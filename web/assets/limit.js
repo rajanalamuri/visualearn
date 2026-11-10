@@ -100,7 +100,9 @@
     restBody.hidden = true;
     restDone.hidden = false;
   });
-  document.getElementById('rest-print')?.addEventListener('click', () => window.print());
+  const printBtn = document.getElementById('rest-print');
+  if (printBtn && !document.getElementById('offline')) printBtn.hidden = true; // home page: nothing to print
+  printBtn?.addEventListener('click', () => window.print());
 
   paint();
   if (limitMin !== 0 && used.sec >= allowedSec()) openRest();

@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sorting · VisuaLearn</title>
+<meta name="description" content="Watch bubble, selection, insertion, merge and quick sort step by step, guess each move, then try them for real with playing cards.">
+<meta property="og:title" content="Sorting · VisuaLearn">
+<meta property="og:description" content="Learn it in 10 minutes. Live it offline.">
+<meta property="og:url" content="https://visualearn.org/sorting/">
+<link rel="canonical" href="https://visualearn.org/sorting/">
+<meta name="theme-color" content="#f6f7fb">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23151a2d'/%3E%3Crect x='7' y='18' width='4' height='7' rx='1' fill='%23b9c1dc'/%3E%3Crect x='14' y='12' width='4' height='13' rx='1' fill='%23e9a400'/%3E%3Crect x='21' y='7' width='4' height='18' rx='1' fill='%2317917f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/assets/style.css">
+<script src="/assets/sort.js" defer></script>
+<script src="/assets/limit.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="VisuaLearn home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="b-bg"/><rect x="7" y="18" width="4" height="7" rx="1" class="b-1"/><rect x="14" y="12" width="4" height="13" rx="1" class="b-2"/><rect x="21" y="7" width="4" height="18" rx="1" class="b-3"/></svg>
+      <span>visua<b>learn</b></span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="/#lessons">Lessons</a>
+      <a href="#offline">Offline</a>
+      <a href="/#grown-ups">Grown-ups</a>
+    </nav>
+    <span class="timer" id="timer" hidden></span>
+  </div>
+</header>
+
+<main>
+  <section id="lesson" class="wrap viz lesson-top" aria-labelledby="viz-title">
+    <div class="viz-head">
+      <p class="eyebrow crumbs"><a href="/#lessons">Lessons</a> · Sorting</p>
+      <h1 id="viz-title">Sorting: putting things in order</h1>
+      <p>Computers sort things all the time: your photos by date, a game's high scores, search results. Pick a way to sort and press play.</p>
+    </div>
+
+    <div class="algos seg" role="group" aria-label="Algorithm" id="algos"></div>
+
+    <div class="board">
+      <div class="stage">
+        <div class="stage-head">
+          <p class="note" id="note" aria-live="polite">Press play to start.</p>
+          <div class="quiz" id="quiz" hidden aria-live="polite">
+            <p class="quiz-q" id="quiz-q"></p>
+            <div class="quiz-opts" id="quiz-opts"></div>
+            <div class="quiz-foot">
+              <p class="fb" id="quiz-fb"></p>
+              <button class="link" id="quiz-skip" type="button">Skip</button>
+            </div>
+          </div>
+          <dl class="stats">
+            <div><dt>Step</dt><dd id="st-step">0 / 0</dd></div>
+            <div><dt>Compares</dt><dd id="st-cmp">0</dd></div>
+            <div><dt>Moves</dt><dd id="st-w">0</dd></div>
+            <div><dt>Guesses</dt><dd id="st-score">–</dd></div>
+          </dl>
+        </div>
+        <div class="bars" id="bars" role="img" aria-label="Array as bars"></div>
+        <div class="done" id="done" hidden>
+          <p id="done-text"></p>
+          <a class="btn primary" href="#offline">Try it offline</a>
+        </div>
+        <ul class="legend" aria-label="Colour key">
+          <li><i class="k-cmp"></i>Comparing</li>
+          <li><i class="k-swap"></i>Moving</li>
+          <li><i class="k-key"></i>Held / smallest</li>
+          <li><i class="k-pivot"></i>Pivot</li>
+          <li><i class="k-done"></i>In final place</li>
+        </ul>
+      </div>
+
+      <aside class="side">
+        <div class="code-card">
+          <p class="eyebrow">The steps, written as code</p>
+          <ol class="code" id="code"></ol>
+        </div>
+        <div class="about-card">
+          <p class="eyebrow" id="algo-name">Algorithm</p>
+          <p id="algo-blurb"></p>
+          <dl class="cx" id="algo-cx"></dl>
+        </div>
+      </aside>
+    </div>
+
+    <div class="controls">
+      <div class="transport">
+        <button class="btn icon" id="b-reset" type="button" aria-label="Back to start" title="Back to start (Home)"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+        <button class="btn icon" id="b-back" type="button" aria-label="Step back" title="Step back (←)"><svg viewBox="0 0 24 24"><path d="M15 5v14L5 12z"/></svg></button>
+        <button class="btn icon play" id="b-play" type="button" aria-label="Play" title="Play / pause (Space)"><svg viewBox="0 0 24 24"><path d="M7 5v14l12-7z"/></svg></button>
+        <button class="btn icon" id="b-fwd" type="button" aria-label="Step forward" title="Step forward (→)"><svg viewBox="0 0 24 24"><path d="M9 5v14l10-7z"/></svg></button>
+        <input type="range" id="scrub" min="0" max="0" value="0" aria-label="Scrub through steps">
+      </div>
+      <div class="knobs">
+        <label class="switch"><input type="checkbox" id="predict" checked> <span>Predict mode</span></label>
+        <label class="knob">Speed <input type="range" id="speed" min="1" max="5" value="2"></label>
+        <label class="knob">Size <input type="range" id="size" min="5" max="64" value="8"><output id="size-out">8</output></label>
+        <label class="knob">Start from
+          <select id="shape">
+            <option value="random">Random</option>
+            <option value="nearly">Nearly sorted</option>
+            <option value="reversed">Backwards</option>
+            <option value="few">Lots of repeats</option>
+          </select>
+        </label>
+        <button class="btn" id="b-new" type="button">New numbers</button>
+      </div>
+      <form class="custom" id="custom">
+        <label for="custom-in">Your numbers</label>
+        <input id="custom-in" type="text" inputmode="numeric" placeholder="e.g. your family's ages: 42, 39, 11, 8" autocomplete="off">
+        <button class="btn" type="submit">Sort these</button>
+        <span class="err" id="custom-err" role="alert"></span>
+      </form>
+    </div>
+  </section>
+
+  <section id="offline" class="wrap block" aria-labelledby="off-h">
+    <div class="off-card">
+      <div class="off-head">
+        <p class="eyebrow">Try it offline · <span id="off-algo">Bubble sort</span></p>
+        <h2 id="off-h"><span id="off-title">The bubble line-up</span></h2>
+        <ul class="chips">
+          <li><b>You need</b> <span id="off-need"></span></li>
+          <li><b>Time</b> <span id="off-time"></span></li>
+        </ul>
+      </div>
+      <ol class="off-steps" id="off-steps"></ol>
+      <div class="off-think">
+        <p class="eyebrow">Think about it</p>
+        <p id="off-think"></p>
+      </div>
+      <div class="tally">
+        <p class="eyebrow">Count your compares</p>
+        <p>Make a tally mark every time you compare two things. Then type the same numbers into the lesson and see if you match the computer.</p>
+        <div class="tally-box" aria-hidden="true"></div>
+      </div>
+      <div class="off-actions no-print">
+        <button class="btn primary" id="b-print" type="button">Print this activity</button>
+        <span>Prints just this card, on one page.</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="compare" class="wrap block" aria-labelledby="cmp-title">
+    <h2 id="cmp-title">Which one is fastest?</h2>
+    <p class="lede">Set Size to 64 and run each one. Watch the Compares counter. Computer scientists describe this with "Big O": it tells you how much more work there is when the list gets longer. <i>n</i> means how many numbers there are.</p>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Extra memory</th><th>Stable</th></tr></thead>
+        <tbody id="cx-table"></tbody>
+      </table>
+    </div>
+    <p class="fine"><b>Stable</b> means equal numbers keep the order they started in. That matters when you sort a class by surname and want students with the same surname to stay sorted by first name.</p>
+  </section>
+
+</main>
+
+<div class="rest" id="rest" role="dialog" aria-modal="true" aria-labelledby="rest-h" hidden>
+  <div class="rest-card">
+    <div id="rest-body">
+      <p class="eyebrow">Screen time is up for today</p>
+      <h2 id="rest-h">Your turn to be the computer.</h2>
+      <p>You've learned enough on screen. Now grab some cards or a few people and try today's activity for real.</p>
+      <div class="rest-actions">
+        <button class="btn primary" id="rest-print" type="button">Print the activity</button>
+        <button class="btn" id="rest-bye" type="button">See you tomorrow</button>
+        <button class="link" id="rest-more" type="button">A grown-up says 5 more minutes</button>
+      </div>
+    </div>
+    <div id="rest-done" hidden>
+      <h2>Great choice.</h2>
+      <p>You can close this tab now. Go and sort something real.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>Free for everyone. No ads, no accounts, no tracking. © 2026 VisuaLearn.</span>
+    <span>Keys: <kbd>Space</kbd> play · <kbd>←</kbd> <kbd>→</kbd> step · <kbd>1</kbd> <kbd>2</kbd> answer</span>
+  </div>
+</footer>
+</body>
+</html>
