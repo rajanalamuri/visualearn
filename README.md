@@ -20,7 +20,7 @@ web/                    static site, served by a Cloudflare Worker (assets only)
   sorting/              bubble, selection, insertion, merge, quick sort
   searching/            linear and binary search
   mazes/                breadth-first (queue) and depth-first (stack) search on a grid graph
-  math/                 + − × ÷ as four cartoons (arith.js); math/advanced/ has the sieve and Euclid
+  math/                 ten math cartoons (arith.js): + − × ÷, regrouping, negatives, fractions, powers, π, Fibonacci; math/advanced/ has the sieve and Euclid
   404.html
   _headers              security headers for every response
   assets/style.css
