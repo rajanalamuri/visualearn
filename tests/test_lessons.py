@@ -282,3 +282,49 @@ def test_every_algorithm_has_a_full_lesson(glob, keys):
         assert al["name"] and al["blurb"] and al["code"]
         assert len(al["facts"]) == 3 and all(len(p) == 2 for p in al["facts"])
         check_offline(al["offline"])
+
+
+# ---------- arithmetic playground ----------
+
+@pytest.fixture(scope="module")
+def arith():
+    return load("arith.js")
+
+
+def test_make_ten_never_loses_a_cookie(arith):
+    for a in range(1, 10):
+        for b in range(1, 10):
+            m = call(arith, f"VLArith.makeTen({a}, {b})")
+            assert m["first"] + m["second"] == m["sum"] == a + b
+            assert m["first"] <= 10 and m["second"] >= 0 and m["moved"] >= 0
+            if a + b >= 10:
+                assert m["first"] == 10  # the first frame is filled before anything is counted
+
+
+def test_skip_counting_ends_at_the_product(arith):
+    for a in range(1, 10):
+        for b in range(1, 10):
+            s = call(arith, f"VLArith.skip({a}, {b})")
+            assert len(s) == b and s[-1] == a * b
+            assert all(y - x == a for x, y in zip(s, s[1:]))
+
+
+def test_sharing_is_fair(arith):
+    for a in range(1, 21):
+        for b in range(1, 6):
+            s = call(arith, f"VLArith.share({a}, {b})")
+            assert (s["q"], s["r"]) == divmod(a, b)
+            assert [s["order"].count(j) for j in range(b)] == [s["q"]] * b  # everyone gets the same
+
+
+def test_answers_and_ranges(arith):
+    ops = call(arith, "VLArith.OPS")
+    assert list(ops) == ["add", "sub", "mul", "div"]
+    for key, o in ops.items():
+        assert o["off"] and o["sym"]
+        for lo, hi, start in (o["a"], o["b"]):
+            assert lo <= start <= hi
+    assert call(arith, "VLArith.answer('add', 8, 5)") == 13
+    assert call(arith, "VLArith.answer('sub', 9, 4)") == 5
+    assert call(arith, "VLArith.answer('mul', 4, 3)") == 12
+    assert call(arith, "VLArith.answer('div', 14, 3)") == 4
