@@ -1,16 +1,18 @@
 /* VisuaLearn sorting visualiser.
    Each algorithm runs once, up front, on a copy of the array and records a frame after every step.
-   The player only renders frames, so stepping backwards is free. */
+   The player only renders frames, so stepping backwards is free.
+   Comparison frames carry a question (q) so Predict mode can ask before showing the answer. */
 (() => {
   'use strict';
 
   const swap = (a, i, j) => { const t = a[i]; a[i] = a[j]; a[j] = t; };
+  const yn = (yes, text, whyYes, whyNo) => ({ text, options: ['Yes', 'No'], answer: yes ? 0 : 1, why: yes ? whyYes : whyNo });
 
   // ---------- algorithms ----------
   const ALGOS = {
     bubble: {
       name: 'Bubble sort',
-      blurb: 'Walk the list, swapping neighbours that are out of order. Each pass carries the largest remaining value to the end, like a bubble rising.',
+      blurb: 'Walk along the list and swap any two neighbours that are in the wrong order. Each walk carries the biggest number left to the end, like a bubble rising.',
       cx: { best: 'O(n)', avg: 'O(n²)', worst: 'O(n²)', space: 'O(1)', stable: 'Yes' },
       code: [
         'for each pass i = 0, 1, …',
@@ -21,14 +23,29 @@
         '  a[n−1−i] is in place',
         '  if not swapped: stop',
       ],
+      offline: {
+        title: 'The bubble line-up',
+        need: '4 to 8 people, or 8 playing cards',
+        time: '10 minutes',
+        steps: [
+          'Stand in a line in any order.',
+          'Start at the left end. Look at the first two people. If the taller one is on the left, they swap places.',
+          'Take one step right and check the next two. Keep going to the end of the line.',
+          'The tallest person is now at the right end. They are sorted, so they can sit down.',
+          'Start again from the left. You are done when you walk the whole line and nobody swaps.',
+        ],
+        think: 'How many times did the shortest person move? Why do small values travel left so slowly?',
+      },
       run(x) {
         const { a, n } = x;
         for (let i = 0; i < n - 1; i++) {
           let swapped = false;
-          x.rec({}, 0, `Pass ${i + 1}: carry the largest unsorted value to the right.`);
+          x.rec({}, 0, `Pass ${i + 1}: carry the biggest unsorted number to the right.`);
           for (let j = 0; j < n - 1 - i; j++) {
             x.c++;
-            x.rec({ [j]: 'cmp', [j + 1]: 'cmp' }, 3, `Is ${a[j]} bigger than ${a[j + 1]}?`);
+            x.rec({ [j]: 'cmp', [j + 1]: 'cmp' }, 3, `Is ${a[j]} bigger than ${a[j + 1]}?`, null,
+              yn(a[j] > a[j + 1], `Will ${a[j]} and ${a[j + 1]} swap places?`,
+                `${a[j]} is bigger, so it moves right.`, `${a[j]} isn't bigger, so they stay put.`));
             if (a[j] > a[j + 1]) {
               swap(a, j, j + 1); x.w += 2; swapped = true;
               x.rec({ [j]: 'swap', [j + 1]: 'swap' }, 4, `Yes, so swap them. ${a[j + 1]} moves right.`);
@@ -46,7 +63,7 @@
 
     selection: {
       name: 'Selection sort',
-      blurb: 'Scan the unsorted part for its smallest value and move it to the front. It always makes the same number of comparisons, but very few swaps.',
+      blurb: 'Look through the unsorted numbers, find the smallest, and move it to the front. Then do it again with what is left.',
       cx: { best: 'O(n²)', avg: 'O(n²)', worst: 'O(n²)', space: 'O(1)', stable: 'No' },
       code: [
         'for i = 0 … n−2',
@@ -56,14 +73,28 @@
         '  swap a[i], a[min]',
         '  a[i] is in place',
       ],
+      offline: {
+        title: 'Find the smallest',
+        need: '8 playing cards (ace counts as 1)',
+        time: '10 minutes',
+        steps: [
+          'Lay the cards face up in a row, all mixed up.',
+          'Touch each card one at a time and find the smallest.',
+          'Move it down to start a new row underneath.',
+          'Do the same with the cards that are left, until the top row is empty.',
+        ],
+        think: 'Count every card you touch. With 8 cards it is always 28, however they start. Can you work out why?',
+      },
       run(x) {
         const { a, n } = x;
         for (let i = 0; i < n - 1; i++) {
           let min = i;
-          x.rec({ [i]: 'key' }, 1, `Start by assuming ${a[i]} is the smallest of what's left.`, [i, n - 1]);
+          x.rec({ [i]: 'key' }, 1, `Start by guessing ${a[i]} is the smallest of what's left.`, [i, n - 1]);
           for (let j = i + 1; j < n; j++) {
             x.c++;
-            x.rec({ [min]: 'key', [j]: 'cmp' }, 3, `Is ${a[j]} smaller than ${a[min]}?`, [i, n - 1]);
+            x.rec({ [min]: 'key', [j]: 'cmp' }, 3, `Is ${a[j]} smaller than ${a[min]}?`, [i, n - 1],
+              yn(a[j] < a[min], `Is ${a[j]} smaller than ${a[min]}?`,
+                `${a[j]} is the new smallest.`, `${a[min]} is still the smallest.`));
             if (a[j] < a[min]) {
               min = j;
               x.rec({ [min]: 'key' }, 3, `Yes. ${a[min]} is the new smallest.`, [i, n - 1]);
@@ -83,7 +114,7 @@
 
     insertion: {
       name: 'Insertion sort',
-      blurb: 'Grow a sorted part on the left. Take the next value and slide it left until it fits, the way most people sort a hand of cards. Very fast on lists that are nearly sorted.',
+      blurb: 'Keep a sorted part on the left. Take the next number and slide it left until it fits, the way most people sort a hand of cards.',
       cx: { best: 'O(n)', avg: 'O(n²)', worst: 'O(n²)', space: 'O(1)', stable: 'Yes' },
       code: [
         'for i = 1 … n−1',
@@ -92,15 +123,29 @@
         '    shift neighbour right; key moves left',
         '  key is placed',
       ],
+      offline: {
+        title: 'Sort your hand',
+        need: '8 playing cards, face down in a pile',
+        time: '10 minutes',
+        steps: [
+          'Pick up one card. A hand of one card is already sorted.',
+          'Pick up the next card and slide it into the right place in your hand.',
+          'Keep going, one card at a time, until the pile is gone.',
+          'Now deal the cards out already in order and do it again. Notice how much faster it is.',
+        ],
+        think: 'Why does insertion sort get so quick when the cards are nearly in order already?',
+      },
       run(x) {
         const { a, n } = x;
         for (let i = 1; i < n; i++) {
           const key = a[i];
           let j = i;
-          x.rec({ [i]: 'key' }, 1, `Take ${key} and insert it into the sorted part on its left.`, [0, i]);
+          x.rec({ [i]: 'key' }, 1, `Take ${key} and slide it into the sorted part on its left.`, [0, i]);
           while (j > 0) {
             x.c++;
-            x.rec({ [j - 1]: 'cmp', [j]: 'key' }, 2, `Is ${a[j - 1]} bigger than ${key}?`, [0, i]);
+            x.rec({ [j - 1]: 'cmp', [j]: 'key' }, 2, `Is ${a[j - 1]} bigger than ${key}?`, [0, i],
+              yn(a[j - 1] > key, `Will ${key} slide left past ${a[j - 1]}?`,
+                `${a[j - 1]} is bigger, so ${key} slides past it.`, `${a[j - 1]} isn't bigger, so ${key} stops here.`));
             if (a[j - 1] <= key) break;
             swap(a, j - 1, j); x.w++; j--;
             x.rec({ [j]: 'key', [j + 1]: 'swap' }, 3, `Yes. Shift ${a[j + 1]} right and move ${key} left.`, [0, i]);
@@ -112,7 +157,7 @@
 
     merge: {
       name: 'Merge sort',
-      blurb: 'Split the list in half until each piece has one item, then merge the pieces back together in order. Always O(n log n), at the cost of a second array.',
+      blurb: 'Split the list in half again and again until every piece has one number. Then merge the pieces back together in order.',
       cx: { best: 'O(n log n)', avg: 'O(n log n)', worst: 'O(n log n)', space: 'O(n)', stable: 'Yes' },
       code: [
         'mergeSort(lo, hi)',
@@ -123,6 +168,18 @@
         '    write the smaller front item',
         '  copy any leftovers',
       ],
+      offline: {
+        title: 'Split and merge',
+        need: '8 playing cards and a table',
+        time: '15 minutes',
+        steps: [
+          'Split the cards into 2 piles of 4. Split those into 4 piles of 2. Split again into 8 single cards.',
+          'Merge the single cards in pairs, smaller card on top.',
+          'Merge two pairs into a sorted pile of 4. Only look at the top card of each pile and take the smaller one.',
+          'Merge the two piles of 4 into one sorted pile of 8.',
+        ],
+        think: 'When you merge, you only ever compare the top two cards. Why is that enough?',
+      },
       run(x) {
         const { a, n } = x;
         const ms = (lo, hi) => {
@@ -143,9 +200,16 @@
           };
           while (i < L.length && j < R.length) {
             x.c++;
-            x.rec({ [k]: 'cmp' }, 4, `Compare the fronts: ${L[i]} (left) and ${R[j]} (right).`, [lo, hi]);
-            if (L[i] <= R[j]) put(L[i++], 5, `${L[i - 1]} is smaller or equal. Write it at position ${k}.`);
-            else put(R[j++], 5, `${R[j - 1]} is smaller. Write it at position ${k}.`);
+            const l = L[i], r = R[j];
+            x.rec({ [k]: 'cmp' }, 4, `Compare the fronts: ${l} (left) and ${r} (right).`, [lo, hi], {
+              text: `Which number goes next: ${l} from the left, or ${r} from the right?`,
+              options: [`${l} (left)`, `${r} (right)`],
+              answer: l <= r ? 0 : 1,
+              either: l === r,
+              why: l === r ? `They're equal. Merge sort takes the left one first.` : `${Math.min(l, r)} is smaller, so it goes first.`,
+            });
+            if (l <= r) put(L[i++], 5, `${l} is smaller or equal. Write it at position ${k}.`);
+            else put(R[j++], 5, `${r} is smaller. Write it at position ${k}.`);
           }
           while (i < L.length) put(L[i++], 6, `Copy leftover ${L[i - 1]} from the left half.`);
           while (j < R.length) put(R[j++], 6, `Copy leftover ${R[j - 1]} from the right half.`);
@@ -156,7 +220,7 @@
 
     quick: {
       name: 'Quick sort',
-      blurb: 'Pick a pivot, move everything smaller to its left, and the pivot lands in its final spot. Repeat on each side. Usually the fastest in practice, but a bad pivot choice makes it O(n²).',
+      blurb: 'Pick one number as the pivot. Put everything smaller on its left, and the pivot lands in its final spot. Then do the same on each side.',
       cx: { best: 'O(n log n)', avg: 'O(n log n)', worst: 'O(n²)', space: 'O(log n)', stable: 'No' },
       code: [
         'quickSort(lo, hi)',
@@ -167,6 +231,18 @@
         '  swap a[i], a[hi]    // pivot placed',
         '  quickSort(lo, i−1); quickSort(i+1, hi)',
       ],
+      offline: {
+        title: 'The pivot game',
+        need: '8 to 10 playing cards',
+        time: '10 minutes',
+        steps: [
+          'Mix the cards and pick the last one as the pivot. Put it in the middle of the table.',
+          'Every card smaller than the pivot goes in a pile on its left. Every other card goes on its right.',
+          'The pivot is now in its final place. Leave it there.',
+          'Play the same game with the left pile, then the right pile, until every pile has one card.',
+        ],
+        think: 'What happens if the pivot is always the biggest card? Try it, and count how many times you compare.',
+      },
       run(x) {
         const { a } = x;
         const qs = (lo, hi) => {
@@ -178,10 +254,12 @@
           }
           const p = a[hi];
           let i = lo;
-          x.rec({ [hi]: 'pivot' }, 2, `Pivot is ${p}. Values smaller than it will gather on the left.`, [lo, hi]);
+          x.rec({ [hi]: 'pivot' }, 2, `The pivot is ${p}. Numbers smaller than it gather on the left.`, [lo, hi]);
           for (let j = lo; j < hi; j++) {
             x.c++;
-            x.rec({ [i]: 'key', [j]: 'cmp', [hi]: 'pivot' }, 4, `Is ${a[j]} smaller than the pivot ${p}?`, [lo, hi]);
+            x.rec({ [i]: 'key', [j]: 'cmp', [hi]: 'pivot' }, 4, `Is ${a[j]} smaller than the pivot ${p}?`, [lo, hi],
+              yn(a[j] < p, `Does ${a[j]} join the "smaller than ${p}" group?`,
+                `${a[j]} is smaller than ${p}.`, `${a[j]} isn't smaller than ${p}.`));
             if (a[j] < p) {
               if (i !== j) {
                 swap(a, i, j); x.w += 2;
@@ -194,7 +272,7 @@
           }
           if (i !== hi) { swap(a, i, hi); x.w += 2; }
           x.sorted.add(i);
-          x.rec({ [i]: 'pivot' }, 5, `Pivot ${p} lands at position ${i}, its final place.`, [lo, hi]);
+          x.rec({ [i]: 'pivot' }, 5, `The pivot ${p} lands at position ${i}, its final place.`, [lo, hi]);
           qs(lo, i - 1);
           qs(i + 1, hi);
         };
@@ -208,14 +286,14 @@
     const a = input.slice();
     const x = {
       a, n: a.length, c: 0, w: 0, sorted: new Set(), frames: [],
-      rec(marks, line, note, range) {
-        this.frames.push({ a: a.slice(), m: marks || {}, s: new Set(this.sorted), r: range || null, line, note, c: this.c, w: this.w });
+      rec(marks, line, note, range, q) {
+        this.frames.push({ a: a.slice(), m: marks || {}, s: new Set(this.sorted), r: range || null, line, note, c: this.c, w: this.w, q: q || null });
       },
     };
     x.rec({}, -1, 'Press play, or step through with the arrow keys.');
     if (a.length > 1) ALGOS[algoKey].run(x);
     for (let k = 0; k < a.length; k++) x.sorted.add(k);
-    x.rec({}, -1, `Sorted. ${x.c} comparisons and ${x.w} array writes.`);
+    x.rec({}, -1, `Sorted! That took ${x.c} comparisons and ${x.w} moves.`);
     return x.frames;
   }
 
@@ -237,13 +315,13 @@
 
   function parseCustom(text) {
     const parts = text.split(/[\s,;]+/).filter(Boolean);
-    if (parts.length < 2) return { error: 'Enter at least two numbers, separated by commas or spaces.' };
+    if (parts.length < 2) return { error: 'Type at least two numbers, with commas or spaces between them.' };
     if (parts.length > 64) return { error: 'Use 64 numbers or fewer so the bars stay readable.' };
     const out = [];
     for (const p of parts) {
       if (!/^\d+$/.test(p)) return { error: `"${p}" isn't a whole number. Use whole numbers from 1 to 999.` };
       const v = Number(p);
-      if (v < 1 || v > 999) return { error: `${v} is out of range. Use whole numbers from 1 to 999.` };
+      if (v < 1 || v > 999) return { error: `${v} is too big or too small. Use whole numbers from 1 to 999.` };
       out.push(v);
     }
     return { values: out };
@@ -255,14 +333,20 @@
   if (typeof document === 'undefined') return;
   const $ = (id) => document.getElementById(id);
   const DELAYS = [700, 340, 160, 70, 22];
-  const state = { algo: 'bubble', input: [], frames: [], i: 0, timer: null };
+  const state = {
+    algo: 'bubble', input: [], frames: [], i: 0, timer: null,
+    predict: true, pending: -1, resume: false, answered: new Map(), right: 0, asked: 0,
+  };
 
   const els = {
     algos: $('algos'), bars: $('bars'), note: $('note'), code: $('code'),
-    step: $('st-step'), cmp: $('st-cmp'), w: $('st-w'), scrub: $('scrub'),
-    play: $('b-play'), speed: $('speed'), size: $('size'), sizeOut: $('size-out'), shape: $('shape'),
+    step: $('st-step'), cmp: $('st-cmp'), w: $('st-w'), score: $('st-score'), scrub: $('scrub'),
+    play: $('b-play'), fwd: $('b-fwd'), speed: $('speed'), size: $('size'), sizeOut: $('size-out'), shape: $('shape'),
     name: $('algo-name'), blurb: $('algo-blurb'), cx: $('algo-cx'), table: $('cx-table'),
     form: $('custom'), customIn: $('custom-in'), err: $('custom-err'),
+    predict: $('predict'), quiz: $('quiz'), quizQ: $('quiz-q'), quizOpts: $('quiz-opts'), quizFb: $('quiz-fb'), quizSkip: $('quiz-skip'),
+    done: $('done'), doneText: $('done-text'),
+    offTitle: $('off-title'), offNeed: $('off-need'), offTime: $('off-time'), offSteps: $('off-steps'), offThink: $('off-think'), offAlgo: $('off-algo'),
   };
   let barEls = [];
 
@@ -301,11 +385,26 @@
     }
   }
 
+  function renderOffline(al) {
+    const o = al.offline;
+    els.offAlgo.textContent = al.name;
+    els.offTitle.textContent = o.title;
+    els.offNeed.textContent = o.need;
+    els.offTime.textContent = o.time;
+    els.offThink.textContent = o.think;
+    els.offSteps.innerHTML = '';
+    for (const s of o.steps) { const li = document.createElement('li'); li.textContent = s; els.offSteps.appendChild(li); }
+  }
+
   function prepare() {
     stop();
     const al = ALGOS[state.algo];
     state.frames = record(state.algo, state.input);
     state.i = 0;
+    state.pending = -1;
+    state.answered = new Map();
+    state.right = 0;
+    state.asked = 0;
     els.scrub.max = String(state.frames.length - 1);
     els.code.innerHTML = '';
     al.code.forEach((line) => { const li = document.createElement('li'); li.textContent = line; els.code.appendChild(li); });
@@ -321,8 +420,37 @@
     }
     for (const b of els.algos.children) b.setAttribute('aria-pressed', String(b.dataset.algo === state.algo));
     for (const tr of els.table.children) tr.classList.toggle('on', tr.dataset.algo === state.algo);
+    renderOffline(al);
     if (barEls.length !== state.input.length) buildBars(state.input.length);
     render();
+  }
+
+  function renderQuiz(f) {
+    const open = state.pending === state.i;
+    const result = state.answered.get(state.i);
+    els.quiz.hidden = !(state.predict && f.q && (open || result));
+    els.note.hidden = !els.quiz.hidden;
+    if (els.quiz.hidden) return;
+    els.quizQ.textContent = f.q.text;
+    els.quizOpts.innerHTML = '';
+    f.q.options.forEach((label, k) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn opt';
+      b.textContent = label;
+      b.disabled = !open;
+      if (result && (k === f.q.answer || f.q.either)) b.classList.add('is-answer');
+      b.addEventListener('click', () => answer(k));
+      els.quizOpts.appendChild(b);
+    });
+    els.quizSkip.hidden = !open;
+    if (result) {
+      els.quizFb.textContent = result === 'right' ? `Right! ${f.q.why}` : result === 'skip' ? f.q.why : `Not quite. ${f.q.why}`;
+      els.quizFb.className = `fb ${result}`;
+    } else {
+      els.quizFb.textContent = 'Make a guess, then the bars will show you.';
+      els.quizFb.className = 'fb';
+    }
   }
 
   function render() {
@@ -345,13 +473,54 @@
     els.step.textContent = `${state.i} / ${state.frames.length - 1}`;
     els.cmp.textContent = f.c;
     els.w.textContent = f.w;
+    els.score.textContent = state.asked ? `${state.right} / ${state.asked}` : '–';
     els.scrub.value = String(state.i);
+    els.fwd.disabled = state.pending === state.i;
     els.bars.setAttribute('aria-label', `Array: ${f.a.join(', ')}`);
+    renderQuiz(f);
+    const last = state.i === state.frames.length - 1 && state.frames.length > 1;
+    els.done.hidden = !last;
+    if (last) {
+      els.doneText.textContent = state.asked
+        ? `You guessed ${state.right} of ${state.asked} right. Now try it for real, away from the screen.`
+        : 'Now try it for real, away from the screen.';
+    }
   }
 
+  // Moves to frame i. Returns false if Predict mode stopped there to ask a question.
   function go(i) {
     state.i = Math.max(0, Math.min(state.frames.length - 1, i));
+    const f = state.frames[state.i];
+    const ask = state.predict && f.q && !state.answered.has(state.i);
+    state.pending = ask ? state.i : -1;
     render();
+    if (ask) {
+      // Hand keyboard focus to the answers if it was on the play controls, so Enter answers.
+      const first = els.quizOpts.querySelector('button');
+      const active = document.activeElement;
+      if (first && active && (active === document.body || active.closest('.transport'))) first.focus({ preventScroll: true });
+    }
+    return !ask;
+  }
+
+  function answer(k) {
+    if (state.pending !== state.i) return;
+    const q = state.frames[state.i].q;
+    let result = 'skip';
+    if (k >= 0) {
+      state.asked++;
+      const right = k === q.answer || q.either;
+      if (right) state.right++;
+      result = right ? 'right' : 'wrong';
+    }
+    state.answered.set(state.i, result);
+    state.pending = -1;
+    render();
+    if (state.resume) {
+      state.resume = false;
+      setPlayIcon(true);
+      state.timer = setTimeout(tick, result === 'wrong' ? 1800 : 1000);
+    }
   }
 
   function setPlayIcon(playing) {
@@ -362,12 +531,14 @@
   }
 
   function tick() {
+    state.timer = null;
     if (state.i >= state.frames.length - 1) { stop(); return; }
-    go(state.i + 1);
+    if (!go(state.i + 1)) { state.resume = true; setPlayIcon(false); return; }
     state.timer = setTimeout(tick, DELAYS[Number(els.speed.value) - 1]);
   }
   function play() {
     if (state.timer) return;
+    if (state.pending === state.i) { state.resume = true; return; }
     if (state.i >= state.frames.length - 1) go(0);
     setPlayIcon(true);
     state.timer = setTimeout(tick, 0);
@@ -375,9 +546,18 @@
   function stop() {
     clearTimeout(state.timer);
     state.timer = null;
+    state.resume = false;
     setPlayIcon(false);
   }
-  const toggle = () => (state.timer ? stop() : play());
+  function toggle() {
+    if (state.pending === state.i) { // a question is waiting: answering is how you continue
+      state.resume = true;
+      els.quizOpts.querySelector('button')?.focus({ preventScroll: true });
+      return;
+    }
+    if (state.timer) stop(); else play();
+  }
+  const step = (d) => { stop(); if (d > 0 && state.pending === state.i) return; go(state.i + d); };
 
   function newArray() {
     state.input = makeArray(Number(els.size.value), els.shape.value);
@@ -387,11 +567,23 @@
 
   // ---------- wiring ----------
   els.play.addEventListener('click', toggle);
-  $('b-back').addEventListener('click', () => { stop(); go(state.i - 1); });
-  $('b-fwd').addEventListener('click', () => { stop(); go(state.i + 1); });
+  $('b-back').addEventListener('click', () => step(-1));
+  els.fwd.addEventListener('click', () => step(1));
   $('b-reset').addEventListener('click', () => { stop(); go(0); });
   $('b-new').addEventListener('click', newArray);
-  els.scrub.addEventListener('input', () => { stop(); go(Number(els.scrub.value)); });
+  els.quizSkip.addEventListener('click', () => answer(-1));
+  els.predict.addEventListener('change', () => {
+    state.predict = els.predict.checked;
+    if (!state.predict && state.pending === state.i) { state.pending = -1; if (state.resume) { state.resume = false; play(); } }
+    render();
+  });
+  els.scrub.addEventListener('input', () => {
+    stop();
+    // Scrubbing is for looking around, so it never stops to ask.
+    state.i = Number(els.scrub.value);
+    state.pending = -1;
+    render();
+  });
   els.size.addEventListener('input', () => { els.sizeOut.textContent = els.size.value; newArray(); });
   els.shape.addEventListener('change', newArray);
   els.form.addEventListener('submit', (e) => {
@@ -404,12 +596,16 @@
     els.sizeOut.textContent = String(res.values.length);
     prepare();
   });
+  $('b-print').addEventListener('click', () => window.print());
+  document.addEventListener('vl:rest', stop);
   document.addEventListener('keydown', (e) => {
     const t = e.target;
-    if (t && (t.tagName === 'INPUT' && t.type !== 'range' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) return;
+    if (t && ((t.tagName === 'INPUT' && t.type !== 'range' && t.type !== 'checkbox') || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) return;
+    if (document.body.classList.contains('resting')) return;
+    if (state.pending === state.i && (e.key === '1' || e.key === '2')) { answer(Number(e.key) - 1); return; }
     if (e.key === ' ' && t.tagName !== 'BUTTON') { e.preventDefault(); toggle(); }
-    else if (e.key === 'ArrowRight' && t.type !== 'range') { stop(); go(state.i + 1); }
-    else if (e.key === 'ArrowLeft' && t.type !== 'range') { stop(); go(state.i - 1); }
+    else if (e.key === 'ArrowRight' && t.type !== 'range') step(1);
+    else if (e.key === 'ArrowLeft' && t.type !== 'range') step(-1);
     else if (e.key === 'Home') { stop(); go(0); }
   });
 

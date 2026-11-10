@@ -20,7 +20,8 @@ def js():
     ctx.eval(SRC)
     ctx.eval("""
       globalThis.run = (key, input) => JSON.stringify(VisuaLearn.record(key, input).map(f => ({
-        a: f.a, m: f.m, s: [...f.s], line: f.line, note: f.note, c: f.c, w: f.w })));
+        a: f.a, m: f.m, s: [...f.s], line: f.line, note: f.note, c: f.c, w: f.w, q: f.q })));
+      globalThis.offline = (key) => JSON.stringify(VisuaLearn.ALGOS[key].offline);
       globalThis.parse = (t) => JSON.stringify(VisuaLearn.parseCustom(t));
       globalThis.make = (n, shape) => JSON.stringify(VisuaLearn.makeArray(n, shape));
       globalThis.codeLen = (key) => VisuaLearn.ALGOS[key].code.length;
@@ -103,7 +104,7 @@ def test_comparison_counts(js):
 def test_first_and_last_frames(js):
     fr = frames(js, "quick", [3, 1, 2])
     assert fr[0]["a"] == [3, 1, 2] and fr[0]["c"] == 0
-    assert fr[-1]["note"].startswith("Sorted.")
+    assert fr[-1]["note"].startswith("Sorted!")
 
 
 @pytest.mark.parametrize("text,values", [
@@ -129,3 +130,60 @@ def test_make_array(js, shape):
         assert a == sorted(a, reverse=True)
     if shape == "few":
         assert len(set(a)) <= 4
+
+
+# ---------- Predict mode ----------
+
+@pytest.mark.parametrize("key", ALGOS)
+def test_every_comparison_asks_a_question(js, key):
+    fr = frames(js, key, [12, 88, 5, 40, 40, 73, 1, 64, 29, 50])
+    for prev, f in zip(fr, fr[1:]):
+        if f["c"] > prev["c"]:
+            q = f["q"]
+            assert q, (key, f["note"])
+            assert q["text"] and q["why"]
+            assert len(q["options"]) == 2 and q["answer"] in (0, 1)
+        else:
+            assert f["q"] is None, (key, f["note"])
+
+
+def _questions(fr):
+    return [(f, fr[i + 1]) for i, f in enumerate(fr[:-1]) if f["q"]]
+
+
+@pytest.mark.parametrize("key", ["bubble", "insertion"])
+def test_answer_matches_whether_a_swap_follows(js, key):
+    rng = random.Random(3)
+    for _ in range(15):
+        arr = [rng.randint(1, 30) for _ in range(12)]
+        for f, nxt in _questions(frames(js, key, arr)):
+            swapped = "swap" in nxt["m"].values()
+            assert (f["q"]["answer"] == 0) == swapped, (key, arr, f["note"])
+
+
+@pytest.mark.parametrize("key", ["selection", "quick"])
+def test_answer_matches_the_yes_step(js, key):
+    rng = random.Random(4)
+    for _ in range(15):
+        arr = [rng.randint(1, 30) for _ in range(12)]
+        for f, nxt in _questions(frames(js, key, arr)):
+            assert (f["q"]["answer"] == 0) == nxt["note"].startswith("Yes"), (key, arr, f["note"])
+
+
+def test_merge_answer_is_the_value_written_next(js):
+    rng = random.Random(5)
+    for _ in range(15):
+        arr = [rng.randint(1, 30) for _ in range(12)]
+        for f, nxt in _questions(frames(js, "merge", arr)):
+            q = f["q"]
+            k = int(next(iter(f["m"])))
+            picked = int(q["options"][q["answer"]].split()[0])
+            assert nxt["a"][k] == picked
+            assert q["either"] == (q["options"][0].split()[0] == q["options"][1].split()[0])
+
+
+@pytest.mark.parametrize("key", ALGOS)
+def test_offline_activity(js, key):
+    o = json.loads(js.eval(f"offline({json.dumps(key)})"))
+    assert o["title"] and o["need"] and o["time"] and o["think"]
+    assert 3 <= len(o["steps"]) <= 6

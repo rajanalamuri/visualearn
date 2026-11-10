@@ -1,6 +1,7 @@
 # VisuaLearn
 
-Data structures and algorithms you can watch, step by step. Live at https://visualearn.org.
+Short lessons on how computers think, for ages 8 to 14. Watch, predict, then go offline.
+Live at https://visualearn.org.
 
 ## Layout
 
@@ -10,6 +11,7 @@ web/                 static site, served by a Cloudflare Worker
   404.html
   assets/style.css
   assets/sort.js     algorithms record every step as a frame; the player renders frames
+  assets/limit.js    daily screen-time limit (localStorage only)
 wrangler.jsonc       Worker config (assets only, no server code)
 ```
 
