@@ -1,0 +1,54 @@
+/* Math playground: a stage, an equation, a play button. Nothing else competes for attention. */
+.ar{display:flex;flex-direction:column;align-items:center;gap:18px;padding-block:28px 64px}
+.ar-ops{display:flex;gap:10px}
+.ar-ops button{width:60px;height:60px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);
+  font-family:var(--font-display);font-size:32px;font-weight:700;line-height:1;cursor:pointer;transition:background-color .15s, transform .15s}
+.ar-ops button:hover{transform:translateY(-2px)}
+.ar-ops button[aria-pressed="true"]{background:var(--pip);border-color:var(--pip);color:var(--pip-ink)}
+
+.ar-stage{width:100%;max-width:880px;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:24px}
+
+.ar-eq{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 14px;font-family:var(--font-display);font-weight:700;font-size:clamp(38px, 7vw, 64px);line-height:1}
+.ar-step{display:inline-flex;align-items:center;gap:6px}
+.ar-step output{min-width:1.2ch;text-align:center;font-variant-numeric:tabular-nums}
+.ar-step button{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--ink-2);font:700 20px/1 var(--font-body);cursor:pointer}
+.ar-step button:hover{border-color:var(--ink-2);color:var(--ink)}
+.ar-sym{color:var(--muted);font-weight:500}
+.ar-ans{min-width:1.3ch;text-align:center;color:var(--muted);font-variant-numeric:tabular-nums}
+.ar-ans.got{color:var(--ink);background:linear-gradient(transparent 62%, color-mix(in srgb, var(--pip) 70%, transparent) 62% 92%, transparent 92%)}
+.ar-think{margin:-6px 0 0;min-height:1.5em;font-family:var(--font-code);font-size:18px;color:var(--ink-2)}
+.ar-go{display:flex;align-items:center;gap:12px}
+.ar-go .play{width:64px;height:64px}
+.ar-go .play svg{width:24px;height:24px}
+.ar-off{margin:18px 0 0;max-width:52ch;text-align:center;color:var(--ink-2);font-size:16.5px}
+.ar-off b{color:var(--ink)}
+.ar-next{margin-top:26px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:14px 22px;border:1px solid var(--line);border-radius:14px;color:var(--ink);text-decoration:none}
+.ar-next:hover{border-color:var(--ink-2)}
+.ar-next span{font-family:var(--font-code);font-size:12.5px;color:var(--muted)}
+.ar-next b{font-family:var(--font-display);font-size:18px}
+
+/* things on the stage */
+.ck circle{fill:#d9a35b}
+.ck-b circle{fill:#e58f8f}
+.ck .chip{fill:#5a3a1f}
+.frame rect{fill:none;stroke:var(--line);stroke-width:2}
+.frame.full rect{stroke:var(--done);fill:color-mix(in srgb, var(--done) 10%, transparent)}
+.ground{stroke:var(--line);stroke-width:2;stroke-linecap:round}
+.carrot .root{fill:#f08a24}
+.carrot .leaf{fill:var(--done)}
+.mu-fur{fill:#e9e6df;stroke:#cfcac0;stroke-width:1.5}
+.mu-pink{fill:#f2a7b5}
+.mu-teeth{fill:#fff;stroke:#cfcac0;stroke-width:1.5}
+.critter .antenna{fill:none;stroke:var(--ink-2);stroke-width:2.5;stroke-linecap:round}
+.cr-0 .cr-body{fill:var(--accent)} .cr-1 .cr-body{fill:var(--done)} .cr-2 .cr-body{fill:var(--pivot)} .cr-3 .cr-body{fill:var(--swap)} .cr-4 .cr-body{fill:#f08a24}
+.critter .pip-mouth{stroke:#fff}
+.count{fill:var(--ink);font-family:var(--font-display);font-weight:700;font-size:22px;text-anchor:middle;dominant-baseline:middle}
+.count.left{text-anchor:start}
+.count.old{fill:var(--muted);font-weight:500}
+.count.mid{font-size:20px}
+@media (prefers-color-scheme: dark){ .mu-fur{fill:#d8d5cd} }
+@media (max-width: 560px){
+  .ar{gap:14px;padding-block:18px 48px}
+  .ar-ops button{width:52px;height:52px;font-size:28px}
+  .ar-stage{border-radius:16px}
+}

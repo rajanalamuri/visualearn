@@ -3,23 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Math algorithms · VisuaLearn</title>
-<meta name="description" content="The Sieve of Eratosthenes and Euclid's algorithm, step by step. Find every prime and the greatest common divisor, then do it with paper and scissors.">
-<meta property="og:title" content="Math algorithms · VisuaLearn">
-<meta property="og:description" content="Learn it in 10 minutes. Live it offline.">
+<title>Math · VisuaLearn</title>
+<meta name="description" content="Add, subtract, multiply and divide as four small cartoons. Learn the trick behind each one, then try it with real things. Free.">
+<meta property="og:title" content="Math · VisuaLearn">
+<meta property="og:description" content="Add, take away, clone and share. Tricks beat memorising.">
 <meta property="og:url" content="https://visualearn.org/math/">
 <link rel="canonical" href="https://visualearn.org/math/">
-<meta name="theme-color" content="#f6f7fb">
+<meta name="theme-color" content="#fbfaf7">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/assets/style.css">
-<script src="/assets/player.js" defer></script>
-<script src="/assets/math.js" defer></script>
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/arith.css">
+<script src="/assets/pipkit.js" defer></script>
+<script src="/assets/arith.js" defer></script>
 <script src="/assets/limit.js" defer></script>
 </head>
-<body>
+<body class="home">
 <header class="top">
   <div class="wrap top-in">
     <a class="brand" href="/" aria-label="VisuaLearn home">
@@ -27,135 +29,61 @@
       <span>visua<b>learn</b></span>
     </a>
     <nav class="nav" aria-label="Sections">
-      <a href="/#lessons">Lessons</a>
-      <a href="#offline">Offline</a>
-      <a href="/#grown-ups">Grown-ups</a>
+      <a href="/#habits">Lessons</a>
+      <a href="/math/advanced/">Advanced math</a>
     </nav>
     <span class="timer" id="timer" hidden></span>
   </div>
 </header>
 
-<main>
-  <section id="lesson" class="wrap viz lesson-top" aria-labelledby="viz-title">
-    <div class="viz-head">
-      <p class="eyebrow crumbs"><a href="/#lessons">Lessons</a> · Math</p>
-      <h1 id="viz-title">Math algorithms: older than computers</h1>
-      <p>These two recipes are over 2,000 years old, and computers still run them every day. Primes keep your messages secret online; the GCD simplifies fractions and sets the teeth on gears.</p>
-    </div>
+<main class="wrap ar">
+  <h1 class="sr-only">Math: add, subtract, multiply, divide</h1>
 
-    <div class="algos seg" role="group" aria-label="Algorithm" id="algos"></div>
+  <div class="ar-ops" role="group" aria-label="Choose an operation">
+    <button type="button" data-op="add" aria-label="Add">+</button>
+    <button type="button" data-op="sub" aria-label="Subtract">−</button>
+    <button type="button" data-op="mul" aria-label="Multiply">×</button>
+    <button type="button" data-op="div" aria-label="Divide">÷</button>
+  </div>
 
-    <div class="board">
-      <div class="stage">
-        <div class="stage-head">
-          <p class="note" id="note" aria-live="polite">Press play to start.</p>
-          <div class="quiz" id="quiz" hidden aria-live="polite">
-            <p class="quiz-q" id="quiz-q"></p>
-            <div class="quiz-opts" id="quiz-opts"></div>
-            <div class="quiz-foot">
-              <p class="fb" id="quiz-fb"></p>
-              <button class="link" id="quiz-skip" type="button">Skip</button>
-            </div>
-          </div>
-          <dl class="stats" id="stats"></dl>
-        </div>
-        <div id="view" role="img" aria-label="Numbers"></div>
-        <div class="done" id="done" hidden>
-          <p id="done-text"></p>
-          <a class="btn primary" href="#offline">Try it offline</a>
-        </div>
-        <ul class="legend" aria-label="Colour key" data-for="sieve">
-          <li><i class="k-key"></i>Current prime</li>
-          <li><i class="k-swap"></i>Crossing out now</li>
-          <li><i class="k-out"></i>Crossed out</li>
-          <li><i class="k-done"></i>Prime</li>
-        </ul>
-        <ul class="legend" aria-label="Colour key" data-for="euclid" hidden>
-          <li><i class="k-cmp"></i>Round 1</li>
-          <li><i class="k-done"></i>Round 2</li>
-          <li><i class="k-key"></i>Round 3</li>
-          <li><i class="k-pivot"></i>Round 4</li>
-          <li><i class="k-rest"></i>Strip still to cut</li>
-        </ul>
-      </div>
+  <svg id="stage" class="ar-stage" viewBox="0 0 800 410" role="img"></svg>
 
-      <aside class="side">
-        <div class="code-card">
-          <p class="eyebrow">The steps, written as code</p>
-          <ol class="code" id="code"></ol>
-        </div>
-        <div class="about-card">
-          <p class="eyebrow" id="algo-name">Algorithm</p>
-          <p id="algo-blurb"></p>
-          <dl class="cx" id="algo-facts"></dl>
-        </div>
-      </aside>
-    </div>
+  <div class="ar-eq" aria-live="polite">
+    <span class="ar-step">
+      <button type="button" data-step="a:-1" aria-label="First number down">−</button>
+      <output id="val-a">8</output>
+      <button type="button" data-step="a:1" aria-label="First number up">+</button>
+    </span>
+    <span class="ar-sym" id="sym">+</span>
+    <span class="ar-step">
+      <button type="button" data-step="b:-1" aria-label="Second number down">−</button>
+      <output id="val-b">5</output>
+      <button type="button" data-step="b:1" aria-label="Second number up">+</button>
+    </span>
+    <span class="ar-sym">=</span>
+    <b class="ar-ans" id="ans">?</b>
+  </div>
+  <p class="ar-think" id="think" aria-live="polite"></p>
 
-    <div class="controls">
-      <div class="transport">
-        <button class="btn icon" id="b-reset" type="button" aria-label="Back to start" title="Back to start (Home)"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
-        <button class="btn icon" id="b-back" type="button" aria-label="Step back" title="Step back (←)"><svg viewBox="0 0 24 24"><path d="M15 5v14L5 12z"/></svg></button>
-        <button class="btn icon play" id="b-play" type="button" aria-label="Play" title="Play / pause (Space)"><svg viewBox="0 0 24 24"><path d="M7 5v14l12-7z"/></svg></button>
-        <button class="btn icon" id="b-fwd" type="button" aria-label="Step forward" title="Step forward (→)"><svg viewBox="0 0 24 24"><path d="M9 5v14l10-7z"/></svg></button>
-        <input type="range" id="scrub" min="0" max="0" value="0" aria-label="Scrub through steps">
-      </div>
-      <div class="knobs">
-        <label class="switch"><input type="checkbox" id="predict" checked> <span>Predict mode</span></label>
-        <label class="knob">Speed <input type="range" id="speed" min="1" max="5" value="3"></label>
-        <label class="knob" data-for="sieve">Up to
-          <select id="upto">
-            <option value="30">30</option>
-            <option value="60" selected>60</option>
-            <option value="100">100</option>
-          </select>
-        </label>
-        <button class="btn" id="b-pair" type="button" data-for="euclid" hidden>New rectangle</button>
-      </div>
-      <form class="custom" id="rect-form" data-for="euclid" hidden>
-        <label for="rect-w">Rectangle</label>
-        <input id="rect-w" class="num" type="number" min="1" max="60" value="21" inputmode="numeric" aria-label="Width">
-        <span aria-hidden="true">×</span>
-        <input id="rect-h" class="num" type="number" min="1" max="60" value="13" inputmode="numeric" aria-label="Height">
-        <button class="btn" type="submit">Find the GCD</button>
-        <span class="err" id="rect-err" role="alert"></span>
-      </form>
-    </div>
-  </section>
+  <div class="ar-go">
+    <button class="btn play" id="b-play" type="button" aria-label="Play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14l12-7z"/></svg></button>
+    <button class="btn icon" id="b-flip" type="button" aria-label="Swap the two numbers" title="Swap the two numbers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </div>
 
-  <section id="offline" class="wrap block" aria-labelledby="off-h">
-    <div class="off-card">
-      <div class="off-head">
-        <p class="eyebrow">Try it offline · <span id="off-algo"></span></p>
-        <h2 id="off-h"><span id="off-title"></span></h2>
-        <ul class="chips">
-          <li><b>You need</b> <span id="off-need"></span></li>
-          <li><b>Time</b> <span id="off-time"></span></li>
-        </ul>
-      </div>
-      <ol class="off-steps" id="off-steps"></ol>
-      <div class="off-think">
-        <p class="eyebrow">Think about it</p>
-        <p id="off-think"></p>
-      </div>
-      <div class="tally">
-        <p class="eyebrow">Work it out here</p>
-        <div class="grid-box" aria-hidden="true"></div>
-      </div>
-      <div class="off-actions no-print">
-        <button class="btn primary" id="b-print" type="button">Print this activity</button>
-        <span>Prints just this card, on one page.</span>
-      </div>
-    </div>
-  </section>
+  <p class="ar-off"><b>Now with real things.</b> <span id="off-line"></span></p>
+
+  <a class="ar-next" href="/math/advanced/">
+    <span>Advanced math</span>
+    <b>Primes and the greatest common divisor →</b>
+  </a>
 </main>
 
 <div class="rest" id="rest" role="dialog" aria-modal="true" aria-labelledby="rest-h" hidden>
   <div class="rest-card">
     <div id="rest-body">
       <p class="eyebrow">Screen time is up for today</p>
-      <h2 id="rest-h">Your turn to be the computer.</h2>
-      <p>You've learned enough on screen. Get some paper and do today's activity by hand.</p>
+      <h2 id="rest-h">Your turn.</h2>
+      <p>Grab coins, grapes or bricks and try it with real things.</p>
       <div class="rest-actions">
         <button class="btn primary" id="rest-print" type="button">Print the activity</button>
         <button class="btn" id="rest-bye" type="button">See you tomorrow</button>
@@ -164,15 +92,15 @@
     </div>
     <div id="rest-done" hidden>
       <h2>Great choice.</h2>
-      <p>You can close this tab now. Go and find some primes on paper.</p>
+      <p>You can close this tab now.</p>
     </div>
   </div>
 </div>
 
 <footer class="foot">
   <div class="wrap foot-in">
-    <span>Free for everyone. No ads, no accounts, no tracking. © 2026 VisuaLearn.</span>
-    <span>Keys: <kbd>Space</kbd> play · <kbd>←</kbd> <kbd>→</kbd> step · <kbd>1</kbd> <kbd>2</kbd> answer</span>
+    <span>© 2026 VisuaLearn</span>
+    <span>Free for everyone.</span>
   </div>
 </footer>
 </body>
