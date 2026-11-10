@@ -1,0 +1,18 @@
+# Wrangler / Node
+node_modules/
+.wrangler/
+.dev.vars
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local tool settings
+.claude/
+
+# Python
+__pycache__/
+.pytest_cache/
+.venv/
