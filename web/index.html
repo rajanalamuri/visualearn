@@ -4,20 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>VisuaLearn</title>
-<meta name="description" content="Free visual lessons on algorithms and data structures for children, parents and teachers everywhere. Ten minutes on screen, then an activity away from it.">
+<meta name="description" content="Answers are everywhere. Thinking is rare. Ten-minute visual lessons that teach children the thinking habits inside the great algorithms, then send them off the screen.">
 <meta property="og:title" content="VisuaLearn">
-<meta property="og:description" content="Learn it in 10 minutes. Live it offline. Free for everyone.">
+<meta property="og:description" content="Answers are everywhere. Thinking is rare.">
 <meta property="og:url" content="https://visualearn.org/">
 <link rel="canonical" href="https://visualearn.org/">
-<meta name="theme-color" content="#f6f7fb">
+<meta name="theme-color" content="#fbfaf7">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<script src="/assets/pip.js" defer></script>
 <script src="/assets/limit.js" defer></script>
 </head>
-<body>
+<body class="home">
 <header class="top">
   <div class="wrap top-in">
     <a class="brand" href="/" aria-label="VisuaLearn home">
@@ -25,8 +27,8 @@
       <span>visua<b>learn</b></span>
     </a>
     <nav class="nav" aria-label="Sections">
-      <a href="#lessons">Lessons</a>
-      <a href="#teachers">Teachers</a>
+      <a href="#habits">Lessons</a>
+      <a href="#science">Why it works</a>
       <a href="#grown-ups">Grown-ups</a>
     </nav>
     <span class="timer" id="timer" hidden></span>
@@ -34,99 +36,122 @@
 </header>
 
 <main>
-  <section class="hero wrap">
-    <p class="eyebrow">Free for everyone · ages 8 to 14 · parents and teachers welcome</p>
-    <h1>Learn it in 10 minutes. Live it offline.</h1>
-    <p>See how computers think: sorting, searching, mazes and the math behind them, one step at a time. Then switch off the screen and try it for real with cards, paper, or your family.</p>
-    <ol class="how">
-      <li><b>Watch</b><span>See the algorithm move, one step at a time.</span></li>
-      <li><b>Predict</b><span>Guess each step before it happens. Your brain does the work, not the screen.</span></li>
-      <li><b>Go offline</b><span>Do the same thing with real objects. That's where it sticks.</span></li>
+  <section class="h-hero wrap">
+    <h1>Answers are everywhere.<br><em>Thinking</em> is rare.</h1>
+    <p>Anyone can ask a machine for an answer. VisuaLearn teaches children the habits of mind inside the great algorithms, in ten minutes on screen, then sends them off it to try for real.</p>
+
+    <figure class="pip-card">
+      <svg id="pip-stage" viewBox="0 40 800 210" role="img" tabindex="0" aria-label="Pip, a cartoon made of circles and parabolas, hops along a number line from 1 to 100 to find a hidden number. Tap the line to hide one."></svg>
+      <figcaption>
+        <p id="pip-status" aria-live="polite"></p>
+        <button class="link" id="pip-again" type="button">Hide a random number</button>
+      </figcaption>
+    </figure>
+    <p class="h-math">Pip is drawn with math: three circles <span>x² + y² = r²</span> and a parabola for the smile. Every hop is a parabola too: <span>y = 4h·t(1 − t)</span>.</p>
+  </section>
+
+  <section class="h-band wrap" aria-labelledby="wisdom-h">
+    <p class="h-kicker">The idea</p>
+    <h2 id="wisdom-h">Information can be found. Judgement has to be grown.</h2>
+    <p>The great algorithms are not just computer code. They are the best ways people have found to think through a hard problem: cut it in half, put it in order, look near before far, find the simple pieces underneath. Children who learn these habits can use them for the rest of their lives, with or without a screen.</p>
+  </section>
+
+  <section id="habits" class="wrap h-section" aria-labelledby="habits-h">
+    <p class="h-kicker">Lessons</p>
+    <h2 id="habits-h">One habit of mind per lesson</h2>
+    <ol class="habits">
+      <li>
+        <a href="/searching/">
+          <span class="n">01</span>
+          <b>Halve the problem</b>
+          <span class="life">When you're lost, rule out half of what's left with each question.</span>
+          <span class="algo">Binary search</span>
+        </a>
+      </li>
+      <li>
+        <a href="/sorting/">
+          <span class="n">02</span>
+          <b>Make order first</b>
+          <span class="life">A tidy pile is quick to search. Some ways of tidying are far faster than others.</span>
+          <span class="algo">Five sorting algorithms</span>
+        </a>
+      </li>
+      <li>
+        <a href="/mazes/">
+          <span class="n">03</span>
+          <b>Look near before far</b>
+          <span class="life">Explore in ripples to find the shortest way, or dive deep and back up.</span>
+          <span class="algo">Breadth- and depth-first search</span>
+        </a>
+      </li>
+      <li>
+        <a href="/math/">
+          <span class="n">04</span>
+          <b>Find the simple pieces</b>
+          <span class="life">Big things are built from small ones. Find them and the problem gets easy.</span>
+          <span class="algo">Primes and Euclid's GCD</span>
+        </a>
+      </li>
+      <li class="soon-item">
+        <span class="n">05</span>
+        <b>Solve a smaller copy</b>
+        <span class="life">Many big problems are the same small problem, repeated.</span>
+        <span class="algo">Recursion · coming</span>
+      </li>
+      <li class="soon-item">
+        <span class="n">06</span>
+        <b>Weigh every path</b>
+        <span class="life">The shortest route on the map isn't always the quickest one.</span>
+        <span class="algo">Dijkstra and A* · coming</span>
+      </li>
+      <li class="soon-item">
+        <span class="n">07</span>
+        <b>Remember what matters</b>
+        <span class="life">Put things where you can find them again in one look.</span>
+        <span class="algo">Hashing and caching · coming</span>
+      </li>
     </ol>
   </section>
 
-  <section id="lessons" class="wrap block" aria-labelledby="lessons-h">
-    <h2 id="lessons-h">Lessons</h2>
-    <p class="lede">Each lesson takes about ten minutes on screen and ends with something to do away from it. Start anywhere.</p>
-    <ul class="cards">
+  <section id="science" class="wrap h-section" aria-labelledby="sci-h">
+    <p class="h-kicker">Why it works</p>
+    <h2 id="sci-h">Built on how brains learn</h2>
+    <ul class="science">
       <li>
-        <a class="card" href="/sorting/">
-          <svg viewBox="0 0 120 64" aria-hidden="true"><rect x="8" y="40" width="14" height="18" rx="2" class="i-bar"/><rect x="30" y="30" width="14" height="28" rx="2" class="i-cmp"/><rect x="52" y="20" width="14" height="38" rx="2" class="i-cmp"/><rect x="74" y="12" width="14" height="46" rx="2" class="i-done"/><rect x="96" y="6" width="14" height="52" rx="2" class="i-done"/></svg>
-          <b>Sorting</b>
-          <span>Bubble, selection, insertion, merge and quick sort.</span>
-          <small>Offline: sort a hand of playing cards</small>
-        </a>
+        <b>Guess before you see</b>
+        <p>Every step asks the child to predict what happens next. Trying to come up with an answer, even a wrong one, makes the real answer stick far better than just watching.</p>
+        <small>Generation effect (Slamecka &amp; Graf, 1978); retrieval practice (Roediger &amp; Karpicke, 2006); errorful generation (Kornell, Hays &amp; Bjork, 2009).</small>
       </li>
       <li>
-        <a class="card" href="/searching/">
-          <svg viewBox="0 0 120 64" aria-hidden="true"><rect x="6" y="20" width="18" height="24" rx="3" class="i-out"/><rect x="28" y="20" width="18" height="24" rx="3" class="i-out"/><rect x="51" y="20" width="18" height="24" rx="3" class="i-cmp"/><rect x="74" y="20" width="18" height="24" rx="3" class="i-bar"/><rect x="96" y="20" width="18" height="24" rx="3" class="i-bar"/><path d="M60 52v8M54 56l6 6 6-6" class="i-line"/></svg>
-          <b>Searching</b>
-          <span>Linear search and binary search: why halving wins.</span>
-          <small>Offline: Guess My Number</small>
-        </a>
+        <b>Pictures and words together</b>
+        <p>Each idea is shown as a moving picture with one short sentence beside it, never a wall of text or a busy screen.</p>
+        <small>Dual coding (Paivio, 1971); multimedia learning (Mayer, 2001).</small>
       </li>
       <li>
-        <a class="card" href="/mazes/">
-          <svg viewBox="0 0 120 64" aria-hidden="true"><g class="i-grid"><rect x="20" y="6" width="16" height="16"/><rect x="36" y="6" width="16" height="16" class="i-wall"/><rect x="52" y="6" width="16" height="16"/><rect x="68" y="6" width="16" height="16"/><rect x="84" y="6" width="16" height="16" class="i-wall"/><rect x="20" y="22" width="16" height="16" class="i-done"/><rect x="36" y="22" width="16" height="16" class="i-done"/><rect x="52" y="22" width="16" height="16" class="i-done"/><rect x="68" y="22" width="16" height="16" class="i-wall"/><rect x="84" y="22" width="16" height="16" class="i-cmp"/><rect x="20" y="38" width="16" height="16" class="i-wall"/><rect x="36" y="38" width="16" height="16"/><rect x="52" y="38" width="16" height="16" class="i-done"/><rect x="68" y="38" width="16" height="16" class="i-done"/><rect x="84" y="38" width="16" height="16" class="i-done"/></g></svg>
-          <b>Mazes and maps</b>
-          <span>Queues, stacks, and two ways to search a graph.</span>
-          <small>Offline: draw a ripple map</small>
-        </a>
+        <b>Hands, not just eyes</b>
+        <p>Every lesson ends with something to do with cards, coins, paper or people. Ideas you have acted out with your own hands are the ones you remember.</p>
+        <small>The approach behind CS Unplugged (Bell, Witten &amp; Fellows), used in classrooms around the world.</small>
       </li>
       <li>
-        <a class="card" href="/math/">
-          <svg viewBox="0 0 120 64" aria-hidden="true"><rect x="10" y="6" width="52" height="52" rx="2" class="i-cmp"/><rect x="62" y="6" width="32" height="32" rx="2" class="i-done"/><rect x="94" y="6" width="20" height="20" rx="2" class="i-key"/><rect x="62" y="38" width="20" height="20" rx="2" class="i-pivot"/><rect x="82" y="38" width="32" height="20" rx="2" class="i-rest"/></svg>
-          <b>Math algorithms</b>
-          <span>The Sieve of Eratosthenes and Euclid's GCD.</span>
-          <small>Offline: cut squares from a sheet of paper</small>
-        </a>
+        <b>Short, then stop</b>
+        <p>Ten minutes, then a daily limit. Short sessions spread over days beat long ones, and they leave time for sleep, play and people.</p>
+        <small>Spacing effect (Cepeda et al., 2006).</small>
       </li>
     </ul>
-    <h3 class="sub">Coming next</h3>
-    <ul class="soon">
-      <li><b>Trees</b><span>Offline: draw your family tree and find anyone in a few steps.</span></li>
-      <li><b>Recursion</b><span>Offline: the Tower of Hanoi with three coins and three plates.</span></li>
-      <li><b>Shortest paths</b><span>Offline: map your neighbourhood and time the quickest walk to school.</span></li>
-      <li><b>Hashing</b><span>Offline: sort the post into pigeonholes by the first letter.</span></li>
-    </ul>
+    <p class="fine">These are well-studied principles of learning. VisuaLearn itself has not been tested in a trial yet. When it is, we will publish the results here, good or bad.</p>
   </section>
 
-  <section id="teachers" class="wrap block" aria-labelledby="teach-h">
-    <h2 id="teach-h">For teachers</h2>
+  <section id="grown-ups" class="wrap h-section" aria-labelledby="gu-title">
+    <p class="h-kicker">For parents and teachers</p>
+    <h2 id="gu-title">Designed to be put down</h2>
     <div class="gu">
-      <div class="gu-why">
-        <p>Every lesson fits a 40-minute class with one screen at the front of the room.</p>
-        <ol class="plan">
-          <li><b>10 minutes, together on screen.</b> Turn on Predict mode and let the class vote on each answer before you click.</li>
-          <li><b>25 minutes, in groups, off screen.</b> Print the activity card. Each group needs only cards, coins or paper.</li>
-          <li><b>5 minutes, back together.</b> Compare tally counts with the computer's. Discuss the "Think about it" question.</li>
-        </ol>
-      </div>
-      <div class="gu-set">
-        <p class="eyebrow">Works anywhere</p>
-        <ul class="promises">
-          <li>No sign-up, for you or your students.</li>
-          <li>Runs in any modern browser, on old laptops and phones.</li>
-          <li>Every activity prints on one page, black on white.</li>
-          <li>Free for every school, in every country.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section id="grown-ups" class="wrap block" aria-labelledby="gu-title">
-    <h2 id="gu-title">For parents and grown-ups</h2>
-    <div class="gu">
-      <div class="gu-why">
-        <p>Children growing up with AI will get answers instantly. What they need is the habit of thinking a problem through step by step, guessing, and checking. VisuaLearn uses the screen for the minimum it takes to show an idea, then sends them off it.</p>
-        <ul class="promises">
-          <li>Free for everyone. No ads, no accounts, no tracking.</li>
-          <li>No streaks, badges, points or notifications built to pull them back.</li>
-          <li>No autoplay: a lesson never rolls straight into the next one.</li>
-          <li>Every lesson ends with something to do away from the screen.</li>
-          <li>A daily time limit, counted on this device only.</li>
-        </ul>
-      </div>
+      <ul class="promises">
+        <li>No ads, no accounts, no tracking.</li>
+        <li>No streaks, points, badges or notifications.</li>
+        <li>No autoplay: a lesson never rolls into the next one.</li>
+        <li>Every activity prints on one page, for home or a classroom of thirty.</li>
+        <li>Works on old laptops and phones, anywhere in the world.</li>
+      </ul>
       <div class="gu-set">
         <label for="limit-min" class="eyebrow">Daily screen time on VisuaLearn</label>
         <select id="limit-min">
@@ -136,9 +161,10 @@
           <option value="30">30 minutes</option>
           <option value="0">No limit</option>
         </select>
-        <p class="fine">The limit covers every lesson. When time is up, the lesson pauses and suggests the offline activity. Children can add five minutes twice a day. The setting is saved in this browser and nowhere else.</p>
+        <p class="fine">Covers every lesson. When time is up, the lesson pauses and suggests the offline activity. Children can add five minutes twice a day. Saved in this browser only.</p>
       </div>
     </div>
+    <p class="h-teach"><b>In class:</b> 10 minutes together on screen, with the class voting on each prediction. Then 25 minutes in groups with the printed activity, and 5 minutes comparing results.</p>
   </section>
 </main>
 
@@ -163,8 +189,8 @@
 
 <footer class="foot">
   <div class="wrap foot-in">
-    <span>Free for everyone. No ads, no accounts, no tracking. © 2026 VisuaLearn.</span>
-    <span>Made for children, parents and teachers everywhere.</span>
+    <span>© 2026 VisuaLearn</span>
+    <span>For children, parents and teachers everywhere.</span>
   </div>
 </footer>
 </body>
