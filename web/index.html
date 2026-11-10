@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/assets/style.css">
 <link rel="stylesheet" href="/assets/home.css">
+<script src="/assets/pipkit.js" defer></script>
 <script src="/assets/pip.js" defer></script>
 <script src="/assets/limit.js" defer></script>
 </head>
@@ -42,10 +43,8 @@
 
     <figure class="pip-card">
       <svg id="pip-stage" viewBox="0 40 800 210" role="img" tabindex="0" aria-label="Pip, a cartoon made of circles and parabolas, hops along a number line from 1 to 100 to find a hidden number. Tap the line to hide one."></svg>
-      <figcaption>
-        <p id="pip-status" aria-live="polite"></p>
-        <button class="link" id="pip-again" type="button">Hide a random number</button>
-      </figcaption>
+      <p class="pip-dots" id="pip-dots" aria-hidden="true"></p>
+      <p class="sr-only" id="pip-said" aria-live="polite"></p>
     </figure>
     <p class="h-math">Pip is drawn with math: three circles <span>x² + y² = r²</span> and a parabola for the smile. Every hop is a parabola too: <span>y = 4h·t(1 − t)</span>.</p>
   </section>
