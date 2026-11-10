@@ -2,6 +2,10 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "visualearn",
   "compatibility_date": "2026-07-02",
+  "routes": [
+    { "pattern": "visualearn.org", "custom_domain": true },
+    { "pattern": "www.visualearn.org", "custom_domain": true }
+  ],
   "observability": {
     "enabled": true
   },
