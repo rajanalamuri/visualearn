@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Math · VisuaLearn</title>
-<meta name="description" content="Add, subtract, multiply and divide as four small cartoons. Learn the trick behind each one, then try it with real things. Free.">
+<meta name="description" content="Ten small math cartoons, from adding to fractions, powers and pi. Learn the trick behind each one, then try it with real things. Free.">
 <meta property="og:title" content="Math · VisuaLearn">
 <meta property="og:description" content="Add, take away, clone and share. Tricks beat memorising.">
 <meta property="og:url" content="https://visualearn.org/math/">
@@ -37,28 +37,43 @@
 </header>
 
 <main class="wrap ar">
-  <h1 class="sr-only">Math: add, subtract, multiply, divide</h1>
+  <h1 class="sr-only">Math: ten ideas to play with</h1>
 
-  <div class="ar-ops" role="group" aria-label="Choose an operation">
-    <button type="button" data-op="add" aria-label="Add">+</button>
-    <button type="button" data-op="sub" aria-label="Subtract">−</button>
-    <button type="button" data-op="mul" aria-label="Multiply">×</button>
-    <button type="button" data-op="div" aria-label="Divide">÷</button>
+  <div class="ar-ops" role="group" aria-label="Choose what to play with">
+    <span class="ar-group">
+      <button type="button" data-op="add" aria-label="Add">+</button>
+      <button type="button" data-op="sub" aria-label="Subtract">−</button>
+      <button type="button" data-op="mul" aria-label="Multiply">×</button>
+      <button type="button" data-op="div" aria-label="Divide">÷</button>
+    </span>
+    <span class="ar-group">
+      <button type="button" data-op="big" aria-label="Add bigger numbers">10s</button>
+      <button type="button" data-op="neg" aria-label="Below zero">−1</button>
+      <button type="button" data-op="frac" aria-label="Fractions">½</button>
+    </span>
+    <span class="ar-group">
+      <button type="button" data-op="pow" aria-label="Powers">2ⁿ</button>
+      <button type="button" data-op="pi" aria-label="Pi">π</button>
+      <button type="button" data-op="fib" aria-label="Fibonacci numbers">1·1·2</button>
+    </span>
   </div>
 
   <svg id="stage" class="ar-stage" viewBox="0 0 800 410" role="img"></svg>
 
   <div class="ar-eq" aria-live="polite">
+    <span class="ar-sym" id="pre" hidden></span>
     <span class="ar-step">
       <button type="button" data-step="a:-1" aria-label="First number down">−</button>
       <output id="val-a">8</output>
       <button type="button" data-step="a:1" aria-label="First number up">+</button>
     </span>
-    <span class="ar-sym" id="sym">+</span>
-    <span class="ar-step">
-      <button type="button" data-step="b:-1" aria-label="Second number down">−</button>
-      <output id="val-b">5</output>
-      <button type="button" data-step="b:1" aria-label="Second number up">+</button>
+    <span class="ar-pair" id="b-wrap">
+      <span class="ar-sym" id="sym">+</span>
+      <span class="ar-step">
+        <button type="button" data-step="b:-1" aria-label="Second number down">−</button>
+        <output id="val-b">5</output>
+        <button type="button" data-step="b:1" aria-label="Second number up">+</button>
+      </span>
     </span>
     <span class="ar-sym">=</span>
     <b class="ar-ans" id="ans">?</b>

@@ -52,3 +52,30 @@
   .ar-ops button{width:52px;height:52px;font-size:28px}
   .ar-stage{border-radius:16px}
 }
+
+/* ten ideas in three groups: basics, next steps, advanced */
+.ar-ops{flex-wrap:wrap;justify-content:center;gap:10px 22px}
+.ar-group{display:flex;gap:8px}
+.ar-ops button{width:auto;min-width:54px;height:54px;padding:0 14px;border-radius:27px;font-size:24px}
+.ar-pair{display:inline-flex;align-items:center;gap:14px}
+.count.right{text-anchor:end}
+.count.small{font-size:17px;font-weight:500;fill:var(--ink-2)}
+.tick-num{fill:var(--muted);font-family:var(--font-code);font-size:12.5px;text-anchor:middle}
+.tick-num.below{fill:#2f6fb5}
+.cold{fill:#d9ebfb}
+.rod rect{fill:var(--accent);opacity:.9}
+.rod line{stroke:var(--surface);stroke-width:1.5}
+.rod.new rect{fill:var(--done)}
+.one circle{fill:var(--accent)}
+.one-b circle{fill:#e58f8f}
+.crust{fill:#d9a35b}
+.cheese{fill:#f6dc8a}
+.slice{fill:#e9694a}
+.pepperoni{fill:#b53a2a}
+.cut{stroke:#fff8e6;stroke-width:3;stroke-linecap:round}
+.seg.s0{fill:var(--accent)} .seg.s1{fill:var(--done)}
+.bun circle:first-of-type,.bun ellipse{fill:#d8d5cd}
+.bun > circle:not(.pip-pupil){fill:#d8d5cd}
+.bun.baby ellipse,.bun.baby > circle:not(.pip-pupil){fill:#f2a7b5}
+@media (prefers-color-scheme: dark){ .cold{fill:#16324d} .tick-num.below{fill:#7fb6ee} }
+@media (max-width: 560px){ .ar-ops button{min-width:46px;height:46px;font-size:20px;padding:0 11px} .ar-group{gap:6px} }

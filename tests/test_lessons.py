@@ -319,12 +319,62 @@ def test_sharing_is_fair(arith):
 
 def test_answers_and_ranges(arith):
     ops = call(arith, "VLArith.OPS")
-    assert list(ops) == ["add", "sub", "mul", "div"]
+    assert list(ops)[:4] == ["add", "sub", "mul", "div"]
     for key, o in ops.items():
-        assert o["off"] and o["sym"]
-        for lo, hi, start in (o["a"], o["b"]):
+        assert o["off"] and (o.get("sym") or o.get("pre"))
+        for lo, hi, start in [r for r in (o["a"], o["b"]) if r]:
             assert lo <= start <= hi
     assert call(arith, "VLArith.answer('add', 8, 5)") == 13
     assert call(arith, "VLArith.answer('sub', 9, 4)") == 5
     assert call(arith, "VLArith.answer('mul', 4, 3)") == 12
     assert call(arith, "VLArith.answer('div', 14, 3)") == 4
+
+
+def test_regrouping_keeps_the_total(arith):
+    for a in range(10, 50):
+        for b in range(10, 50):
+            r = call(arith, f"VLArith.regroup({a}, {b})")
+            assert r["tens"] * 10 + r["ones"] == r["sum"] == a + b
+            assert 0 <= r["ones"] <= 9
+            assert r["carry"] == (1 if a % 10 + b % 10 >= 10 else 0)
+            assert r["first"] == (10 - a % 10 if r["carry"] else b % 10)
+
+
+def test_simplify_gives_lowest_terms(arith):
+    for d in range(2, 13):
+        for n in range(1, d + 1):
+            s = call(arith, f"VLArith.simplify({n}, {d})")
+            assert math.gcd(s["n"], s["d"]) == 1 and s["g"] == math.gcd(n, d)
+            assert s["n"] * d == n * s["d"]  # same amount of pizza
+
+
+def test_powers_and_fibonacci(arith):
+    assert call(arith, "VLArith.powers(2, 6)") == [1, 2, 4, 8, 16, 32, 64]
+    assert call(arith, "VLArith.powers(3, 4)") == [1, 3, 9, 27, 81]
+    assert call(arith, "VLArith.fib(10)") == [1, 1, 2, 3, 5, 8, 13, 21, 34, 55]
+    assert call(arith, "VLArith.fib(1)") == [1]
+
+
+def test_every_cartoon_stays_inside_what_it_can_draw(arith):
+    ops = call(arith, "VLArith.OPS")
+    assert len(ops) == 10
+    for key, o in ops.items():
+        for a in range(-2, 60):
+            for b in range(-2, 25):
+                ca, cb = call(arith, f"VLArith.clamp('{key}', {a}, {b})")
+                assert o["a"][0] <= ca <= o["a"][1]
+                if key == "sub":
+                    assert cb <= ca
+                if key == "neg":
+                    assert -10 <= ca - cb
+                if key == "frac":
+                    assert 1 <= ca <= cb
+                if key == "pow":
+                    assert ca ** cb <= 81
+    assert call(arith, "VLArith.answer('neg', 5, 8)") == -3
+    assert call(arith, "VLArith.answer('frac', 4, 8)") == "1/2"
+    assert call(arith, "VLArith.answer('frac', 6, 6)") == "1"
+    assert call(arith, "VLArith.answer('pow', 2, 5)") == 32
+    assert call(arith, "VLArith.answer('pi', 2, 0)") == "6.28"
+    assert call(arith, "VLArith.answer('fib', 7, 0)") == 13
+    assert call(arith, "VLArith.answer('big', 27, 15)") == 42
