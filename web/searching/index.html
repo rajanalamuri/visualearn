@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Searching · VisuaLearn</title>
+<meta name="description" content="Linear search and binary search, shown with closed boxes. Guess which half the number is in, then play Guess My Number away from the screen.">
+<meta property="og:title" content="Searching · VisuaLearn">
+<meta property="og:description" content="Learn it in 10 minutes. Live it offline.">
+<meta property="og:url" content="https://visualearn.org/searching/">
+<link rel="canonical" href="https://visualearn.org/searching/">
+<meta name="theme-color" content="#f6f7fb">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/assets/style.css">
+<script src="/assets/player.js" defer></script>
+<script src="/assets/search.js" defer></script>
+<script src="/assets/limit.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="VisuaLearn home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="b-bg"/><rect x="7" y="18" width="4" height="7" rx="1" class="b-1"/><rect x="14" y="12" width="4" height="13" rx="1" class="b-2"/><rect x="21" y="7" width="4" height="18" rx="1" class="b-3"/></svg>
+      <span>visua<b>learn</b></span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="/#lessons">Lessons</a>
+      <a href="#offline">Offline</a>
+      <a href="/#grown-ups">Grown-ups</a>
+    </nav>
+    <span class="timer" id="timer" hidden></span>
+  </div>
+</header>
+
+<main>
+  <section id="lesson" class="wrap viz lesson-top" aria-labelledby="viz-title">
+    <div class="viz-head">
+      <p class="eyebrow crumbs"><a href="/#lessons">Lessons</a> · Searching</p>
+      <h1 id="viz-title">Searching: find it in as few looks as you can</h1>
+      <p>Each box hides a number. Opening a box is the only way to see inside, so a good search opens as few as possible. That is how your phone finds one contact among thousands.</p>
+    </div>
+
+    <div class="algos seg" role="group" aria-label="Algorithm" id="algos"></div>
+
+    <div class="board">
+      <div class="stage">
+        <div class="stage-head">
+          <p class="note" id="note" aria-live="polite">Press play to start.</p>
+          <div class="quiz" id="quiz" hidden aria-live="polite">
+            <p class="quiz-q" id="quiz-q"></p>
+            <div class="quiz-opts" id="quiz-opts"></div>
+            <div class="quiz-foot">
+              <p class="fb" id="quiz-fb"></p>
+              <button class="link" id="quiz-skip" type="button">Skip</button>
+            </div>
+          </div>
+          <dl class="stats" id="stats"></dl>
+        </div>
+        <p class="goal">Looking for <b id="target">?</b></p>
+        <div id="view" class="boxes" role="img" aria-label="Boxes"></div>
+        <div class="done" id="done" hidden>
+          <p id="done-text"></p>
+          <a class="btn primary" href="#offline">Try it offline</a>
+        </div>
+        <ul class="legend" aria-label="Colour key">
+          <li><i class="k-closed"></i>Not opened</li>
+          <li><i class="k-cmp"></i>Opening now</li>
+          <li><i class="k-out"></i>Can't be here</li>
+          <li><i class="k-done"></i>Found</li>
+        </ul>
+      </div>
+
+      <aside class="side">
+        <div class="code-card">
+          <p class="eyebrow">The steps, written as code</p>
+          <ol class="code" id="code"></ol>
+        </div>
+        <div class="about-card">
+          <p class="eyebrow" id="algo-name">Algorithm</p>
+          <p id="algo-blurb"></p>
+          <dl class="cx" id="algo-facts"></dl>
+        </div>
+      </aside>
+    </div>
+
+    <div class="controls">
+      <div class="transport">
+        <button class="btn icon" id="b-reset" type="button" aria-label="Back to start" title="Back to start (Home)"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+        <button class="btn icon" id="b-back" type="button" aria-label="Step back" title="Step back (←)"><svg viewBox="0 0 24 24"><path d="M15 5v14L5 12z"/></svg></button>
+        <button class="btn icon play" id="b-play" type="button" aria-label="Play" title="Play / pause (Space)"><svg viewBox="0 0 24 24"><path d="M7 5v14l12-7z"/></svg></button>
+        <button class="btn icon" id="b-fwd" type="button" aria-label="Step forward" title="Step forward (→)"><svg viewBox="0 0 24 24"><path d="M9 5v14l10-7z"/></svg></button>
+        <input type="range" id="scrub" min="0" max="0" value="0" aria-label="Scrub through steps">
+      </div>
+      <div class="knobs">
+        <label class="switch"><input type="checkbox" id="predict" checked> <span>Predict mode</span></label>
+        <label class="knob">Speed <input type="range" id="speed" min="1" max="5" value="2"></label>
+        <label class="knob">Boxes
+          <select id="size">
+            <option value="7">7</option>
+            <option value="15" selected>15</option>
+            <option value="31">31</option>
+            <option value="63">63</option>
+          </select>
+        </label>
+        <button class="btn" id="b-new" type="button">New boxes</button>
+      </div>
+      <form class="custom" id="find-form">
+        <label for="find">Look for</label>
+        <input id="find" type="number" min="1" max="99" inputmode="numeric" autocomplete="off">
+        <button class="btn" type="submit">Search for it</button>
+        <span class="err" id="find-err" role="alert"></span>
+      </form>
+    </div>
+  </section>
+
+  <section id="offline" class="wrap block" aria-labelledby="off-h">
+    <div class="off-card">
+      <div class="off-head">
+        <p class="eyebrow">Try it offline · <span id="off-algo"></span></p>
+        <h2 id="off-h"><span id="off-title"></span></h2>
+        <ul class="chips">
+          <li><b>You need</b> <span id="off-need"></span></li>
+          <li><b>Time</b> <span id="off-time"></span></li>
+        </ul>
+      </div>
+      <ol class="off-steps" id="off-steps"></ol>
+      <div class="off-think">
+        <p class="eyebrow">Think about it</p>
+        <p id="off-think"></p>
+      </div>
+      <div class="tally">
+        <p class="eyebrow">Count your looks</p>
+        <p>Make a tally mark every time you look at a card or make a guess. Who needed the fewest?</p>
+        <div class="tally-box" aria-hidden="true"></div>
+      </div>
+      <div class="off-actions no-print">
+        <button class="btn primary" id="b-print" type="button">Print this activity</button>
+        <span>Prints just this card, on one page.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap block" aria-labelledby="why-h">
+    <h2 id="why-h">Why halving wins</h2>
+    <p class="lede">Every time binary search opens a box, half of what is left disappears. Doubling the number of boxes adds only one more look.</p>
+    <div class="table-wrap">
+      <table class="table">
+        <thead><tr><th>Boxes</th><th>Linear search, at most</th><th>Binary search, at most</th></tr></thead>
+        <tbody>
+          <tr><td>15</td><td>15</td><td>4</td></tr>
+          <tr><td>100</td><td>100</td><td>7</td></tr>
+          <tr><td>1,000</td><td>1,000</td><td>10</td></tr>
+          <tr><td>1,000,000</td><td>1,000,000</td><td>20</td></tr>
+          <tr><td>8,000,000,000 (everyone on Earth)</td><td>8,000,000,000</td><td>33</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fine">The catch: binary search only works when things are already in order. That is one reason computers spend so much effort <a href="/sorting/">sorting</a>.</p>
+  </section>
+</main>
+
+<div class="rest" id="rest" role="dialog" aria-modal="true" aria-labelledby="rest-h" hidden>
+  <div class="rest-card">
+    <div id="rest-body">
+      <p class="eyebrow">Screen time is up for today</p>
+      <h2 id="rest-h">Your turn to be the computer.</h2>
+      <p>You've learned enough on screen. Now find a friend and play today's activity for real.</p>
+      <div class="rest-actions">
+        <button class="btn primary" id="rest-print" type="button">Print the activity</button>
+        <button class="btn" id="rest-bye" type="button">See you tomorrow</button>
+        <button class="link" id="rest-more" type="button">A grown-up says 5 more minutes</button>
+      </div>
+    </div>
+    <div id="rest-done" hidden>
+      <h2>Great choice.</h2>
+      <p>You can close this tab now. Go and play it for real.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>Free for everyone. No ads, no accounts, no tracking. © 2026 VisuaLearn.</span>
+    <span>Keys: <kbd>Space</kbd> play · <kbd>←</kbd> <kbd>→</kbd> step · <kbd>1</kbd> <kbd>2</kbd> answer</span>
+  </div>
+</footer>
+</body>
+</html>
