@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="/assets/style.css">
 <link rel="stylesheet" href="/assets/home.css">
 <link rel="stylesheet" href="/assets/arith.css">
+<script src="/assets/progress.js" defer></script>
 <script src="/assets/pipkit.js" defer></script>
 <script src="/assets/arith.js" defer></script>
 <script src="/assets/limit.js" defer></script>
@@ -37,7 +38,7 @@
 </header>
 
 <main class="wrap ar">
-  <h1 class="sr-only">Math: ten ideas to play with</h1>
+  <h1 class="sr-only">Math: ideas to play with</h1>
 
   <div class="ar-ops" role="group" aria-label="Choose what to play with">
     <span class="ar-group">
@@ -55,6 +56,12 @@
       <button type="button" data-op="pow" aria-label="Powers">2ⁿ</button>
       <button type="button" data-op="pi" aria-label="Pi">π</button>
       <button type="button" data-op="fib" aria-label="Fibonacci numbers">1·1·2</button>
+    </span>
+    <span class="ar-group">
+      <button type="button" data-op="pct" aria-label="Percent">%</button>
+      <button type="button" data-op="sq" aria-label="Square numbers">x²</button>
+      <button type="button" data-op="eq" aria-label="Solve for x">x=?</button>
+      <button type="button" data-op="pyth" aria-label="Pythagoras">◺</button>
     </span>
   </div>
 
@@ -75,7 +82,8 @@
         <button type="button" data-step="b:1" aria-label="Second number up">+</button>
       </span>
     </span>
-    <span class="ar-sym">=</span>
+    <span class="ar-sym" id="post" hidden></span>
+    <span class="ar-sym" id="eqs">=</span>
     <b class="ar-ans" id="ans">?</b>
   </div>
   <p class="ar-think" id="think" aria-live="polite"></p>
@@ -87,10 +95,20 @@
 
   <p class="ar-off"><b>Now with real things.</b> <span id="off-line"></span></p>
 
-  <a class="ar-next" href="/math/advanced/">
-    <span>Advanced math</span>
-    <b>Primes and the greatest common divisor →</b>
-  </a>
+  <div class="ar-links">
+    <a class="ar-next" href="/math/grades/">
+      <span>Grades 1 to 10</span>
+      <b>Find your grade →</b>
+    </a>
+    <a class="ar-next" href="/math/advanced/">
+      <span>Advanced math</span>
+      <b>Primes and the GCD →</b>
+    </a>
+    <a class="ar-next" href="/progress/">
+      <span>On this device</span>
+      <b>What have I explored? →</b>
+    </a>
+  </div>
 </main>
 
 <div class="rest" id="rest" role="dialog" aria-modal="true" aria-labelledby="rest-h" hidden>
