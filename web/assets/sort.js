@@ -405,6 +405,7 @@
     state.answered = new Map();
     state.right = 0;
     state.asked = 0;
+    state.logged = false;
     els.scrub.max = String(state.frames.length - 1);
     els.code.innerHTML = '';
     al.code.forEach((line) => { const li = document.createElement('li'); li.textContent = line; els.code.appendChild(li); });
@@ -480,6 +481,7 @@
     renderQuiz(f);
     const last = state.i === state.frames.length - 1 && state.frames.length > 1;
     els.done.hidden = !last;
+    if (last && !state.logged) { state.logged = true; globalThis.VLProgress?.mark(`sorting:${state.algo}`); }
     if (last) {
       els.doneText.textContent = state.asked
         ? `You guessed ${state.right} of ${state.asked} right. Now try it for real, away from the screen.`

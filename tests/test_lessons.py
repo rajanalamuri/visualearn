@@ -321,7 +321,7 @@ def test_answers_and_ranges(arith):
     ops = call(arith, "VLArith.OPS")
     assert list(ops)[:4] == ["add", "sub", "mul", "div"]
     for key, o in ops.items():
-        assert o["off"] and (o.get("sym") or o.get("pre"))
+        assert o["off"] and (o.get("sym") or o.get("pre") or o.get("post"))
         for lo, hi, start in [r for r in (o["a"], o["b"]) if r]:
             assert lo <= start <= hi
     assert call(arith, "VLArith.answer('add', 8, 5)") == 13
@@ -357,7 +357,7 @@ def test_powers_and_fibonacci(arith):
 
 def test_every_cartoon_stays_inside_what_it_can_draw(arith):
     ops = call(arith, "VLArith.OPS")
-    assert len(ops) == 10
+    assert len(ops) == 14
     for key, o in ops.items():
         for a in range(-2, 60):
             for b in range(-2, 25):
@@ -378,3 +378,17 @@ def test_every_cartoon_stays_inside_what_it_can_draw(arith):
     assert call(arith, "VLArith.answer('pi', 2, 0)") == "6.28"
     assert call(arith, "VLArith.answer('fib', 7, 0)") == 13
     assert call(arith, "VLArith.answer('big', 27, 15)") == 42
+
+
+def test_percent_squares_balance_and_pythagoras(arith):
+    assert call(arith, "VLArith.layers(5)") == [1, 3, 5, 7, 9]
+    for a in range(1, 10):
+        assert sum(call(arith, f"VLArith.layers({a})")) == a * a  # layers of odd numbers build the square
+        assert call(arith, f"VLArith.answer('sq', {a}, 0)") == a * a
+    assert call(arith, "VLArith.answer('pct', 35, 0)") == "0.35"
+    assert call(arith, "VLArith.answer('eq', 3, 8)") == 5
+    assert call(arith, "VLArith.answer('pyth', 3, 4)") == 25
+    for a in range(1, 9):
+        for b in range(1, 9):
+            ca, cb = call(arith, f"VLArith.clamp('eq', {a}, {b})")
+            assert cb >= ca  # x is never negative

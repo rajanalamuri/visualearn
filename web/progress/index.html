@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diary · VisuaLearn</title>
+<meta name="description" content="A quiet diary of what was explored each day. Saved on this device only.">
+<link rel="canonical" href="https://visualearn.org/progress/">
+<meta name="theme-color" content="#fbfaf7">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/arith.css">
+<script src="/assets/progress.js" defer></script>
+<script src="/assets/catalog.js" defer></script>
+<script src="/assets/limit.js" defer></script>
+</head>
+<body class="home">
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="VisuaLearn home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="b-bg"/><rect x="7" y="18" width="4" height="7" rx="1" class="b-1"/><rect x="14" y="12" width="4" height="13" rx="1" class="b-2"/><rect x="21" y="7" width="4" height="18" rx="1" class="b-3"/></svg>
+      <span>visua<b>learn</b></span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="/math/">Math</a>
+      <a href="/math/grades/">Grades</a>
+      <a href="/progress/">Diary</a>
+    </nav>
+    <span class="timer" id="timer" hidden></span>
+  </div>
+</header>
+
+<main class="wrap ar pg">
+  <h1>What have I explored?</h1>
+
+  <section class="diary" aria-labelledby="d-today">
+    <h2 id="d-today">Today</h2>
+    <div class="chips-row" id="diary-today"></div>
+    <p class="pg-note" id="diary-min"></p>
+  </section>
+
+  <section class="diary" aria-labelledby="d-days">
+    <h2 id="d-days">The last four weeks</h2>
+    <ol class="days" id="diary-days"></ol>
+  </section>
+
+  <section class="diary" aria-labelledby="d-all">
+    <h2 id="d-all">Ideas met so far <span id="diary-count"></span></h2>
+    <div class="chips-row" id="diary-all"></div>
+  </section>
+
+  <p class="pg-note">Saved in this browser only. Nobody else can see it, and there are no streaks to keep. <button class="link" id="diary-clear" type="button">Clear the diary</button></p>
+</main>
+
+<div class="rest" id="rest" role="dialog" aria-modal="true" aria-labelledby="rest-h" hidden>
+  <div class="rest-card">
+    <div id="rest-body">
+      <p class="eyebrow">Screen time is up for today</p>
+      <h2 id="rest-h">Your turn.</h2>
+      <p>Grab coins, paper or string and try one for real.</p>
+      <div class="rest-actions">
+        <button class="btn primary" id="rest-print" type="button">Print the activity</button>
+        <button class="btn" id="rest-bye" type="button">See you tomorrow</button>
+        <button class="link" id="rest-more" type="button">A grown-up says 5 more minutes</button>
+      </div>
+    </div>
+    <div id="rest-done" hidden>
+      <h2>Great choice.</h2>
+      <p>You can close this tab now.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>© 2026 VisuaLearn</span>
+    <span>Free for everyone.</span>
+  </div>
+</footer>
+</body>
+</html>

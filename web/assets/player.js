@@ -59,6 +59,7 @@
       state.answered = new Map();
       state.right = 0;
       state.asked = 0;
+      state.logged = false;
       els.scrub.max = String(state.frames.length - 1);
       fillList(els.code, al.code);
       els.name.textContent = al.name;
@@ -143,6 +144,11 @@
       renderQuiz(f);
       const last = state.i === state.frames.length - 1 && state.frames.length > 1;
       els.done.hidden = !last;
+      if (last && !state.logged) { // note it in the on-device diary, once per run
+        state.logged = true;
+        const page = location.pathname.split('/').filter(Boolean).pop();
+        globalThis.VLProgress?.mark(`${page}:${state.algo}`);
+      }
       if (last) {
         els.doneText.textContent = (state.asked ? `You guessed ${state.right} of ${state.asked} right. ` : '') +
           'Now try it for real, away from the screen.';

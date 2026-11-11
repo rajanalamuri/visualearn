@@ -50,6 +50,10 @@
     pow: { sym: '^', a: [2, 3, 2], b: [0, 6, 5], off: 'Fold a sheet of paper in half, again and again. Count the layers each time. How far can you get?' },
     pi: { pre: 'π ×', a: [1, 4, 2], b: null, off: 'Wrap a string once around a plate. Lay the string across the plate. How many times does it fit?' },
     fib: { pre: '#', a: [1, 10, 7], b: null, off: 'Count the spirals on a pine cone or the petals on a daisy. Is your number in the list?' },
+    pct: { post: '%', a: [0, 100, 35], b: null, step: 5, off: 'Draw a 10 by 10 grid. Colour 35 squares. That is 35 percent: 35 out of every 100.' },
+    sq: { post: '²', a: [1, 9, 5], b: null, off: 'Build squares from coins: 1, 4, 9, 16. How many extra coins does each bigger square need?' },
+    eq: { pre: 'x +', sym: '=', res: '→ x =', a: [1, 9, 3], b: [1, 15, 8], off: 'Hide some coins under a cup. Tell a friend: "the cup plus 3 makes 8". Can they work out the cup?' },
+    pyth: { sym: '² +', post: '²', a: [1, 8, 3], b: [1, 8, 4], off: 'Tie a loop of string with 12 equal gaps. Pull it into a triangle with sides 3, 4 and 5. You have made a perfect square corner.' },
   };
   // Keeps a and b inside what each cartoon can draw.
   function clamp(op, a, b) {
@@ -61,6 +65,7 @@
     if (op === 'neg') b = Math.min(b, a + 10); // the line stops at −10
     if (op === 'frac') a = Math.min(a, b);
     if (op === 'pow' && a === 3) b = Math.min(b, 4); // 81 clones is plenty
+    if (op === 'eq') b = Math.max(b, a); // x is never negative here
     return [a, b];
   }
   function answer(op, a, b) {
@@ -72,11 +77,18 @@
       case 'frac': { const s = simplify(a, b); return s.d === 1 ? String(s.n) : `${s.n}/${s.d}`; }
       case 'pow': return a ** b;
       case 'pi': return (Math.PI * a).toFixed(2);
+      case 'pct': return (a / 100).toFixed(2);
+      case 'sq': return a * a;
+      case 'eq': return b - a;
+      case 'pyth': return a * a + b * b;
       default: return fib(a)[a - 1];
     }
   }
 
-  globalThis.VLArith = { makeTen, skip, share, regroup, simplify, powers, fib, clamp, OPS, answer };
+  // 5²: build the square in L-shaped layers. Each layer is the next odd number: 1 + 3 + 5 + 7 + 9.
+  const layers = (a) => Array.from({ length: a }, (_, k) => 2 * k + 1);
+
+  globalThis.VLArith = { makeTen, skip, share, regroup, simplify, powers, fib, layers, clamp, OPS, answer };
 
   // ---------- page ----------
   if (typeof document === 'undefined' || !globalThis.Pip) return;
@@ -502,6 +514,117 @@
         return n >= 3 ? `${s.f[n - 3]} + ${s.f[n - 2]}` : '';
       },
     },
+
+    // 35%: 35 squares out of a hundred.
+    pct: {
+      setup() {
+        const cells = [];
+        for (let i = 0; i < 100; i++) cells.push(el('rect', { x: 240 + Math.floor(i / 10) * 32, y: 45 + (9 - (i % 10)) * 32, width: 30, height: 30, rx: 5, class: 'hund' }, svg));
+        return { cells, pip: pipAt(660, 366, 30) };
+      },
+      async play(a, b, s, ok) {
+        let shown = 0;
+        s.pip.look(-1, -1);
+        await tween(300 + a * 14, (t) => {
+          const upTo = Math.round(a * t);
+          for (; shown < upTo; shown++) s.cells[shown].setAttribute('class', 'hund on');
+        });
+        if (!ok()) return;
+        s.pip.look(0, 0);
+        if (a === 100) { bubble(660, 276, 'all of it!'); s.pip.smile(0.11); }
+        return `${a} out of 100`;
+      },
+    },
+
+    // 5²: a square grows one L-shaped layer at a time. The layers are the odd numbers.
+    sq: {
+      setup(a) {
+        const cell = Math.min(40, 340 / a), x0 = 400 - (a * cell) / 2, y0 = 195 - (a * cell) / 2;
+        const layer = (k) => {
+          const out = [];
+          for (let r = 0; r <= k; r++) for (let c = 0; c <= k; c++) {
+            if (Math.max(r, c) !== k) continue;
+            const g = el('g', { class: `tile t${k % 2}` }, svg);
+            el('rect', { x: -cell / 2 + 1.5, y: -cell / 2 + 1.5, width: cell - 3, height: cell - 3, rx: cell / 7 }, g);
+            put(g, x0 + (c + 0.5) * cell, y0 + (r + 0.5) * cell);
+            out.push(g);
+          }
+          return out;
+        };
+        layer(0);
+        return { layer, cell, x0, y0 };
+      },
+      async play(a, b, s, ok) {
+        for (let k = 1; k < a; k++) {
+          await Promise.all(s.layer(k).map((g) => pop(g, 200)));
+          if (!ok()) return;
+          await wait(180);
+        }
+        label(s.x0 + (a * s.cell) / 2, s.y0 + a * s.cell + 26, `${a} × ${a}`, 'count mid');
+        return a > 1 ? layers(a).join(' + ') : '';
+      },
+    },
+
+    // x + 3 = 8: take the same from both sides until the box is alone.
+    eq: {
+      setup(a, b) {
+        const Y = 250, spot = (i, cx) => [cx - 52 + (i % 5) * 26, Y - 16 - Math.floor(i / 5) * 26];
+        el('path', { d: 'M 400 250 L 372 330 L 428 330 Z', class: 'stand' }, svg);
+        el('line', { x1: 110, y1: Y, x2: 690, y2: Y, class: 'beam' }, svg);
+        const box = el('g', { class: 'box' }, svg);
+        el('rect', { x: -34, y: -68, width: 68, height: 68, rx: 10 }, box);
+        const boxText = el('text', { x: 0, y: -33 }, box);
+        boxText.textContent = 'x';
+        put(box, 180, Y - 3);
+        const left = Array.from({ length: a }, (_, i) => cookie(...spot(i, 300), 'b', 11));
+        const right = Array.from({ length: b }, (_, i) => cookie(...spot(i, 560), 'a', 11));
+        return { left, right, boxText, Y };
+      },
+      async play(a, b, s, ok) {
+        for (let k = 0; k < a; k++) { // one off each side, together, so it stays balanced
+          const l = s.left[a - 1 - k], r = s.right[b - 1 - k];
+          await Promise.all([fly(l, l._x, -30, 320, 0), fly(r, r._x, -30, 320, 0)]);
+          if (!ok()) return;
+        }
+        s.boxText.textContent = b - a;
+        bubble(180, s.Y - 100, `${b - a}!`);
+        return `take ${a} from both sides`;
+      },
+    },
+
+    // 3² + 4² = 5²: the two small squares hold exactly as much as the big one.
+    pyth: {
+      setup(a, b) {
+        const u = Math.min(26, 250 / (a + b), 130 / Math.max(a, b)), ox = 330, oy = 262;
+        const grid = (x, y, n, cls) => {
+          const out = [];
+          for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) out.push(el('rect', { x: x + c * u + 1, y: y + r * u + 1, width: u - 2, height: u - 2, rx: u / 7, class: cls }, svg));
+          return out;
+        };
+        const cellsA = grid(ox, oy, a, 'tile-a'); // square on the bottom side
+        const cellsB = grid(ox - b * u, oy - b * u, b, 'tile-b'); // square on the upright side
+        const A = [ox + a * u, oy], B = [ox, oy - b * u], n = [b * u, -a * u];
+        const pts = [A, B, [B[0] + n[0], B[1] + n[1]], [A[0] + n[0], A[1] + n[1]]].map((q) => q.join(',')).join(' ');
+        el('polygon', { points: pts, class: 'hyp' }, svg);
+        const fill = el('polygon', { points: pts, class: 'hyp-fill', opacity: 0 }, svg);
+        el('polygon', { points: `${ox},${oy} ${A[0]},${A[1]} ${B[0]},${B[1]}`, class: 'tri' }, svg);
+        const mid = [(A[0] + B[0] + n[0]) / 2, (A[1] + B[1] + n[1]) / 2];
+        return { cells: cellsA.concat(cellsB), fill, mid, total: a * a + b * b };
+      },
+      async play(a, b, s, ok) {
+        const count = label(s.mid[0], s.mid[1], 0);
+        let gone = 0;
+        await tween(500 + s.total * 28, (t) => {
+          const upTo = Math.round(s.total * t);
+          for (; gone < upTo; gone++) s.cells[gone].setAttribute('opacity', 0.15);
+          count.textContent = upTo;
+          s.fill.setAttribute('opacity', 0.85 * t);
+        });
+        if (!ok()) return;
+        const c = Math.sqrt(s.total);
+        return Number.isInteger(c) ? `long side = ${c}` : `long side ≈ ${c.toFixed(2)}`;
+      },
+    },
   };
 
   // -- controls --
@@ -516,6 +639,9 @@
     symEl.textContent = o.sym || '';
     preEl.textContent = o.pre || '';
     preEl.hidden = !o.pre;
+    $('post').textContent = o.post || '';
+    $('post').hidden = !o.post;
+    $('eqs').textContent = o.res || '=';
     $('b-wrap').hidden = !o.b;
     ansEl.textContent = '?';
     ansEl.classList.remove('got');
@@ -533,6 +659,7 @@
     ansEl.textContent = minus(answer(op, a, b));
     ansEl.classList.add('got');
     thinkEl.textContent = think || '';
+    globalThis.VLProgress?.mark('math:' + op);
   }
   function choose(op) {
     state.op = op;
@@ -550,7 +677,7 @@
   for (const b of document.querySelectorAll('[data-step]')) {
     b.addEventListener('click', () => {
       const [which, d] = b.dataset.step.split(':');
-      state[which] += Number(d);
+      state[which] += Number(d) * (OPS[state.op].step || 1);
       setup();
     });
   }
