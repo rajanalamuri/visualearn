@@ -21,6 +21,9 @@ web/                    static site, served by a Cloudflare Worker (assets only)
   searching/            linear and binary search
   mazes/                breadth-first (queue) and depth-first (stack) search on a grid graph
   math/                 ten math cartoons (arith.js): + − × ÷, regrouping, negatives, fractions, powers, π, Fibonacci; math/advanced/ has the sieve and Euclid
+  play/                 installable puzzle app: Ten, Balance, Share, Find (play.js, play.css)
+  math/grades/          grade 1 to 10 map; progress/ is the on-device diary
+  manifest.webmanifest, sw.js, icons/   make /play/ installable and usable offline
   404.html
   _headers              security headers for every response
   assets/style.css
@@ -38,6 +41,14 @@ tests/                  pytest; runs the real lesson JavaScript in QuickJS
 python -m http.server 8080 --directory web
 # open http://localhost:8080
 ```
+
+## The Play app
+
+`/play/` is a touch-first app shell: picture tiles, four short games (five puzzles each, then it
+stops), no scores, streaks or timers. It installs from the browser on tablets, phones and
+computers (Chrome: Install; iPad: Share, then Add to Home Screen) and opens offline.
+A Play Store APK can be wrapped around the live site with PWABuilder or Bubblewrap, which need a
+Google Play developer account and the Android SDK.
 
 ## Test
 

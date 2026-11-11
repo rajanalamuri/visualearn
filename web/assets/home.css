@@ -78,3 +78,8 @@ body.home .top{border-bottom-color:transparent}
 .pip-dots i{width:12px;height:12px;border-radius:50%;background:var(--line);transition:background-color .2s, transform .2s}
 .pip-dots i.on{background:var(--ink-2)}
 .pip-dots i.win{background:var(--done);transform:scale(1.25)}
+
+.h-play{display:inline-flex;align-items:center;gap:10px;padding:14px 30px 14px 24px;border-radius:999px;background:var(--pip);color:var(--pip-ink);text-decoration:none;
+  font-family:var(--font-display);font-size:24px;font-weight:700;box-shadow:0 5px 0 color-mix(in srgb, var(--pip) 55%, #000)}
+.h-play svg{width:24px;height:24px;fill:currentColor}
+.h-play:active{transform:translateY(4px);box-shadow:0 1px 0 color-mix(in srgb, var(--pip) 55%, #000)}

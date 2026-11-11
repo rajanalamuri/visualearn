@@ -1,0 +1,96 @@
+/* Play: an app-like shell. Big targets, no scrolling, safe on notched screens, works portrait or landscape. */
+body.play{height:100dvh;overflow:hidden;overscroll-behavior:none;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.pl-app{height:100dvh;display:flex;flex-direction:column;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+
+.pl-top{display:flex;align-items:center;gap:10px;padding:10px 14px;min-height:68px}
+.pl-spacer{flex:1}
+.pl-btn{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;flex:none}
+.pl-btn svg{width:24px;height:24px}
+.pl-btn:hover{border-color:var(--ink-2)}
+.pl-dots{display:flex;gap:10px;margin:0 6px}
+.pl-dots i{width:16px;height:16px;border-radius:50%;background:var(--line);transition:background-color .2s, transform .2s}
+.pl-dots i.is-cur{background:var(--ink-2);transform:scale(1.15)}
+.pl-dots i.is-done{background:var(--done)}
+
+.pl-main{flex:1;min-height:0;display:flex;flex-direction:column}
+
+/* launcher: an app grid, not a page */
+.pl-launcher{flex:1;display:grid;place-items:center;padding:8px 18px}
+.tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2, minmax(0, 220px));gap:clamp(14px, 3vw, 28px)}
+@media (min-width: 900px) and (min-height: 520px){ .tiles{grid-template-columns:repeat(4, minmax(0, 210px))} }
+.tile{width:100%;aspect-ratio:1;border:0;border-radius:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:var(--ink);
+  background:var(--tint, var(--surface));box-shadow:inset 0 0 0 1.5px color-mix(in srgb, var(--ink) 8%, transparent), 0 6px 0 color-mix(in srgb, var(--ink) 8%, transparent);
+  font-family:var(--font-display);font-size:20px;font-weight:700;transition:transform .12s, box-shadow .12s}
+.tile:active{transform:translateY(5px);box-shadow:inset 0 0 0 1.5px color-mix(in srgb, var(--ink) 8%, transparent), 0 1px 0 color-mix(in srgb, var(--ink) 8%, transparent)}
+.tile svg{width:62%;height:auto}
+.t-ten{--tint:color-mix(in srgb, var(--pip) 32%, var(--surface))}
+.t-balance{--tint:color-mix(in srgb, var(--pivot) 22%, var(--surface))}
+.t-share{--tint:color-mix(in srgb, var(--done) 24%, var(--surface))}
+.t-guess{--tint:color-mix(in srgb, var(--accent) 22%, var(--surface))}
+.i-grid rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.i-cookie{fill:#d9a35b}
+.i-q{font-family:var(--font-display);font-weight:700;font-size:30px;fill:var(--ink)}
+.i-stand{fill:var(--ink-2)} .i-beam{stroke:var(--ink);stroke-width:5;stroke-linecap:round}
+.i-box{fill:var(--pivot)}
+.i-c1{fill:var(--accent)} .i-c2{fill:var(--done)} .i-pip{fill:var(--pip)}
+.i-eye{fill:#fff} .i-pupil{fill:#14161f}
+.i-arrow{fill:none;stroke:var(--ink-2);stroke-width:3;stroke-linecap:round}
+.i-tick{stroke:var(--muted);stroke-width:3;stroke-linecap:round}
+.i-smile{fill:none;stroke:#14161f;stroke-width:3;stroke-linecap:round}
+
+/* a game: stage fills the space, answers sit underneath */
+.pl-game{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;padding:0 14px}
+.pl-stage{flex:1;min-height:0;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);border-radius:28px;overflow:hidden}
+#stage{width:100%;height:100%;display:block}
+#stage .ck,#stage .critter{cursor:default}
+.pl-tray{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px;min-height:84px;padding:6px 0 4px}
+.pl-num{min-width:72px;height:72px;padding:0 18px;border-radius:36px;border:0;background:var(--pip);color:var(--pip-ink);cursor:pointer;
+  font-family:var(--font-display);font-size:34px;font-weight:700;box-shadow:0 5px 0 color-mix(in srgb, var(--pip) 55%, #000);transition:transform .1s, box-shadow .1s}
+.pl-num:active{transform:translateY(4px);box-shadow:0 1px 0 color-mix(in srgb, var(--pip) 55%, #000)}
+.pl-num:disabled{opacity:.5}
+@media (max-width: 560px){ .t-ten .pl-num,.pl-tray .pl-num{min-width:52px;height:60px;font-size:28px;padding:0 10px} .pl-tray{gap:8px} }
+.pl-tray i{width:18px;height:18px;border-radius:50%;background:var(--line);transition:background-color .2s}
+.pl-tray i.on{background:var(--ink-2)}
+.pl-tray i.par{box-shadow:0 0 0 3px var(--paper), 0 0 0 5px var(--done)}
+
+/* the ten buttons: one row on wide screens, five and four on narrow ones */
+.tr-ten{display:grid;grid-template-columns:repeat(5, 68px);justify-content:center;gap:10px}
+.tr-ten .pl-num{min-width:0;width:68px;height:60px;padding:0;font-size:30px}
+@media (min-width: 820px){ .tr-ten{grid-template-columns:repeat(9, 68px)} }
+
+/* finished: Pip, one sentence, two icon buttons */
+.pl-done{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:12px 20px}
+#done-stage{width:min(360px, 80vw);height:auto}
+.pl-line{margin:0;max-width:34ch;text-align:center;font-size:19px;color:var(--ink-2)}
+.pl-actions{display:flex;gap:16px}
+.pl-big{width:84px;height:84px;border-radius:50%;border:0;background:var(--pip);color:var(--pip-ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 5px 0 color-mix(in srgb, var(--pip) 55%, #000)}
+.pl-big:active{transform:translateY(4px);box-shadow:0 1px 0 color-mix(in srgb, var(--pip) 55%, #000)}
+.pl-big svg{width:38px;height:38px}
+
+/* dock: the rest of the site, one tap away */
+.pl-dock{display:flex;justify-content:center;gap:10px;padding:8px 14px 12px}
+.pl-dock a{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:76px;padding:8px 14px;border-radius:18px;color:var(--ink-2);text-decoration:none;font-size:12.5px}
+.pl-dock a:hover{background:var(--surface);color:var(--ink)}
+.pl-dock svg{width:24px;height:24px}
+body[data-view="game"] .pl-dock,body[data-view="done"] .pl-dock{display:none}
+
+/* short landscape screens (phones on their side) */
+@media (max-height: 460px){
+  .pl-top{min-height:56px;padding:6px 12px}
+  .pl-btn{width:42px;height:42px}
+  .tiles{grid-template-columns:repeat(4, minmax(0, 150px))}
+  .tile{font-size:16px;border-radius:26px}
+  .pl-dock{display:none}
+  .pl-tray{min-height:70px}
+  .pl-num{height:60px}
+}
+@media (prefers-reduced-motion: reduce){ .tile,.pl-num,.pl-big,.pl-dots i{transition:none} }
+
+#stage .nl-num{font-size:20px}
+@media (max-width: 560px){
+  .pl-top{gap:8px;padding:8px 10px}
+  .pl-btn{width:42px;height:42px}
+  .pl-dots{gap:6px;margin:0 2px}
+  .pl-dots i{width:12px;height:12px}
+  .pl-top .timer{font-size:11.5px;padding:3px 8px}
+}
