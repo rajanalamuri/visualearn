@@ -86,3 +86,41 @@ def test_catalogue_covers_ten_grades_and_every_link_exists():
     # every math cartoon is in the catalogue, and the catalogue invents none
     ops = call(ctx, "Object.keys(VLArith.OPS)")
     assert sorted(k.split(":")[1] for k in ideas if k.startswith("math:")) == sorted(ops)
+
+
+def test_dsa_curriculum_is_complete_and_honest():
+    ctx = boot("catalog.js")
+    dsa = call(ctx, "VLCatalog.DSA")
+    ideas = call(ctx, "VLCatalog.IDEAS")
+    names = [t[0] for _, topics in dsa for t in topics]
+    assert len(dsa) >= 8 and len(names) >= 40 and len(set(names)) == len(names)
+    for track, topics in dsa:
+        assert track and topics
+        for t in topics:
+            name, ref, nxt = (t + [None, None])[:3]
+            assert name
+            if ref:
+                assert not nxt  # a ready topic is not "next"
+                if ref.startswith("/"):
+                    page, _, frag = ref.partition("#")
+                    html = WEB / page.strip("/") / "index.html"
+                    assert html.is_file(), ref
+                    if frag:
+                        assert f'id="{frag}"' in html.read_text(encoding="utf-8"), ref
+                else:
+                    assert ref in ideas, ref
+    ready = [t for _, topics in dsa for t in topics if len(t) > 1 and t[1]]
+    nxt = [t for _, topics in dsa for t in topics if len(t) > 2 and t[2]]
+    assert len(ready) >= 10 and 4 <= len(nxt) <= 10
+    # every lesson that exists is on the map: all five sorts, both searches, both graph searches
+    refs = {t[1] for t in ready}
+    for want in ("sorting:bubble", "sorting:selection", "sorting:insertion", "sorting:merge", "sorting:quick",
+                 "searching:linear", "searching:binary", "mazes:bfs", "mazes:dfs"):
+        assert want in refs
+
+
+def test_curriculum_page_has_what_the_script_needs():
+    html = (WEB / "curriculum" / "index.html").read_text(encoding="utf-8")
+    for i in ("curriculum", "cur-count", "cur-fill"):
+        assert f'id="{i}"' in html
+    assert "/assets/catalog.js" in html
