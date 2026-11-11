@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Play · VisuaLearn</title>
+<meta name="description" content="Four short picture puzzles for children: fill the ten, balance the scale, share the cookies, find the number. Works on tablets, phones and computers, even offline. Free.">
+<meta property="og:title" content="Play · VisuaLearn">
+<meta property="og:url" content="https://visualearn.org/play/">
+<link rel="canonical" href="https://visualearn.org/play/">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#fbfaf7">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="VisuaLearn">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/arith.css">
+<link rel="stylesheet" href="/assets/play.css">
+<script src="/assets/progress.js" defer></script>
+<script src="/assets/pipkit.js" defer></script>
+<script src="/assets/play.js" defer></script>
+<script src="/assets/limit.js" defer></script>
+</head>
+<body class="home play" data-view="launcher">
+<div class="pl-app">
+  <header class="pl-top">
+    <button class="pl-btn" id="b-home" type="button" aria-label="Back">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11 12 4l8 7M6 10v9h4v-5h4v5h4v-9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <p class="pl-dots" id="dots" aria-hidden="true" hidden></p>
+    <span class="pl-spacer"></span>
+    <button class="pl-btn" id="b-reset" type="button" aria-label="Start this one again" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a7 7 0 1 0 2.2-5.1M5 4v4h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="pl-btn" id="b-install" type="button" aria-label="Install the app" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="timer" id="timer" hidden></span>
+  </header>
+
+  <main class="pl-main">
+    <section id="launcher" class="pl-launcher" aria-label="Choose a game">
+      <h1 class="sr-only">Play</h1>
+      <ul class="tiles">
+        <li><button class="tile t-ten" type="button" data-game="ten" aria-label="Fill the ten">
+          <svg viewBox="0 0 96 96" aria-hidden="true"><g class="i-grid"><rect x="8" y="26" width="16" height="16"/><rect x="24" y="26" width="16" height="16"/><rect x="40" y="26" width="16" height="16"/><rect x="56" y="26" width="16" height="16"/><rect x="72" y="26" width="16" height="16"/><rect x="8" y="42" width="16" height="16"/><rect x="24" y="42" width="16" height="16"/><rect x="40" y="42" width="16" height="16"/><rect x="56" y="42" width="16" height="16"/><rect x="72" y="42" width="16" height="16"/></g><circle cx="16" cy="34" r="6" class="i-cookie"/><circle cx="32" cy="34" r="6" class="i-cookie"/><circle cx="48" cy="34" r="6" class="i-cookie"/><circle cx="64" cy="34" r="6" class="i-cookie"/><circle cx="80" cy="34" r="6" class="i-cookie"/><circle cx="16" cy="50" r="6" class="i-cookie"/><circle cx="32" cy="50" r="6" class="i-cookie"/><text x="60" y="84" class="i-q">?</text></svg>
+          <span>Ten</span></button></li>
+        <li><button class="tile t-balance" type="button" data-game="balance" aria-label="Balance the scale">
+          <svg viewBox="0 0 96 96" aria-hidden="true"><path d="M48 54 38 82h20Z" class="i-stand"/><g transform="rotate(-8 48 54)"><line x1="12" y1="54" x2="84" y2="54" class="i-beam"/><rect x="16" y="30" width="24" height="24" rx="5" class="i-box"/><circle cx="58" cy="46" r="7" class="i-cookie"/><circle cx="74" cy="46" r="7" class="i-cookie"/></g></svg>
+          <span>Balance</span></button></li>
+        <li><button class="tile t-share" type="button" data-game="share" aria-label="Share the cookies">
+          <svg viewBox="0 0 96 96" aria-hidden="true"><circle cx="26" cy="62" r="18" class="i-c1"/><circle cx="26" cy="58" r="6" class="i-eye"/><circle cx="26" cy="59" r="2.6" class="i-pupil"/><circle cx="70" cy="62" r="18" class="i-c2"/><circle cx="64" cy="58" r="5" class="i-eye"/><circle cx="76" cy="58" r="5" class="i-eye"/><circle cx="64" cy="59" r="2.2" class="i-pupil"/><circle cx="76" cy="59" r="2.2" class="i-pupil"/><circle cx="48" cy="20" r="8" class="i-cookie"/><path d="M40 30 28 42M56 30 68 42" class="i-arrow"/></svg>
+          <span>Share</span></button></li>
+        <li><button class="tile t-guess" type="button" data-game="guess" aria-label="Find the number">
+          <svg viewBox="0 0 96 96" aria-hidden="true"><line x1="8" y1="66" x2="88" y2="66" class="i-beam"/><path d="M16 60v12M32 60v12M48 60v12M64 60v12M80 60v12" class="i-tick"/><circle cx="64" cy="40" r="17" class="i-pip"/><circle cx="58" cy="37" r="4.6" class="i-eye"/><circle cx="70" cy="37" r="4.6" class="i-eye"/><circle cx="59" cy="38" r="2" class="i-pupil"/><circle cx="71" cy="38" r="2" class="i-pupil"/><path d="M57 46Q64 52 71 46" class="i-smile"/><text x="22" y="40" class="i-q">?</text></svg>
+          <span>Find</span></button></li>
+      </ul>
+    </section>
+
+    <section id="game" class="pl-game" hidden>
+      <div class="pl-stage"><svg id="stage" viewBox="0 0 800 440" role="img" aria-label="Puzzle"></svg></div>
+      <div class="pl-tray" id="tray"></div>
+    </section>
+
+    <section id="done" class="pl-done" hidden>
+      <svg id="done-stage" viewBox="0 0 400 260" role="img" aria-label="Pip is happy"></svg>
+      <p class="pl-line" id="done-line"></p>
+      <div class="pl-actions">
+        <button class="pl-big" id="done-again" type="button" aria-label="Play again">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a7 7 0 1 0 2.2-5.1M5 4v4h4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="pl-big" id="done-home" type="button" aria-label="All games">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="pl-dock" aria-label="More">
+    <a href="/math/" aria-label="Math cartoons"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg><span>Math</span></a>
+    <a href="/mazes/" aria-label="Mazes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM4 10h10M10 4v6M10 16h10M14 10v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Mazes</span></a>
+    <a href="/progress/" aria-label="Diary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM9 9h6M9 13h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Diary</span></a>
+  </nav>
+</div>
+
+<div class="rest" id="rest" role="dialog" aria-modal="true" aria-labelledby="rest-h" hidden>
+  <div class="rest-card">
+    <div id="rest-body">
+      <p class="eyebrow">Screen time is up for today</p>
+      <h2 id="rest-h">Your turn.</h2>
+      <p>Put the screen down and try one for real.</p>
+      <div class="rest-actions">
+        <button class="btn" id="rest-bye" type="button">See you tomorrow</button>
+        <button class="link" id="rest-more" type="button">A grown-up says 5 more minutes</button>
+      </div>
+    </div>
+    <div id="rest-done" hidden>
+      <h2>Great choice.</h2>
+      <p>You can close this now.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
