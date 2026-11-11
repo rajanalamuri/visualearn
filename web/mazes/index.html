@@ -15,12 +15,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/lite.css">
 <script src="/assets/progress.js" defer></script>
 <script src="/assets/player.js" defer></script>
 <script src="/assets/graph.js" defer></script>
 <script src="/assets/limit.js" defer></script>
+<script src="/assets/lite.js" defer></script>
 </head>
-<body>
+<body class="home lite">
 <header class="top">
   <div class="wrap top-in">
     <a class="brand" href="/" aria-label="VisuaLearn home">
@@ -41,7 +44,6 @@
     <div class="viz-head">
       <p class="eyebrow crumbs"><a href="/#lessons">Lessons</a> · Mazes and maps</p>
       <h1 id="viz-title">Mazes and maps: queues, stacks and graphs</h1>
-      <p>Find a way from home (⌂) to school (★). Squares wait in line to be explored. Whether that line is a queue or a stack changes everything. Map apps use the same idea to plan your route.</p>
     </div>
 
     <div class="algos seg" role="group" aria-label="Algorithm" id="algos"></div>
@@ -73,18 +75,6 @@
           <li><i class="k-done"></i>Route</li>
         </ul>
       </div>
-
-      <aside class="side">
-        <div class="code-card">
-          <p class="eyebrow">The steps, written as code</p>
-          <ol class="code" id="code"></ol>
-        </div>
-        <div class="about-card">
-          <p class="eyebrow" id="algo-name">Algorithm</p>
-          <p id="algo-blurb"></p>
-          <dl class="cx" id="algo-facts"></dl>
-        </div>
-      </aside>
     </div>
 
     <div class="controls">
@@ -108,6 +98,18 @@
         <button class="btn" id="b-new" type="button">New maze</button>
       </div>
     </div>
+
+    <details class="more"><summary>The steps as code</summary><aside class="side">
+        <div class="code-card">
+          <p class="eyebrow">The steps, written as code</p>
+          <ol class="code" id="code"></ol>
+        </div>
+        <div class="about-card">
+          <p class="eyebrow" id="algo-name">Algorithm</p>
+          <p id="algo-blurb"></p>
+          <dl class="cx" id="algo-facts"></dl>
+        </div>
+      </aside></details>
   </section>
 
   <section id="offline" class="wrap block" aria-labelledby="off-h">
@@ -120,7 +122,10 @@
           <li><b>Time</b> <span id="off-time"></span></li>
         </ul>
       </div>
-      <ol class="off-steps" id="off-steps"></ol>
+      <div class="off-actions no-print">
+        <button class="btn primary" id="b-print" type="button">Print this activity</button>
+      </div>
+      <details class="off-more"><summary>The steps</summary><div class="off-grid"><ol class="off-steps" id="off-steps"></ol>
       <div class="off-think">
         <p class="eyebrow">Think about it</p>
         <p id="off-think"></p>
@@ -128,22 +133,18 @@
       <div class="tally">
         <p class="eyebrow">Draw your map here</p>
         <div class="grid-box" aria-hidden="true"></div>
-      </div>
-      <div class="off-actions no-print">
-        <button class="btn primary" id="b-print" type="button">Print this activity</button>
-        <span>Prints just this card, on one page.</span>
-      </div>
+      </div></div></details>
     </div>
   </section>
 
   <section class="wrap block" aria-labelledby="why-h">
-    <h2 id="why-h">Queues and stacks, everywhere</h2>
+    <details class="more"><summary>Queues and stacks, everywhere</summary><div class="more-body">
     <ul class="soon">
       <li><b>Queue: first in, first out</b><span>The line at a shop, songs waiting to play, pages waiting at a printer. Breadth-first search uses one.</span></li>
       <li><b>Stack: last in, first out</b><span>A pile of plates, the "undo" button, the back button in a web browser. Depth-first search uses one.</span></li>
       <li><b>Graph: dots and lines</b><span>Each square is a dot (a node), joined to its neighbours by lines (edges). Roads, friendships and the internet are all graphs.</span></li>
     </ul>
-  </section>
+  </div></details></section>
 </main>
 
 <div class="rest" id="rest" role="dialog" aria-modal="true" aria-labelledby="rest-h" hidden>

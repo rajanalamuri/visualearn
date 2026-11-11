@@ -1,0 +1,29 @@
+/* Lesson pages, quieter: the stage and the controls first. Everything that explains folds away. */
+.lite .lesson-top{padding-top:22px}
+.lite .viz-head h1{font-size:clamp(26px, 3.6vw, 40px);letter-spacing:-.03em}
+.lite .board{grid-template-columns:minmax(0,1fr)}
+.lite .stage,.lite .controls{border-radius:22px}
+.lite .seg button[aria-pressed="true"]{background:var(--pip);border-color:var(--pip);color:var(--pip-ink)}
+.lite .btn.play,.lite .btn.primary{background:var(--pip);border-color:var(--pip);color:var(--pip-ink)}
+.lite .btn.play:hover,.lite .btn.primary:hover{background:var(--pip);filter:brightness(1.06)}
+.lite .block{border-top:0;padding-block:10px}
+
+/* a closed box with a plus sign */
+.more{border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.more > summary,.off-more > summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  font-family:var(--font-display);font-weight:700;font-size:18px}
+.more > summary{padding:15px 20px}
+.more > summary::-webkit-details-marker,.off-more > summary::-webkit-details-marker{display:none}
+.more > summary::after,.off-more > summary::after{content:"+";font-family:var(--font-code);font-weight:400;font-size:22px;line-height:1;color:var(--muted)}
+.more[open] > summary::after,.off-more[open] > summary::after{content:"\2212"}
+.more .side{display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:14px;padding:0 14px 14px}
+.more .code-card,.more .about-card{background:var(--paper)}
+.more-body{padding:0 20px 20px;display:flex;flex-direction:column;gap:12px}
+
+/* the offline activity: a title, what you need, a print button. The steps are one tap away. */
+.lite .off-card{display:flex;flex-direction:column;align-items:flex-start;gap:16px;border-radius:26px;padding:24px}
+.lite .off-actions{margin:0}
+.off-more{width:100%;border-top:1px solid var(--line);padding-top:14px}
+.off-grid{margin-top:14px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);grid-template-areas:"steps think" "steps tally";grid-template-rows:auto 1fr;gap:20px 32px}
+@media (max-width: 920px){ .off-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"steps" "think" "tally"} }
+@media print{ .off-more > summary{display:none} .off-more{border:0;padding:0} }

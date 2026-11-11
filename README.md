@@ -21,7 +21,7 @@ web/                    static site, served by a Cloudflare Worker (assets only)
   searching/            linear and binary search
   mazes/                breadth-first (queue) and depth-first (stack) search on a grid graph
   math/                 ten math cartoons (arith.js): + − × ÷, regrouping, negatives, fractions, powers, π, Fibonacci; math/advanced/ has the sieve and Euclid
-  play/                 installable puzzle app: Ten, Balance, Share, Find (play.js, play.css)
+  play/                 installable puzzle app: Ten, Balance, Share, Find, Line, Pile, Towers (play.js, play.css)
   math/grades/          grade 1 to 10 map; progress/ is the on-device diary
   curriculum/           the whole DSA map: ready, next, to do (data lives in assets/catalog.js)
   manifest.webmanifest, sw.js, icons/   make /play/ installable and usable offline
@@ -31,6 +31,7 @@ web/                    static site, served by a Cloudflare Worker (assets only)
   assets/sort.js        sorting lesson with its own player
   assets/player.js      shared player for every other lesson: play, step, scrub, Predict mode, offline card
   assets/search.js, graph.js, math.js   one lesson each
+  assets/lite.css, lite.js   quieter lesson pages: explanations fold away
   assets/limit.js       daily screen-time limit (localStorage only)
 wrangler.jsonc          Worker config
 tests/                  pytest; runs the real lesson JavaScript in QuickJS

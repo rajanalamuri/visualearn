@@ -29,6 +29,9 @@
     'play:balance': ['Balance the scale', '/play/#balance'],
     'play:share': ['Share the cookies', '/play/#share'],
     'play:guess': ['Find the number', '/play/#guess'],
+    'play:line': ['Lines (queues)', '/play/#line'],
+    'play:pile': ['Piles (stacks)', '/play/#pile'],
+    'play:towers': ['Towers of Hanoi', '/play/#towers'],
     'sorting:bubble': ['Bubble sort', '/sorting/'],
     'sorting:selection': ['Selection sort', '/sorting/'],
     'sorting:insertion': ['Insertion sort', '/sorting/'],
@@ -55,7 +58,7 @@
   // With no ref it is still to do ("tbd"); next = true marks what gets built soon.
   const DSA = [
     ['Think like a computer', [
-      ['Steps and loops'], ['Big O', '/sorting/#compare'], ['Recursion', null, true], ['Invariants'],
+      ['Steps and loops'], ['Big O', '/sorting/#compare'], ['Recursion', 'play:towers'], ['Invariants'],
     ]],
     ['Search and order', [
       ['Linear search', 'searching:linear'], ['Binary search', 'searching:binary'],
@@ -63,7 +66,7 @@
       ['Merge sort', 'sorting:merge'], ['Quick sort', 'sorting:quick'], ['Heap sort'], ['Counting sort'],
     ]],
     ['Lists and lines', [
-      ['Arrays', null, true], ['Linked lists'], ['Stacks', null, true], ['Queues', null, true], ['Deques'],
+      ['Arrays', null, true], ['Linked lists'], ['Stacks', 'play:pile'], ['Queues', 'play:line'], ['Deques'],
     ]],
     ['Trees', [
       ['Binary trees', null, true], ['Binary search trees'], ['Heaps and priority queues'], ['Tries'], ['Balanced trees'], ['Segment trees'],

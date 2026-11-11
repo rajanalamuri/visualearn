@@ -15,11 +15,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
 <link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/lite.css">
 <script src="/assets/progress.js" defer></script>
 <script src="/assets/sort.js" defer></script>
 <script src="/assets/limit.js" defer></script>
+<script src="/assets/lite.js" defer></script>
 </head>
-<body>
+<body class="home lite">
 <header class="top">
   <div class="wrap top-in">
     <a class="brand" href="/" aria-label="VisuaLearn home">
@@ -40,7 +43,6 @@
     <div class="viz-head">
       <p class="eyebrow crumbs"><a href="/#lessons">Lessons</a> · Sorting</p>
       <h1 id="viz-title">Sorting: putting things in order</h1>
-      <p>Computers sort things all the time: your photos by date, a game's high scores, search results. Pick a way to sort and press play.</p>
     </div>
 
     <div class="algos seg" role="group" aria-label="Algorithm" id="algos"></div>
@@ -77,18 +79,6 @@
           <li><i class="k-done"></i>In final place</li>
         </ul>
       </div>
-
-      <aside class="side">
-        <div class="code-card">
-          <p class="eyebrow">The steps, written as code</p>
-          <ol class="code" id="code"></ol>
-        </div>
-        <div class="about-card">
-          <p class="eyebrow" id="algo-name">Algorithm</p>
-          <p id="algo-blurb"></p>
-          <dl class="cx" id="algo-cx"></dl>
-        </div>
-      </aside>
     </div>
 
     <div class="controls">
@@ -120,6 +110,18 @@
         <span class="err" id="custom-err" role="alert"></span>
       </form>
     </div>
+
+    <details class="more"><summary>The steps as code</summary><aside class="side">
+        <div class="code-card">
+          <p class="eyebrow">The steps, written as code</p>
+          <ol class="code" id="code"></ol>
+        </div>
+        <div class="about-card">
+          <p class="eyebrow" id="algo-name">Algorithm</p>
+          <p id="algo-blurb"></p>
+          <dl class="cx" id="algo-cx"></dl>
+        </div>
+      </aside></details>
   </section>
 
   <section id="offline" class="wrap block" aria-labelledby="off-h">
@@ -132,7 +134,10 @@
           <li><b>Time</b> <span id="off-time"></span></li>
         </ul>
       </div>
-      <ol class="off-steps" id="off-steps"></ol>
+      <div class="off-actions no-print">
+        <button class="btn primary" id="b-print" type="button">Print this activity</button>
+      </div>
+      <details class="off-more"><summary>The steps</summary><div class="off-grid"><ol class="off-steps" id="off-steps"></ol>
       <div class="off-think">
         <p class="eyebrow">Think about it</p>
         <p id="off-think"></p>
@@ -141,16 +146,12 @@
         <p class="eyebrow">Count your compares</p>
         <p>Make a tally mark every time you compare two things. Then type the same numbers into the lesson and see if you match the computer.</p>
         <div class="tally-box" aria-hidden="true"></div>
-      </div>
-      <div class="off-actions no-print">
-        <button class="btn primary" id="b-print" type="button">Print this activity</button>
-        <span>Prints just this card, on one page.</span>
-      </div>
+      </div></div></details>
     </div>
   </section>
 
   <section id="compare" class="wrap block" aria-labelledby="cmp-title">
-    <h2 id="cmp-title">Which one is fastest?</h2>
+    <details class="more"><summary>Which one is fastest?</summary><div class="more-body">
     <p class="lede">Set Size to 64 and run each one. Watch the Compares counter. Computer scientists describe this with "Big O": it tells you how much more work there is when the list gets longer. <i>n</i> means how many numbers there are.</p>
     <div class="table-wrap">
       <table class="table">
@@ -159,7 +160,7 @@
       </table>
     </div>
     <p class="fine"><b>Stable</b> means equal numbers keep the order they started in. That matters when you sort a class by surname and want students with the same surname to stay sorted by first name.</p>
-  </section>
+  </div></details></section>
 
 </main>
 

@@ -39,14 +39,56 @@
     return guess < target ? { hit: false, lo: Math.max(lo, guess + 1), hi } : { hit: false, lo, hi: Math.min(hi, guess - 1) };
   }
 
+  // A line (queue) serves the one who has waited longest; a pile (stack) gives back the one put on last.
+  // Items are colours 0 to 4. ops are { t: 'in', c } or { t: 'out' }. Who is next out after they all happen?
+  function runContainer(mode, start, ops) {
+    const list = start.slice(), out = [];
+    for (const op of ops) {
+      if (op.t === 'in') list.push(op.c);
+      else out.push(mode === 'queue' ? list.shift() : list.pop());
+    }
+    return { final: list, out, answer: mode === 'queue' ? list[0] : list[list.length - 1] };
+  }
+  function containerSet(mode) {
+    return Array.from({ length: SET }, (_, i) => {
+      for (;;) {
+        const col = shuffle([0, 1, 2, 3, 4]), start = col.slice(0, 3), spare = col.slice(3), m = 2 + (i >> 1), ops = [];
+        let size = 3;
+        for (let k = 0; k < m; k++) {
+          const canIn = spare.length > 0, canOut = size > 1;
+          if (canIn && (!canOut || Math.random() < 0.5)) { ops.push({ t: 'in', c: spare.shift() }); size++; }
+          else if (canOut) { ops.push({ t: 'out' }); size--; }
+        }
+        if (ops.length === m && size >= 2 && ops.some((o) => o.t === 'in') && ops.some((o) => o.t === 'out')) {
+          const r = runContainer(mode, start, ops);
+          return { mode, start, ops, answer: r.answer, final: r.final };
+        }
+      }
+    });
+  }
+
+  // Tower of Hanoi: move every disc to the last peg, never a bigger disc on a smaller one.
+  // The solution is recursive: move the smaller tower out of the way, move the big disc, move the tower back on top.
+  const hanoiMoves = (n, from = 0, to = 2, via = 1) => (n === 0 ? [] : [...hanoiMoves(n - 1, from, via, to), [from, to], ...hanoiMoves(n - 1, via, to, from)]);
+  const hanoiStart = (n) => [Array.from({ length: n }, (_, k) => n - k), [], []]; // discs by size, bottom first
+  function hanoiLegal(pegs, from, to) {
+    const a = pegs[from], b = pegs[to];
+    return from !== to && a.length > 0 && (b.length === 0 || a[a.length - 1] < b[b.length - 1]);
+  }
+  const hanoiSolved = (pegs, n) => pegs[2].length === n;
+  const towersSet = () => [2, 3, 3, 4, 4].map((n) => ({ n }));
+
   const OFFLINE = {
     ten: 'Press 10 coins into an egg box. Start with some in. How many more fill it?',
     balance: 'Hide coins under a cup. Say "the cup plus 3 makes 8". Can a friend find the cup?',
     share: 'Deal 14 cards to 3 people, one each, round and round. Who gets the leftovers?',
     guess: 'Think of a number from 1 to 100. Ask a friend to guess it. Only say higher or lower.',
+    line: 'Line up toys like a queue. Serve the first one. Add one at the back. Who is next now?',
+    pile: 'Stack four books. You can only take from the top. Which one comes out first? Which last?',
+    towers: 'Stack three coins, small on top of big, on a plate. Move them to another plate, one at a time, never big on small.',
   };
 
-  globalThis.VLPlay = { SET, tenSet, balanceSet, shareSet, shareSolved, guessSet, narrow, OFFLINE };
+  globalThis.VLPlay = { SET, tenSet, balanceSet, shareSet, shareSolved, guessSet, narrow, runContainer, containerSet, hanoiMoves, hanoiStart, hanoiLegal, hanoiSolved, towersSet, OFFLINE };
 
   // ---------- page ----------
   if (typeof document === 'undefined' || !globalThis.Pip) return;
@@ -57,7 +99,7 @@
   const app = { game: null, i: 0, set: [], token: 0, busy: false, pip: null };
   globalThis.VLPlay._app = app; // for tests and debugging
 
-  const put = (n, x, y, s = 1) => { n._x = x; n._y = y; n.setAttribute('transform', `translate(${x} ${y}) scale(${s})`); };
+  const put = (n, x, y, s) => { n._x = x; n._y = y; if (s !== undefined) n._s = s; n.setAttribute('transform', `translate(${x} ${y}) scale(${n._s ?? 1})`); };
   async function fly(n, x1, y1, ms = 340, h = 40) {
     const x0 = n._x, y0 = n._y;
     await tween(ms, (t) => { const e = ease(t); put(n, x0 + (x1 - x0) * e, y0 + (y1 - y0) * e - 4 * h * t * (1 - t)); });
@@ -100,6 +142,7 @@
     return b;
   };
   const alive = (tok) => tok === app.token;
+  const COLOURS = ['var(--accent)', 'var(--done)', 'var(--pivot)', 'var(--swap)', '#f08a24'];
   const view = (vb) => svg.setAttribute('viewBox', vb); // each game frames just its own content, so it fills a phone too
 
   // ---------- the four games ----------
@@ -297,6 +340,170 @@
     },
   };
 
+  // ---------- lines, piles and towers ----------
+  const chipBtn = (c, onTap) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = `pl-colour c${c}`;
+    b.setAttribute('aria-label', `Colour ${c + 1}`);
+    b.addEventListener('click', () => onTap(b));
+    tray.appendChild(b);
+    return b;
+  };
+  function plate(x, y, c) {
+    const g = el('g', { class: `plate c${c}` }, svg);
+    el('rect', { x: -80, y: -15, width: 160, height: 30, rx: 12 }, g);
+    put(g, x, y);
+    return g;
+  }
+
+  // Who is next out? The line or pile is shown, then the changes; tap the colour you think comes out next.
+  function containerLoad(p) {
+    const tok = app.token, queue = p.mode === 'queue', Y = 330, m = p.ops.length;
+    view('40 0 720 440');
+    const spot = (i) => (queue ? [170 + i * 105, Y] : [400, 357 - i * 32]); // line: front at the left; pile: bottom first
+    const make = (c, x, y) => { const g = queue ? critter(x, y, c) : plate(x, y, c); put(g, x, y, queue ? 0.82 : 1); return g; };
+    if (queue) el('rect', { x: 50, y: Y - 128, width: 52, height: 128, rx: 12, class: 'door' }, svg);
+    else el('rect', { x: 300, y: 372, width: 200, height: 10, rx: 5, class: 'beam' }, svg);
+    const items = p.start.map((c, i) => ({ c, g: make(c, ...spot(i)) }));
+    const chips = p.ops.map((op, k) => {
+      const g = el('g', { class: `opchip ${op.t}` }, svg);
+      el('circle', { r: 24, class: 'opc', style: op.t === 'in' ? `fill:${COLOURS[op.c]}` : '' }, g);
+      el('text', { y: 1 }, g).textContent = op.t === 'in' ? '+' : '−';
+      put(g, 400 + (k - (m - 1) / 2) * 84, 52);
+      return g;
+    });
+    bubble(queue ? 76 : 560, queue ? 170 : 220, '?');
+    app.pip = Pip.make(svg, 22);
+    app.pip.place(700, 425);
+
+    async function replay() {
+      for (let k = 0; k < m; k++) {
+        chips[k].classList.add('now');
+        const op = p.ops[k];
+        if (op.t === 'in') {
+          const it = { c: op.c, g: make(op.c, queue ? 800 : 400, queue ? Y : -40) };
+          items.push(it);
+          await fly(it.g, ...spot(items.length - 1), 380, 40);
+        } else {
+          const it = queue ? items.shift() : items.pop();
+          await fly(it.g, queue ? 66 : 650, queue ? Y - 30 : 300, 380, 40);
+          it.g.remove();
+          if (queue) await Promise.all(items.map((x, i) => fly(x.g, ...spot(i), 260, 0)));
+        }
+        if (!alive(tok)) return;
+        await wait(220);
+        chips[k].classList.remove('now');
+        chips[k].classList.add('past');
+      }
+    }
+    const colours = [...new Set([...p.start, ...p.ops.filter((o) => o.t === 'in').map((o) => o.c)])].sort();
+    for (const c of colours) {
+      chipBtn(c, async () => {
+        if (app.busy) return;
+        app.busy = true;
+        await replay();
+        if (!alive(tok)) return;
+        items.find((it) => it.c === p.answer)?.g.classList.add('answer');
+        if (c === p.answer) { app.pip.smile(0.11); return win(); }
+        app.pip.smile(-0.03);
+        await wait(1500);
+        if (alive(tok)) loadPuzzle(); // the same puzzle again, now that the answer has been shown
+      });
+    }
+  }
+
+  // Tower of Hanoi. Tap a peg to lift its top disc, tap another to put it down. The bulb shows the recursive way.
+  function towersLoad(p) {
+    const tok = app.token, n = p.n, X = [170, 400, 630], BASE = 340, H = 32, UP = 80;
+    view('40 0 720 440');
+    const pegs = hanoiStart(n), w = (sz) => 36 + sz * 30;
+    el('line', { x1: 60, y1: BASE + 2, x2: 740, y2: BASE + 2, class: 'ground' }, svg);
+    for (const x of X) el('rect', { x: x - 6, y: BASE - 230, width: 12, height: 230, rx: 6, class: 'peg' }, svg);
+    const discs = {};
+    for (let sz = 1; sz <= n; sz++) {
+      const g = el('g', { class: `disc d${sz % 5}` }, svg);
+      el('rect', { x: -w(sz) / 2, y: -H / 2 + 2, width: w(sz), height: H - 4, rx: 12 }, g);
+      discs[sz] = g;
+    }
+    const at = (peg, level) => [X[peg], BASE - H * (level + 1) + H / 2];
+    const layout = () => pegs.forEach((st, i) => st.forEach((sz, l) => put(discs[sz], ...at(i, l))));
+    const reset = () => { const st = hanoiStart(n); for (let i = 0; i < 3; i++) pegs[i] = st[i]; layout(); };
+    layout();
+    app.pip = Pip.make(svg, 22);
+    app.pip.place(400, 432);
+    let sel = null;
+    const top = (i) => pegs[i][pegs[i].length - 1];
+
+    async function tap(i) {
+      if (app.busy) return;
+      if (sel === null) {
+        if (!pegs[i].length) return;
+        sel = i;
+        app.busy = true;
+        await fly(discs[top(i)], X[i], UP, 180, 0);
+        if (alive(tok)) app.busy = false;
+        return;
+      }
+      const from = sel, sz = top(from);
+      app.busy = true;
+      sel = null;
+      if (i === from) {
+        await fly(discs[sz], ...at(from, pegs[from].length - 1), 180, 0);
+      } else if (hanoiLegal(pegs, from, i)) {
+        pegs[from].pop();
+        pegs[i].push(sz);
+        await fly(discs[sz], X[i], UP, 200, 0);
+        await fly(discs[sz], ...at(i, pegs[i].length - 1), 200, 0);
+        if (!alive(tok)) return;
+        if (hanoiSolved(pegs, n)) { app.pip.smile(0.11); return win(); }
+      } else { // a big disc on a small one: shake it and put it back
+        app.pip.smile(-0.03);
+        await tween(300, (t) => put(discs[sz], X[from] + Math.sin(t * 20) * 12 * (1 - t), UP));
+        await fly(discs[sz], ...at(from, pegs[from].length - 1), 180, 0);
+        app.pip.smile(0.05);
+      }
+      if (alive(tok)) app.busy = false;
+    }
+    for (const x of X) {
+      const z = el('rect', { x: x - 100, y: 90, width: 200, height: 270, fill: 'transparent' }, svg);
+      z.addEventListener('click', () => tap(X.indexOf(x)));
+    }
+
+    // Watch the recursive solution: small tower out of the way, the big disc across, small tower back on top.
+    const bulb = document.createElement('button');
+    bulb.type = 'button';
+    bulb.className = 'pl-num';
+    bulb.setAttribute('aria-label', 'Show me');
+    bulb.innerHTML = '<svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    bulb.addEventListener('click', async () => {
+      if (app.busy) return;
+      app.busy = true;
+      sel = null;
+      reset();
+      discs[n].classList.add('big');
+      for (const [a, b] of hanoiMoves(n)) {
+        const sz = pegs[a].pop();
+        pegs[b].push(sz);
+        await fly(discs[sz], X[a], UP, 140, 0);
+        await fly(discs[sz], X[b], UP, 220, 0);
+        await fly(discs[sz], ...at(b, pegs[b].length - 1), 140, 0);
+        if (!alive(tok)) return;
+        await wait(sz === n ? 500 : 140);
+      }
+      await wait(700);
+      if (!alive(tok)) return;
+      discs[n].classList.remove('big');
+      reset(); // now it is your turn
+      app.busy = false;
+    });
+    tray.appendChild(bulb);
+  }
+
+  GAMES.line = { load: (p) => containerLoad(p) };
+  GAMES.pile = { load: (p) => containerLoad(p) };
+  GAMES.towers = { load: (p) => towersLoad(p) };
+
   // ---------- flow ----------
   function show(view) {
     for (const k in views) views[k].hidden = k !== view;
@@ -343,7 +550,7 @@
   }
   function start(game) {
     app.game = game;
-    app.set = { ten: tenSet, balance: balanceSet, share: shareSet, guess: guessSet }[game]();
+    app.set = { ten: tenSet, balance: balanceSet, share: shareSet, guess: guessSet, line: () => containerSet('queue'), pile: () => containerSet('stack'), towers: towersSet }[game]();
     app.i = 0;
     show('game');
     loadPuzzle();

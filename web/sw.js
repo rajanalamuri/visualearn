@@ -2,7 +2,7 @@
    Network first, so people always get the newest version when online; the cache is only the fallback. */
 const V = 'vl-v1';
 const CORE = ['/play/', '/math/', '/progress/', '/curriculum/', '/assets/style.css', '/assets/home.css', '/assets/arith.css', '/assets/play.css',
-  '/assets/pipkit.js', '/assets/play.js', '/assets/progress.js', '/assets/limit.js', '/assets/arith.js', '/assets/catalog.js',
+  '/assets/pipkit.js', '/assets/play.js', '/assets/progress.js', '/assets/limit.js', '/assets/arith.js', '/assets/catalog.js', '/assets/lite.css', '/assets/lite.js',
   '/favicon.svg', '/manifest.webmanifest', '/icons/icon-192.png'];
 
 self.addEventListener('install', (e) => {

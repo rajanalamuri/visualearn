@@ -15,7 +15,8 @@ body.play{height:100dvh;overflow:hidden;overscroll-behavior:none;touch-action:ma
 .pl-main{flex:1;min-height:0;display:flex;flex-direction:column}
 
 /* launcher: an app grid, not a page */
-.pl-launcher{flex:1;display:grid;place-items:center;padding:8px 18px}
+.pl-launcher{flex:1;display:flex;overflow-y:auto;padding:8px 18px 14px}
+.pl-launcher .tiles{margin:auto}
 .tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2, minmax(0, 220px));gap:clamp(14px, 3vw, 28px)}
 @media (min-width: 900px) and (min-height: 520px){ .tiles{grid-template-columns:repeat(4, minmax(0, 210px))} }
 .tile{width:100%;aspect-ratio:1;border:0;border-radius:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:var(--ink);
@@ -94,3 +95,26 @@ body[data-view="game"] .pl-dock,body[data-view="done"] .pl-dock{display:none}
   .pl-dots i{width:12px;height:12px}
   .pl-top .timer{font-size:11.5px;padding:3px 8px}
 }
+
+/* line, pile, towers */
+.t-line{--tint:color-mix(in srgb, var(--swap) 20%, var(--surface))}
+.t-pile{--tint:color-mix(in srgb, #f08a24 26%, var(--surface))}
+.t-towers{--tint:color-mix(in srgb, var(--accent) 12%, color-mix(in srgb, var(--done) 18%, var(--surface)))}
+.i-sw{fill:var(--swap)} .i-or{fill:#f08a24} .i-pv{fill:var(--pivot)}
+.pl-colour{width:72px;height:72px;border-radius:50%;border:0;cursor:pointer;box-shadow:0 5px 0 rgba(0,0,0,.22);transition:transform .1s, box-shadow .1s}
+.pl-colour:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.22)}
+.pl-colour.c0{background:var(--accent)} .pl-colour.c1{background:var(--done)} .pl-colour.c2{background:var(--pivot)} .pl-colour.c3{background:var(--swap)} .pl-colour.c4{background:#f08a24}
+.plate.c0 rect{fill:var(--accent)} .plate.c1 rect{fill:var(--done)} .plate.c2 rect{fill:var(--pivot)} .plate.c3 rect{fill:var(--swap)} .plate.c4 rect{fill:#f08a24}
+.door{fill:var(--paper);stroke:var(--ink-2);stroke-width:3;stroke-dasharray:8 6}
+.opc{fill:var(--paper);stroke:var(--ink-2);stroke-width:2.5;stroke-dasharray:5 4}
+.opchip.in .opc{stroke:none}
+.opchip text{fill:#fff;font-family:var(--font-display);font-weight:700;font-size:30px;text-anchor:middle;dominant-baseline:central}
+.opchip.out text{fill:var(--ink-2)}
+.opchip.now .opc{stroke:var(--ink);stroke-width:4;stroke-dasharray:none}
+.opchip.past{opacity:.35}
+.answer .cr-body,.answer rect{stroke:var(--ink);stroke-width:5}
+.peg{fill:var(--ink-2)}
+.disc rect{fill:var(--accent)}
+.disc.d1 rect{fill:var(--swap)} .disc.d2 rect{fill:#f08a24} .disc.d3 rect{fill:var(--done)} .disc.d4 rect{fill:var(--pivot)} .disc.d0 rect{fill:var(--accent)}
+.disc.big rect{stroke:var(--ink);stroke-width:4}
+.pl-num svg{display:block;margin:auto}
