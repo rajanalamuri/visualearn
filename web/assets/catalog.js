@@ -50,7 +50,43 @@
     [['Growth that doubles', 'math:pow'], ['Trigonometry'], ['Parabolas'], ['Statistics']],
   ];
 
-  globalThis.VLCatalog = { IDEAS, GRADES };
+  // The ultimate DSA curriculum. Each track runs from easiest to hardest.
+  // A topic is [name, ref, next]. ref is an idea id above, or a page path, when a lesson is ready.
+  // With no ref it is still to do ("tbd"); next = true marks what gets built soon.
+  const DSA = [
+    ['Think like a computer', [
+      ['Steps and loops'], ['Big O', '/sorting/#compare'], ['Recursion', null, true], ['Invariants'],
+    ]],
+    ['Search and order', [
+      ['Linear search', 'searching:linear'], ['Binary search', 'searching:binary'],
+      ['Bubble sort', 'sorting:bubble'], ['Selection sort', 'sorting:selection'], ['Insertion sort', 'sorting:insertion'],
+      ['Merge sort', 'sorting:merge'], ['Quick sort', 'sorting:quick'], ['Heap sort'], ['Counting sort'],
+    ]],
+    ['Lists and lines', [
+      ['Arrays', null, true], ['Linked lists'], ['Stacks', null, true], ['Queues', null, true], ['Deques'],
+    ]],
+    ['Trees', [
+      ['Binary trees', null, true], ['Binary search trees'], ['Heaps and priority queues'], ['Tries'], ['Balanced trees'], ['Segment trees'],
+    ]],
+    ['Graphs', [
+      ['Breadth-first search', 'mazes:bfs'], ['Depth-first search', 'mazes:dfs'],
+      ['Shortest paths (Dijkstra)', null, true], ['A* search'], ['Topological sort'], ['Minimum spanning trees'], ['Union-find'], ['Network flow'],
+    ]],
+    ['Ways to solve it', [
+      ['Divide and conquer'], ['Greedy choices'], ['Backtracking'], ['Dynamic programming', null, true], ['Bit tricks'],
+    ]],
+    ['Hashing and text', [
+      ['Hash tables', null, true], ['Pattern matching'], ['Edit distance'], ['Compression (Huffman)'], ['Bloom filters'], ['Caches (LRU)'],
+    ]],
+    ['Number magic', [
+      ['Primes (the sieve)', 'advanced:sieve'], ['Common factors (GCD)', 'advanced:euclid'], ['Modular arithmetic'], ['Fast powers'],
+    ]],
+    ['The big questions', [
+      ['Randomised algorithms'], ['Easy and hard problems (P vs NP)'], ['Approximation'],
+    ]],
+  ];
+
+  globalThis.VLCatalog = { IDEAS, GRADES, DSA };
   if (typeof document === 'undefined') return;
 
   const $ = (id) => document.getElementById(id);
@@ -92,6 +128,39 @@
     }
     const saved = Number(store.get('vl-grade'));
     show(saved >= 1 && saved <= GRADES.length ? saved : 1);
+  }
+
+  // ---- curriculum ----
+  const curEl = $('curriculum');
+  if (curEl) {
+    const met = new Set(globalThis.VLProgress ? VLProgress.everMet() : []);
+    let ready = 0, total = 0;
+    for (const [track, topics] of DSA) {
+      const sec = make('section', 'track');
+      const head = make('h2', '', track);
+      const list = make('ul', 'topics tl');
+      let here = 0;
+      for (const [name, ref, next] of topics) {
+        total++;
+        const li = make('li');
+        if (ref) {
+          here++; ready++;
+          const a = make('a', met.has(ref) ? 'topic met' : 'topic', name);
+          a.href = ref.startsWith('/') ? ref : IDEAS[ref][1];
+          li.appendChild(a);
+        } else {
+          const sp = make('span', next ? 'topic soon next' : 'topic soon', name);
+          sp.appendChild(make('small', '', next ? 'next' : 'tbd'));
+          li.appendChild(sp);
+        }
+        list.appendChild(li);
+      }
+      head.appendChild(make('span', '', `${here} of ${topics.length}`));
+      sec.append(head, list);
+      curEl.appendChild(sec);
+    }
+    $('cur-count').textContent = `${ready} of ${total} ready`;
+    $('cur-fill').style.width = `${Math.round((100 * ready) / total)}%`;
   }
 
   // ---- progress diary ----

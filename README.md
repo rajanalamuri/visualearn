@@ -23,6 +23,7 @@ web/                    static site, served by a Cloudflare Worker (assets only)
   math/                 ten math cartoons (arith.js): + − × ÷, regrouping, negatives, fractions, powers, π, Fibonacci; math/advanced/ has the sieve and Euclid
   play/                 installable puzzle app: Ten, Balance, Share, Find (play.js, play.css)
   math/grades/          grade 1 to 10 map; progress/ is the on-device diary
+  curriculum/           the whole DSA map: ready, next, to do (data lives in assets/catalog.js)
   manifest.webmanifest, sw.js, icons/   make /play/ installable and usable offline
   404.html
   _headers              security headers for every response

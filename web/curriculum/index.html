@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Curriculum · VisuaLearn</title>
+<meta name="description" content="Every data structure and algorithm VisuaLearn will teach, from searching and sorting to graphs and dynamic programming. What is ready, what is next, and what is still to do.">
+<meta property="og:title" content="Curriculum · VisuaLearn">
+<meta property="og:url" content="https://visualearn.org/curriculum/">
+<link rel="canonical" href="https://visualearn.org/curriculum/">
+<meta name="theme-color" content="#fbfaf7">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/arith.css">
+<script src="/assets/progress.js" defer></script>
+<script src="/assets/catalog.js" defer></script>
+<script src="/assets/limit.js" defer></script>
+</head>
+<body class="home">
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="VisuaLearn home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="b-bg"/><rect x="7" y="18" width="4" height="7" rx="1" class="b-1"/><rect x="14" y="12" width="4" height="13" rx="1" class="b-2"/><rect x="21" y="7" width="4" height="18" rx="1" class="b-3"/></svg>
+      <span>visua<b>learn</b></span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="/play/">Play</a>
+      <a href="/math/grades/">Grades</a>
+      <a href="/progress/">Diary</a>
+    </nav>
+    <span class="timer" id="timer" hidden></span>
+  </div>
+</header>
+
+<main class="wrap ar pg cur">
+  <h1>Ultimate DSA</h1>
+  <p class="cur-count" id="cur-count"></p>
+  <div class="cbar" aria-hidden="true"><i id="cur-fill"></i></div>
+  <ul class="legend-row" aria-label="Key">
+    <li><span class="topic met-key"></span>ready</li>
+    <li><span class="topic next-key"></span>next</li>
+    <li><span class="topic soon-key"></span>to do</li>
+  </ul>
+
+  <div id="curriculum" class="curriculum"></div>
+
+  <p class="pg-note">Each row goes from easiest to hardest. A yellow dot means you have played it on this device.</p>
+</main>
+
+<div class="rest" id="rest" role="dialog" aria-modal="true" aria-labelledby="rest-h" hidden>
+  <div class="rest-card">
+    <div id="rest-body">
+      <p class="eyebrow">Screen time is up for today</p>
+      <h2 id="rest-h">Your turn.</h2>
+      <p>Put the screen down and try one for real.</p>
+      <div class="rest-actions">
+        <button class="btn" id="rest-bye" type="button">See you tomorrow</button>
+        <button class="link" id="rest-more" type="button">A grown-up says 5 more minutes</button>
+      </div>
+    </div>
+    <div id="rest-done" hidden>
+      <h2>Great choice.</h2>
+      <p>You can close this tab now.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>© 2026 VisuaLearn</span>
+    <span>Free for everyone.</span>
+  </div>
+</footer>
+</body>
+</html>
