@@ -1,6 +1,6 @@
 /* VisuaLearn home: minimal. One idea per screen, lots of air, one colour doing the work (Pip's yellow). */
-body.home{--paper:#fbfaf7;--line:#e7e4dc;--pip:#f2b51d;--pip-ink:#14161f}
-@media (prefers-color-scheme: dark){ body.home{--paper:#101218;--line:#262a36;--pip:#f5c242;--pip-ink:#14161f} }
+body.home{--pip:#ffd54a;--pip-ink:#2a2312}
+@media (prefers-color-scheme: dark){ body.home{--pip:#ffd45a;--pip-ink:#2a2312} }
 body.home .top{border-bottom-color:transparent}
 
 .h-hero{padding-block:72px 40px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px}
