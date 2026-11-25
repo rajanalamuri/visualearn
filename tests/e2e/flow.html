@@ -46,7 +46,7 @@ const chip = () => (q('.top-in .me') || {}).textContent || '';
   try {
     // 1. a first visit: no profile, a Join chip, the form is open
     await open('/progress/', () => q('#join') && q('.top-in .me'));
-    ok('first visit shows a Join chip', /Join/.test(chip()), chip());
+    ok('first visit shows a Sign up chip', /Sign up/.test(chip()), chip());
     ok('the sign-up form is open on a first visit', !q('#join').hidden);
     ok('greeting invites a nickname', /nickname/i.test(q('#greet').textContent), q('#greet').textContent);
 

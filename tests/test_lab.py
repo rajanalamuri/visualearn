@@ -527,7 +527,7 @@ def test_interval_scheduling_is_optimal():
 
 def test_backtracking_subset_sum_and_queens():
     found = set()
-    for _ in range(60):
+    for _ in range(300):
         inp, fr = run("solve", "backtrack")
         a, t = inp["a"], inp["t"]
         possible = any(sum(c) == t for r in range(len(a) + 1) for c in itertools.combinations(a, r))

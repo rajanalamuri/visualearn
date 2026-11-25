@@ -41,7 +41,7 @@
     if (P && C) {
       const me = P.active();
       card.append(el('p', 'finish-prog', progressLine(me && me.name, P.everMet().length, Object.keys(C.IDEAS).length)));
-      if (!me) { const j = el('a', 'link', 'Join with a nickname to keep your own page'); j.href = '/progress/#join'; card.append(j); }
+      if (!me) { const j = el('a', 'link', 'Sign up with a nickname to keep your own page'); j.href = '/progress/#join'; card.append(j); }
     }
     const row = el('div', 'rest-actions');
     const buttons = [...list.children].map((b) => ({ key: b.dataset.algo, name: b.textContent, pressed: b.getAttribute('aria-pressed') === 'true', node: b }));

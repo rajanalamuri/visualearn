@@ -1,5 +1,5 @@
 /* VisuaLearn profiles: a nickname and a colour, kept on this device only.
-   - Every page gets a small chip in the header: your nickname, or "Join".
+   - Every page gets a small chip in the header: your nickname, or "Sign up".
    - The diary page (/progress/) has the sign-up form and the switcher for everyone using this device.
    No email, no real name, no password, and nothing is sent anywhere. */
 (() => {
@@ -17,8 +17,8 @@
     const me = P.active();
     const a = el('a', me ? 'me' : 'me join-chip');
     a.href = me ? '/progress/#me' : '/progress/#join';
-    if (me) { a.append(dot(me), el('span', 'me-name', me.name)); a.setAttribute('aria-label', `${me.name}'s page`); }
-    else { a.textContent = 'Join'; a.setAttribute('aria-label', 'Join with a nickname'); }
+    if (me) { a.title = 'Your page: what you have explored'; a.append(dot(me), el('span', 'me-name', me.name)); a.setAttribute('aria-label', `${me.name}'s page`); }
+    else { a.textContent = 'Sign up'; a.title = 'Make your own page with a nickname. No email needed.'; a.setAttribute('aria-label', 'Sign up with a nickname'); }
     const timer = bar.querySelector('.timer');
     bar.insertBefore(a, timer || null);
   }

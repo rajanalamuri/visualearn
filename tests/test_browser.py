@@ -64,7 +64,7 @@ def test_a_child_signs_up_plays_a_lesson_and_switches_profiles(site):
     names = [s["name"] for s in result["steps"]]
     assert result["errors"] == [], result["errors"]
     # every stage of the journey actually ran
-    for must in ("first visit shows a Join chip", "an email is refused with a reason", "header chip shows the nickname",
+    for must in ("first visit shows a Sign up chip", "an email is refused with a reason", "header chip shows the nickname",
                  "the lesson reaches its last step", "the final card says the big idea", "Next switched to the next lesson",
                  "the diary lists today's lesson", "switching restores the first diary", "removing a person leaves the other",
                  "home page ends with the closing card", "roadmap ends with its closing card"):
