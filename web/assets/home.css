@@ -4,8 +4,8 @@ body.home{--paper:#fbfaf7;--line:#e7e4dc;--pip:#f2b51d;--pip-ink:#14161f}
 body.home .top{border-bottom-color:transparent}
 
 .h-hero{padding-block:72px 40px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:20px}
-.h-hero h1{font-size:clamp(40px, 7.4vw, 92px);line-height:.98;letter-spacing:-.035em;max-width:14ch}
-.h-hero h1 em{font-style:normal;background:linear-gradient(transparent 62%, color-mix(in srgb, var(--pip) 70%, transparent) 62% 92%, transparent 92%)}
+.h-hero h1{font-size:clamp(32px, 5vw, 60px);line-height:1.08;letter-spacing:-.025em;font-weight:600;max-width:20ch}
+.h-hero h1 em{font-style:normal;background:linear-gradient(transparent 70%, color-mix(in srgb, var(--pip) 38%, transparent) 70% 92%, transparent 92%)}
 .h-hero > p{margin:0;max-width:56ch;font-size:clamp(17px, 1.6vw, 20px);color:var(--ink-2)}
 
 .pip-card{margin:24px 0 0;width:100%;max-width:880px;display:flex;flex-direction:column;gap:6px}
