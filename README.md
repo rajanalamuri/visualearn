@@ -37,6 +37,7 @@ web/                    static site, served by a Cloudflare Worker (assets only)
   assets/player.js      shared player for every other lesson: play, step, scrub, Predict mode, offline card
   assets/search.js, graph.js, math.js   one lesson each
   assets/lite.css, lite.js   quieter lesson pages: explanations fold away
+  assets/genz.css       the visual skin: loaded last on every page (colours are tokens at the top)
   assets/toc.js, toc.css     floating table of contents with scroll spy: add data-toc to any long page
   assets/limit.js       daily screen-time limit (localStorage only)
 wrangler.jsonc          Worker config
@@ -56,6 +57,23 @@ python -m http.server 8080 --directory web
 ```
 
 To deploy by hand instead of through GitHub: `npx wrangler deploy` (log in to Cloudflare first).
+
+## Run with Docker
+
+```bash
+docker compose up --build            # the site at http://localhost:8080 (nginx, non-root, read-only)
+docker compose run --rm test         # the whole test suite in a clean container
+```
+
+`docker/default.conf` and `docker/security.conf` mirror the Cloudflare headers and folder behaviour in `web/_headers`.
+(The Docker files were written without Docker on hand, so run `docker compose up --build` once and open the site to confirm.)
+
+## Check the links
+
+```bash
+python tools/check_links.py              # every page, anchor, asset and listed file (also runs under pytest)
+python tools/check_links.py --external   # also request every https:// address the site and docs mention
+```
 
 ## Run locally
 

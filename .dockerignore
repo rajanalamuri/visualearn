@@ -1,0 +1,14 @@
+.git
+.github
+.vscode
+.wrangler
+node_modules
+__pycache__
+.pytest_cache
+tests
+tools
+docs
+*.md
+Dockerfile*
+docker-compose.yml
+web/_h.html

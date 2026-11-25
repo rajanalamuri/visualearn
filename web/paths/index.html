@@ -25,6 +25,7 @@
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <script src="/assets/app.js" defer></script>
 <script src="/assets/speak.js" defer></script>
+<link rel="stylesheet" href="/assets/genz.css">
 </head>
 <body class="home lite">
 <header class="top">
@@ -35,7 +36,7 @@
     </a>
     <nav class="nav" aria-label="Sections">
       <a href="/#lessons">Lessons</a>
-      <a href="#offline">Offline</a>
+      <a href="#offline">IRL</a>
       <a href="/#grown-ups">Grown-ups</a>
     </nav>
     <span class="timer" id="timer" hidden></span>
@@ -68,7 +69,7 @@
         <div id="view" class="boxes" role="img" aria-label="Lesson picture"></div>
         <div class="done" id="done" hidden>
           <p id="done-text"></p>
-          <a class="btn primary" href="#offline">Try it offline</a>
+          <a class="btn primary" href="#offline">Try it IRL</a>
         </div>
         <ul class="legend" aria-label="Colour key">
           <li><i class="k-cmp"></i>Settling now</li>
@@ -87,9 +88,9 @@
         <input type="range" id="scrub" min="0" max="0" value="0" aria-label="Scrub through steps">
       </div>
       <div class="knobs">
-        <label class="switch"><input type="checkbox" id="predict" checked> <span>Predict mode</span></label>
+        <label class="switch"><input type="checkbox" id="predict" checked> <span>Guess first</span></label>
         <label class="knob">Speed <input type="range" id="speed" min="1" max="5" value="3"></label>
-        <button class="btn" id="b-new" type="button">New example</button>
+        <button class="btn" id="b-new" type="button">Shuffle</button>
       </div>
     </div>
 
@@ -109,7 +110,7 @@
   <section id="offline" class="wrap block" aria-labelledby="off-h">
     <div class="off-card">
       <div class="off-head">
-        <p class="eyebrow">Try it offline · <span id="off-algo"></span></p>
+        <p class="eyebrow">Try it IRL · <span id="off-algo"></span></p>
         <h2 id="off-h"><span id="off-title"></span></h2>
         <ul class="chips">
           <li><b>You need</b> <span id="off-need"></span></li>

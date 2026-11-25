@@ -24,6 +24,7 @@
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <script src="/assets/app.js" defer></script>
 <script src="/assets/speak.js" defer></script>
+<link rel="stylesheet" href="/assets/genz.css">
 </head>
 <body class="home lite">
 <header class="top">
@@ -34,7 +35,7 @@
     </a>
     <nav class="nav" aria-label="Sections">
       <a href="/#lessons">Lessons</a>
-      <a href="#offline">Offline</a>
+      <a href="#offline">IRL</a>
       <a href="/#grown-ups">Grown-ups</a>
     </nav>
     <span class="timer" id="timer" hidden></span>
@@ -72,7 +73,7 @@
         <div class="bars" id="bars" role="img" aria-label="Array as bars"></div>
         <div class="done" id="done" hidden>
           <p id="done-text"></p>
-          <a class="btn primary" href="#offline">Try it offline</a>
+          <a class="btn primary" href="#offline">Try it IRL</a>
         </div>
         <ul class="legend" aria-label="Colour key">
           <li><i class="k-cmp"></i>Comparing</li>
@@ -93,7 +94,7 @@
         <input type="range" id="scrub" min="0" max="0" value="0" aria-label="Scrub through steps">
       </div>
       <div class="knobs">
-        <label class="switch"><input type="checkbox" id="predict" checked> <span>Predict mode</span></label>
+        <label class="switch"><input type="checkbox" id="predict" checked> <span>Guess first</span></label>
         <label class="knob">Speed <input type="range" id="speed" min="1" max="5" value="2"></label>
         <label class="knob">Size <input type="range" id="size" min="5" max="64" value="8"><output id="size-out">8</output></label>
         <label class="knob">Start from
@@ -130,7 +131,7 @@
   <section id="offline" class="wrap block" aria-labelledby="off-h">
     <div class="off-card">
       <div class="off-head">
-        <p class="eyebrow">Try it offline · <span id="off-algo">Bubble sort</span></p>
+        <p class="eyebrow">Try it IRL · <span id="off-algo">Bubble sort</span></p>
         <h2 id="off-h"><span id="off-title">The bubble line-up</span></h2>
         <ul class="chips">
           <li><b>You need</b> <span id="off-need"></span></li>

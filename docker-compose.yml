@@ -1,0 +1,16 @@
+services:
+  web:
+    build: .
+    image: visualearn:latest
+    ports:
+      - "8080:8080"          # http://localhost:8080
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+
+  test:
+    profiles: ["test"]       # docker compose run --rm test
+    build:
+      context: .
+      dockerfile: Dockerfile.test
