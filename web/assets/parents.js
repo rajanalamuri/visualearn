@@ -77,9 +77,10 @@
     say('Loading…');
     try {
       await load();
-      await fb.A.getRedirectResult(fb.auth).catch(() => {});
+      $('p-out').hidden = false;          // never make the button wait on the redirect check below
+      say('');
+      fb.A.getRedirectResult(fb.auth).catch(() => { /* no redirect to finish */ });
       fb.A.onAuthStateChanged(fb.auth, (u) => { show(u); say(''); if (u) sync(); });
-      $('p-out').hidden = false;
     } catch { say('Could not reach the sign-in service.'); $('p-gate').hidden = false; }
   });
 

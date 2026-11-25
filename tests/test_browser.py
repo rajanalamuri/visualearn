@@ -70,3 +70,26 @@ def test_a_child_signs_up_plays_a_lesson_and_switches_profiles(site):
                  "home page ends with the closing card", "roadmap ends with its closing card"):
         assert must in names, must
     assert len(names) >= 28
+
+
+def _online(host="www.gstatic.com"):
+    import socket
+    try:
+        socket.create_connection((host, 443), timeout=4).close()
+        return True
+    except OSError:
+        return False
+
+
+@pytest.mark.skipif(find_chrome() is None or not _online(), reason="needs Chrome and an internet connection")
+def test_parent_page_gates_then_offers_google_sign_in(site):
+    with tempfile.TemporaryDirectory() as profile:
+        out = subprocess.run(
+            [find_chrome(), "--headless=new", "--disable-gpu", "--no-sandbox", f"--user-data-dir={profile}", "--window-size=1000,800",
+             "--virtual-time-budget=100000", "--dump-dom", f"{site}/__e2e/parents.html"],
+            capture_output=True, text=True, timeout=180).stdout
+    m = re.search(r'<pre id="out">(.*?)</pre>', out, re.S)
+    assert m, out[-500:]
+    res = json.loads(html.unescape(m.group(1)))
+    assert res["configured"] and res["gateFirst"] and res["wrongAnswerStaysLocked"]
+    assert res["signInButtonShown"] and res["signedInPanelHidden"], res

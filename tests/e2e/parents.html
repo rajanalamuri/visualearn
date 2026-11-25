@@ -1,0 +1,22 @@
+<!doctype html><meta charset="utf-8"><title>parents</title>
+<iframe id="f" style="width:900px;height:700px"></iframe><pre id="out">running</pre>
+<script>
+const f = document.getElementById('f'), sleep = (ms) => new Promise((r) => setTimeout(r, ms)), res = {};
+(async () => {
+  f.src = '/parents/'; await sleep(1500);
+  const d = f.contentDocument;
+  res.gateFirst = !d.getElementById('p-gate').hidden && d.getElementById('p-out').hidden; // sign-in is hidden behind the grown-up check
+  res.configured = !!f.contentWindow.VL_FIREBASE.apiKey;
+  d.getElementById('p-a').value = '1';
+  d.getElementById('p-gate').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  res.wrongAnswerStaysLocked = !d.getElementById('p-gate').hidden && /grown-ups/.test(d.getElementById('p-status').textContent);
+  const m = d.getElementById('p-q').textContent.match(/(\d+) × (\d+)/); // the sum changes after a wrong answer
+  d.getElementById('p-a').value = String(m[1] * m[2]);
+  d.getElementById('p-gate').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  for (let i = 0; i < 300 && d.getElementById('p-out').hidden && !/Could not/.test(d.getElementById('p-status').textContent); i++) await sleep(100);
+  res.signInButtonShown = !d.getElementById('p-out').hidden;
+  res.signedInPanelHidden = d.getElementById('p-in').hidden;
+  res.status = d.getElementById('p-status').textContent;
+  document.getElementById('out').textContent = JSON.stringify(res);
+})();
+</script>
