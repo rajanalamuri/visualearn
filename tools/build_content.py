@@ -252,7 +252,9 @@ def generate():
 def main():
     files = generate()
     if "--check" in sys.argv:
-        stale = [p for p, t in files.items() if not (ROOT / p).is_file() or (ROOT / p).read_text(encoding="utf-8") != t]
+        stale = [p for p, t in files.items() if not (ROOT / p).is_file() or (ROOT / p).read_text(encoding="utf-8").replace("
+", "
+") != t]
         for p in stale:
             print("STALE", p)
         sys.exit(1 if stale else 0)
