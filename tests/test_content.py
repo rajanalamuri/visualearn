@@ -42,9 +42,7 @@ def test_a_lesson_knows_who_it_is_for():
 
 def test_generated_pages_are_up_to_date():
     files = build_content.generate()
-    stale = [p for p, t in files.items() if not (ROOT / p).is_file() or (ROOT / p).read_text(encoding="utf-8").replace("
-", "
-") != t]  # Git may convert line endings on Windows
+    stale = [p for p, t in files.items() if not (ROOT / p).is_file() or (ROOT / p).read_text(encoding="utf-8").replace("\r\n", "\n") != t]  # Git may convert line endings on Windows
     assert stale == [], f"run: python tools/build_content.py  ({len(stale)} stale, e.g. {stale[:3]})"
 
 

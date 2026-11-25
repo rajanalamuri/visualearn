@@ -108,7 +108,7 @@
         }
         while (p !== q) {
           p = par.get(p); q = par.get(q); seen.add(p); seen.add(q);
-          x.rec(view(), 3, `Same depth, different nodes. Lift both: A to ${p}, B to ${q}.`);
+          x.rec(view(), 3, `Same depth, different nodes. Lift both: A to ${p}, B to ${q}.`, asked < 4 ? (asked++, yesno(`A is now at ${p} and B is at ${q}. Are they on the same node yet?`, p === q, p === q ? 'Yes: this is where their paths meet.' : 'No, so keep lifting both.')) : null);
         }
         x.rec({ ...view(), nodes: view().nodes.map((n) => ({ ...n, c: n.id === p ? 'found' : n.c })) }, 4, `They meet at ${p}. That is the lowest common ancestor.`);
         x.result = p;
