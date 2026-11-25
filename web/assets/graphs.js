@@ -439,5 +439,100 @@
     },
   };
 
+  ALGOS.scc = {
+    name: 'Strongly connected components',
+    blurb: 'In a graph of one-way roads, a strongly connected group is a set of towns where you can get from any one to any other. Kosaraju\'s method: search once to find the order towns finish, then search the reversed roads starting from the last to finish.',
+    facts: [['Group', 'Everyone reaches everyone'], ['Searches', 'Two depth-first passes'], ['Time', 'O(towns + roads)']],
+    code: ['pass 1: depth-first search, note the order towns finish', 'reverse every road', 'pass 2: take towns in reverse finish order', '  search the reversed roads from it', '  everything reached is one group'],
+    offline: off('One-way streets', 'Paper, a pencil and a drawing of 7 towns with one-way arrows', '20 minutes', [
+      'Draw 7 towns and some one-way arrows.',
+      'Pass 1: walk depth-first from any town. Write each town down at the moment you have finished with it.',
+      'Redraw every arrow backward. Pass 2: take the town you wrote last. Walk along the backward arrows to everything you can reach that is not yet coloured. That is one group.',
+      'Repeat with the next-latest uncoloured town.'], 'Can two different groups ever reach each other in both directions?'),
+    make() { for (;;) { const n = 7, es = []; while (es.length < 10) { const a = rnd(0, n - 1), b = rnd(0, n - 1); if (a !== b && !es.some((e) => e[0] === a && e[1] === b)) es.push([a, b]); } return { n, es }; } },
+    run(x, { n, es }) {
+      const P = ring(n), adj = Array.from({ length: n }, () => []), radj = Array.from({ length: n }, () => []);
+      es.forEach(([a, b]) => { adj[a].push(b); radj[b].push(a); });
+      const cls = ['key', 'found', 'alt', 'done', 'swap', 'seen', 'cur'], comp = Array(n).fill(-1), fin = [], seen = new Set();
+      const view = (cur, rev) => gv(P.map((p, i) => ({ id: i, ...p, t: L(i), s: fin.includes(i) ? String(fin.indexOf(i) + 1) : '', c: i === cur ? 'cur' : comp[i] >= 0 ? cls[comp[i] % 6] : seen.has(i) ? 'seen' : '' })), es.map(([a, b]) => (rev ? { a: b, b: a, d: true } : { a, b, d: true })), [{ label: 'Finish order', items: fin.map(L) }]);
+      x.rec(view(), -1, 'Find the groups where every town can reach every other. Pass 1 notes the order towns finish. Press play.');
+      const dfs = (u) => { seen.add(u); for (const v of adj[u]) if (!seen.has(v)) dfs(v); fin.push(u); x.rec(view(u), 0, `Finished ${L(u)}: number ${fin.length} in the finish order.`); };
+      for (let i = 0; i < n; i++) if (!seen.has(i)) dfs(i);
+      x.rec(view(-1, true), 1, 'Now reverse every road.');
+      let c = 0, asked = 0;
+      for (const s of fin.slice().reverse()) {
+        if (comp[s] >= 0) continue;
+        x.rec(view(s, true), 2, `Take ${L(s)}, the latest finisher not yet in a group.`, asked < 2 && fin.some((t) => t !== s && comp[t] < 0) ? (asked++, choice('Which town starts the next group?', L(s), fin.filter((t) => t !== s && comp[t] < 0).map(L).slice(0, 3), 'Pass 2 always starts from the unassigned town that finished last in pass 1.')) : null);
+        const st = [s]; comp[s] = c;
+        while (st.length) { const u = st.pop(); for (const v of radj[u]) if (comp[v] < 0) { comp[v] = c; st.push(v); } }
+        x.rec(view(-1, true), 4, `Everything reached along the reversed roads joins ${L(s)}: group ${c + 1} has ${comp.filter((z) => z === c).length} town${comp.filter((z) => z === c).length === 1 ? '' : 's'}.`);
+        c++;
+      }
+      x.rec(view(-1, false), 4, `${c} strongly connected group${c === 1 ? '' : 's'}.`);
+      x.result = { comp: comp.slice(), count: c, n, es };
+    },
+  };
+
+  ALGOS.bridges = {
+    name: 'Bridges and cut points',
+    blurb: 'A bridge is a road whose removal splits the network. Walk depth-first and note when you first arrive at each town (disc) and the earliest town you can get back to without that road (low). If a child cannot get back above its parent, the road to it is a bridge.',
+    facts: [['Bridge', 'Removing it disconnects'], ['Test', 'low[child] > disc[parent]'], ['Time', 'O(towns + roads)']],
+    code: ['disc[u] ← the time we first reach u; low[u] ← disc[u]', 'for each road u – v (not the one we came by)', '  new town: search it, then low[u] ← min(low[u], low[v])', '    if low[v] > disc[u]: the road is a bridge', '  seen town: low[u] ← min(low[u], disc[v])'],
+    offline: off('Which road is a lifeline?', 'A drawing of 7 towns and 8 roads, and a pencil', '15 minutes', [
+      'Draw 7 towns joined by roads, with a couple of loops.',
+      'For each road, imagine closing it. Can you still get from any town to any other? If not, it is a bridge.',
+      'Notice that bridges are never part of a loop.'], 'Why can a road inside a loop never be a bridge?'),
+    make() { const n = 7, es = []; for (let i = 1; i < n; i++) es.push([rnd(0, i - 1), i]); while (es.length < 8) { const a = rnd(0, n - 1), b = rnd(0, n - 1); if (a !== b && !es.some((e) => key(e[0], e[1]) === key(a, b))) es.push([a, b]); } return { n, es }; },
+    run(x, { n, es }) {
+      const P = ring(n), adj = Array.from({ length: n }, () => []); es.forEach(([a, b], k) => { adj[a].push([b, k]); adj[b].push([a, k]); });
+      const disc = Array(n).fill(-1), low = Array(n).fill(0), ec = {}, bridges = []; let t = 0, asked = 0;
+      const view = (cur) => gv(P.map((p, i) => ({ id: i, ...p, t: L(i), s: disc[i] >= 0 ? `${disc[i]}/${low[i]}` : '', c: i === cur ? 'cur' : disc[i] >= 0 ? 'seen' : '' })), es.map(([a, b], k) => ({ a, b, c: ec[k] || '' })), []);
+      x.rec(view(), -1, 'Which roads are bridges? Under each town: when we first reached it (disc) and the earliest town it can get back to (low). Press play.');
+      const dfs = (u, pe) => {
+        disc[u] = low[u] = t++;
+        x.rec(view(u), 0, `Reach ${L(u)} at time ${disc[u]}.`);
+        for (const [v, k] of adj[u]) {
+          if (k === pe) continue;
+          if (disc[v] >= 0) { low[u] = Math.min(low[u], disc[v]); ec[k] = 'on'; x.rec(view(u), 4, `${L(v)} was already reached (time ${disc[v]}), so ${L(u)} can get back that early: low = ${low[u]}.`); continue; }
+          ec[k] = 'on'; dfs(v, k);
+          low[u] = Math.min(low[u], low[v]);
+          const bridge = low[v] > disc[u];
+          x.rec(view(u), 3, `Back at ${L(u)} from ${L(v)}: low[${L(v)}] = ${low[v]}, disc[${L(u)}] = ${disc[u]}.`, asked < 3 ? (asked++, yesno(`Is the road ${L(u)}–${L(v)} a bridge (is ${low[v]} > ${disc[u]})?`, bridge, bridge ? `${L(v)}'s side cannot get back above ${L(u)}, so cutting the road splits the network.` : `${L(v)}'s side can still get back to ${L(u)} or earlier by another road.`)) : null);
+          if (bridge) { bridges.push([Math.min(u, v), Math.max(u, v)]); ec[k] = 'cut'; } else ec[k] = 'done';
+        }
+      };
+      dfs(0, -1);
+      x.rec(view(), 3, bridges.length ? `Bridges: ${bridges.map(([a, b]) => `${L(a)}–${L(b)}`).join(', ')}. Closing any of them splits the network.` : 'No bridges: every road is in a loop.');
+      x.result = { bridges: bridges.sort((p, q) => p[0] - q[0] || p[1] - q[1]), es, n };
+    },
+  };
+
+  ALGOS.euler = {
+    name: 'Euler circuits',
+    blurb: 'Can you walk along every road exactly once and end where you started? Yes, if every town has an even number of roads. Walk until you are stuck, then splice in any loops you skipped. This is how a snow plough could clear every street once.',
+    facts: [['Needs', 'Every town has even degree'], ['Each road', 'Used once'], ['Method', "Hierholzer's walk"]],
+    code: ['check: every town has an even number of roads', 'walk along unused roads, noting each town', 'when stuck, back up and add that town to the finished route', 'keep going until nothing is left', 'the finished route (reversed) is the circuit'],
+    offline: off('Snow plough', 'A drawing of a ring of 6 towns with three extra roads, and a pencil', '15 minutes', [
+      'Draw 6 towns in a ring and add a triangle joining three of them. Count the roads at each town.',
+      'Start anywhere and trace every road once without lifting your pencil. If you get stuck, find a town on your route that still has unused roads and walk a loop from there.',
+      'You should finish where you began.'], 'What goes wrong if two towns have an odd number of roads? What if four do?'),
+    make() { const n = 6, es = Array.from({ length: n }, (_, i) => [i, (i + 1) % n]), t = rnd(0, 1); [[0, 2], [2, 4], [4, 0]].forEach(([a, b]) => es.push([a + t, b + t])); return { n, es: es.map(([a, b]) => [a % n, b % n]) }; },
+    run(x, { n, es }) {
+      const P = ring(n), adj = Array.from({ length: n }, () => []); es.forEach(([a, b], k) => { adj[a].push([b, k]); adj[b].push([a, k]); });
+      const deg = adj.map((a) => a.length), used = new Set(), stack = [0], circuit = [];
+      const view = (cur) => gv(P.map((p, i) => ({ id: i, ...p, t: L(i), s: `deg ${deg[i]}`, c: i === cur ? 'cur' : '' })), es.map(([a, b], k) => ({ a, b, c: used.has(k) ? 'path' : '' })), [{ label: 'Route so far', items: stack.map(L) }, { label: 'Finished', items: circuit.map(L) }]);
+      x.rec(view(), -1, 'Walk along every road exactly once and end where you started. Press play.');
+      x.rec(view(), 0, `Roads at each town: ${deg.join(', ')}. All even, so a circuit exists.`, yesno('Does every town have an even number of roads?', deg.every((d) => d % 2 === 0), `The counts are ${deg.join(', ')}: all even.`));
+      let asked = 0;
+      while (stack.length) {
+        const v = stack[stack.length - 1], e = adj[v].find(([, k]) => !used.has(k));
+        if (e) { used.add(e[1]); stack.push(e[0]); x.rec(view(e[0]), 1, `Walk ${L(v)} → ${L(e[0])}. ${used.size} of ${es.length} roads used.`, asked < 2 && used.size > 2 ? (asked++, numq(`After this step, how many roads have been used?`, used.size, [used.size + 1, used.size - 1, es.length], `Each step uses one road: ${used.size}.`)) : null); }
+        else { stack.pop(); circuit.push(v); x.rec(view(v), 2, `Stuck at ${L(v)} (no unused roads). Move it to the finished route.`); }
+      }
+      x.rec(view(), 4, `Circuit: ${circuit.map(L).join(' → ')}. Every road used once.`);
+      x.result = { circuit: circuit.slice(), es, n };
+    },
+  };
+
   VLLab.define('graphs', ALGOS);
 })();

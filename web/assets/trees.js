@@ -402,5 +402,124 @@
     },
   };
 
+  ALGOS.btree = {
+    name: 'B-trees',
+    blurb: 'A B-tree keeps several numbers in each node, so the tree is short and wide. That suits disks and databases, where fetching a node is slow. When a node gets too full it splits: the middle number moves up, and the tree grows from the top.',
+    facts: [['Keys per node', 'Up to 2 here'], ['All leaves', 'Same depth'], ['Used for', 'Databases, file systems']],
+    code: ['walk down to the leaf where the number belongs', 'put the number in that leaf, in order', 'if the node now holds 3 numbers: split it', '  the middle number moves up to the parent', 'if the root splits, the tree grows taller'],
+    offline: off('Boxes of numbers', 'Paper, a pencil and 7 numbers', '15 minutes', [
+      'Draw a box that can hold at most 2 numbers. Add numbers in order into the right place.',
+      'When a box would hold 3, split it: the middle number goes up into a new box above, and the other two become its children.',
+      'Keep adding. Every time a box fills to 3, split it.',
+      'Check: are all the bottom boxes on the same level?'], 'Why does a B-tree never get lopsided the way a plain search tree can?'),
+    make() { return { v: distinct(7, 10, 99) }; },
+    run(x, { v }) {
+      let root = { keys: [], kids: [] }, splits = 0, last = null;
+      const ins = (n, k) => {
+        if (!n.kids.length) { n.keys.push(k); n.keys.sort((a, b) => a - b); last = n; } else {
+          let i = n.keys.findIndex((z) => k < z); if (i < 0) i = n.keys.length;
+          const r = ins(n.kids[i], k);
+          if (r) { n.keys.splice(i, 0, r.up); n.kids.splice(i, 1, r.l, r.r); }
+        }
+        if (n.keys.length > 2) { splits++; return { up: n.keys[1], l: { keys: [n.keys[0]], kids: n.kids.slice(0, 2) }, r: { keys: [n.keys[2]], kids: n.kids.slice(2) } }; }
+        return null;
+      };
+      const view = (hl) => {
+        let leaf = 0, maxD = 0; const nodes = [], edges = [];
+        (function pos(n, d) { maxD = Math.max(maxD, d); n.kids.forEach((k) => pos(k, d + 1)); n.x = n.kids.length ? n.kids.reduce((s, k) => s + k.x, 0) / n.kids.length : leaf++; n.d = d; })(root, 0);
+        let id = 0; const cols = Math.max(leaf, 1);
+        (function emit(n, pid) { const me = id++; nodes.push({ id: me, x: 40 + (cols === 1 ? 260 : (n.x * 520) / (cols - 1)), y: 36 + n.d * 62, t: n.keys.join('  '), wide: true, c: n === hl ? 'cur' : '' }); if (pid !== null) edges.push({ a: pid, b: me }); n.kids.forEach((k) => emit(k, me)); })(root, null);
+        return { type: 'graph', h: 80 + maxD * 62, nodes, edges, lists: [{ label: 'Splits so far', items: [splits] }] };
+      };
+      x.rec({ type: 'rows', rows: [row('numbers to add', v, {})], lists: [] }, -1, `Add ${v.length} numbers to a B-tree where a node holds at most 2. Press play.`);
+      let asked = 0;
+      v.forEach((k) => {
+        const before = splits, r = ins(root, k);
+        let grew = false;
+        if (r) { root = { keys: [r.up], kids: [r.l, r.r] }; grew = true; }
+        const sp = splits - before;
+        x.rec(view(sp ? null : last), sp ? 2 : 0, sp ? `Add ${k}: a node reached 3 numbers, so it split${grew ? ' and the tree grew taller' : ''}. The middle number moved up.` : `Add ${k} to the leaf where it belongs.`,
+          asked < 3 && root.keys.length + (root.kids.length ? 0 : 0) >= 0 && sp ? (asked++, yesno(`Adding ${k} made a node hold 3 numbers. Did it split?`, true, 'A node holds at most 2 numbers, so a third forces a split.')) : null);
+      });
+      const inorder = (function io(n) { const o = []; n.keys.forEach((z, i) => { if (n.kids[i]) o.push(...io(n.kids[i])); o.push(z); }); if (n.kids.length) o.push(...io(n.kids[n.keys.length])); return o; })(root);
+      const depths = []; (function dd(n, d) { if (!n.kids.length) depths.push(d); else n.kids.forEach((k) => dd(k, d + 1)); })(root, 0);
+      x.rec(view(null), 4, `All ${v.length} numbers are stored. Every bottom node is at the same depth (${depths[0]}).`);
+      x.result = { inorder, depths, maxKeys: (function mk2(n) { return Math.max(n.keys.length, ...n.kids.map(mk2), 0); })(root) };
+    },
+  };
+
+  ALGOS.skiplist = {
+    name: 'Skip lists',
+    blurb: 'A skip list is a sorted list with express lanes. The top lane has only a few numbers and lets you leap far. Go right while the next number is not too big, then drop down a lane and keep going. It searches like a tree, but is only lists.',
+    facts: [['Search', 'About log n steps'], ['Built from', 'Sorted lanes'], ['Uses', 'Chance to choose lanes']],
+    code: ['start at the top lane, left end', 'if the next number on this lane is not past the target: move right', 'otherwise: drop down one lane', 'on the bottom lane: stop at the target, or it is missing'],
+    offline: off('Express lanes', 'Paper: a bottom row of 8 sorted numbers, and shorter rows above', '15 minutes', [
+      'Write 8 sorted numbers on the bottom row. Copy about half of them to a row above, and about half of those to a row above that.',
+      'Pick a target. Start at the left of the top row and move right while the next number is not bigger than the target.',
+      'Drop down a row and keep moving right. Stop at the bottom row.',
+      'Count your moves, and compare with moving along the bottom row only.'], 'Why does the top lane help most when the target is far to the right?'),
+    make() {
+      const keys = distinct(8, 1, 60).sort((a, b) => a - b), lv = keys.map(() => 1 + (Math.random() < 0.5 ? 1 : 0) + (Math.random() < 0.25 ? 1 : 0));
+      lv[rnd(0, 7)] = 3;
+      return { keys, lv, t: Math.random() < 0.8 ? keys[rnd(0, 7)] : rnd(1, 60) };
+    },
+    run(x, { keys, lv, t }) {
+      const n = keys.length, H = 3, name = (h) => `lane ${h}`;
+      const view = (h, pos, done) => rows(Array.from({ length: H }, (_, k) => { const lane = H - k; return row(name(lane), keys.map((key, i) => (lv[i] >= lane ? key : '')), Object.fromEntries(keys.map((_, i) => [i, lv[i] >= lane && i === pos && lane === h ? (done ? 'found' : 'cur') : ''])), pos >= 0 && lane === h ? { [pos]: 'here' } : {}); }));
+      x.rec(view(H, -1), -1, `Find ${t}. The top lane has only a few numbers. Press play.`, null, [['Moves', 0]]);
+      let h = H, pos = -1, moves = 0, asked = 0, found = false;
+      const nextOn = (lane, p) => { for (let i = p + 1; i < n; i++) if (lv[i] >= lane) return i; return -1; };
+      while (h >= 1) {
+        const nx = nextOn(h, pos);
+        if (nx >= 0 && keys[nx] <= t) {
+          const q = asked < 3 ? (asked++, choice(`On ${name(h)}, the next number is ${keys[nx]} and the target is ${t}. What now?`, 'Move right', ['Drop down a lane'], `${keys[nx]} is not past ${t}, so moving right is safe.`)) : null;
+          pos = nx; moves++;
+          x.rec(view(h, pos), 1, `${keys[nx]} is not past ${t}: move right to ${keys[nx]}.`, q, [['Moves', moves]]);
+          if (keys[nx] === t) { found = true; x.rec(view(h, pos, true), 3, `Found ${t} in ${moves} moves.`, null, [['Moves', moves]]); break; }
+        } else {
+          const q = asked < 3 && nx >= 0 ? (asked++, choice(`On ${name(h)}, the next number is ${keys[nx]} and the target is ${t}. What now?`, 'Drop down a lane', ['Move right'], `${keys[nx]} is past ${t}, so going right would overshoot. Drop down for finer steps.`)) : null;
+          moves++;
+          x.rec(view(h - 1 || 1, pos), 2, nx >= 0 ? `The next number, ${keys[nx]}, is past ${t}. Drop down to lane ${Math.max(h - 1, 1)}.` : `The end of ${name(h)}. Drop down.`, q, [['Moves', moves]]);
+          h--;
+        }
+      }
+      if (!found) x.rec(view(1, pos), 3, `${t} is not in the list. ${moves} moves.`, null, [['Moves', moves]]);
+      x.result = { found, moves, t, keys };
+    },
+  };
+
+  ALGOS.treedp = {
+    name: 'Tree DP',
+    blurb: 'Pick nodes of a tree for the most total value, but never two joined nodes. For each node work out the best total if you take it, and the best if you skip it, using answers already worked out for its children.',
+    facts: [['Order', 'Children first'], ['Per node', 'Take or skip'], ['Time', 'O(nodes)']],
+    code: ['for each node, children first', '  take it: its value + each child\'s skip total', '  skip it: each child\'s better of take and skip', 'the answer is the bigger of the root\'s two totals'],
+    offline: off('Pick without neighbours', 'A tree of 7 circles on paper, each with a value', '15 minutes', [
+      'Draw a tree and write a value in each circle.',
+      'Work from the bottom up. Beside each circle write two numbers: best if I take it, best if I skip it.',
+      'Take = its value + the skip numbers of its children. Skip = the bigger of each child\'s two numbers, added up.',
+      'The bigger of the top circle\'s two numbers is your answer.'], 'Why can a child\'s answer be reused, instead of being worked out again?'),
+    make() { const v = distinct(7, 1, 80); return { v, w: Object.fromEntries(v.map((k) => [k, rnd(1, 9)])) }; },
+    run(x, { v, w }) {
+      const root = bstFrom(v), dp = new Map(); let asked = 0;
+      const show = (marks) => {
+        const subs = {}; dp.forEach((val, k) => { subs[k] = `${val[0]}/${val[1]}`; });
+        const view = treeView(root, marks || {}, subs); view.nodes.forEach((nd) => { nd.t = `w${w[nd.id]}`; }); return view;
+      };
+      x.rec(show(), -1, 'Pick nodes for the biggest total weight (w), but never two joined nodes. Under each node: best if taken / best if skipped. Press play.');
+      (function go(n) {
+        if (!n) return [0, 0];
+        const a = go(n.l), b = go(n.r);
+        const take = w[n.v] + a[1] + b[1], skip = Math.max(...a) + Math.max(...b);
+        dp.set(n.v, [take, skip]);
+        x.rec(show({ [n.v]: 'cur' }), 1, `Node w${w[n.v]}: take = ${w[n.v]} + ${a[1]} + ${b[1]} = ${take}. Skip = ${Math.max(...a)} + ${Math.max(...b)} = ${skip}.`,
+          asked < 3 && (n.l || n.r) ? (asked++, numq(`If we take this node (w${w[n.v]}), its children must be skipped: their skip totals are ${a[1]} and ${b[1]}. What is the total?`, take, [skip, take + 1, w[n.v]], `${w[n.v]} + ${a[1]} + ${b[1]} = ${take}.`)) : null);
+        return [take, skip];
+      })(root);
+      const best = Math.max(...dp.get(root.v));
+      x.rec(show({ [root.v]: 'found' }), 3, `The best total is ${best}.`);
+      x.result = { best, v, w };
+    },
+  };
+
   VLLab.define('trees', ALGOS);
 })();

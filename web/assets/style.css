@@ -454,3 +454,7 @@ body.resting{overflow:hidden}
 .g-edge.cut{stroke:var(--swap);stroke-dasharray:6 5}
 .g-edge.dim{opacity:.3}
 .g-arrow{fill:var(--ink-2)}
+.g-node rect{fill:var(--surface);stroke:var(--ink-2);stroke-width:2;vector-effect:non-scaling-stroke;transition:fill .15s}
+.g-node.cur rect{fill:var(--cmp);stroke:var(--cmp)}
+.g-node.found rect,.g-node.done rect{fill:var(--done);stroke:var(--done)}
+.g-node.seen rect{fill:var(--line)}

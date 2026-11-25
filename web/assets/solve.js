@@ -339,5 +339,106 @@
     },
   };
 
+  ALGOS.bitmask = {
+    name: 'Bitmask DP',
+    blurb: 'A bitmask is a row of 0s and 1s saying which jobs are already taken. Store the best cost for each possible mask. To fill a mask, remove one job and use the answer already stored for the smaller mask, plus that job\'s cost for the next worker.',
+    facts: [['Masks', '2ⁿ states'], ['Each', 'One cell per set'], ['Good for', 'Small sets (about 20)']],
+    code: ['best[000] ← 0 (no jobs taken)', 'for each mask, smallest first', '  worker ← the number of jobs taken', '  for each job j in the mask: best[mask without j] + cost[worker][j]', '  best[mask] ← the smallest of those', 'the answer is best[111]'],
+    offline: off('Jobs and workers', 'A 3 by 3 table of costs, paper and a pencil', '20 minutes', [
+      'Write a 3 by 3 table: the cost of each worker doing each job.',
+      'List all 8 subsets of jobs as 000, 001, … 111 (1 means the job is taken).',
+      'For each subset, the number of 1s tells you how many workers are done. Try removing each job in turn: previous best + that cost for the next worker. Keep the smallest.',
+      'The cost for 111 is the cheapest way to give every worker a different job.'], 'How many ways are there to give 20 workers 20 different jobs? How many masks are there?'),
+    make() { return { c: Array.from({ length: 3 }, () => Array.from({ length: 3 }, () => rnd(1, 9))) }; },
+    run(x, { c }) {
+      const N = 3, dp = Array(1 << N).fill(null), pc = (m) => m.toString(2).split('1').length - 1, bs = (m) => m.toString(2).padStart(N, '0');
+      dp[0] = 0; let asked = 0;
+      const view = (cur, from) => ({ ...rows([row('jobs taken (mask)', dp.map((_, m) => bs(m)), { [cur ?? -1]: 'cur', ...Object.fromEntries((from || []).map((f) => [f, 'key'])) }), row('cheapest cost', dp.map((d) => (d === null ? '' : d)), {})]), lists: [{ label: 'Costs (row = worker, column = job)', items: c.map((r) => r.join(' ')) }] });
+      x.rec(view(), -1, 'Give 3 workers 3 different jobs as cheaply as possible. Each mask says which jobs are taken. Press play.');
+      x.rec(view(0), 0, 'With no jobs taken the cost is 0.');
+      for (let m = 1; m < 1 << N; m++) {
+        const w = pc(m) - 1, opts = []; for (let j = 0; j < N; j++) if (m >> j & 1) opts.push({ j, from: m ^ (1 << j), v: dp[m ^ (1 << j)] + c[w][j] });
+        dp[m] = Math.min(...opts.map((o) => o.v));
+        x.rec(view(m, opts.map((o) => o.from)), 4, `Mask ${bs(m)}: worker ${w + 1} takes one of the jobs. ${opts.map((o) => `${dp[o.from] !== null ? dp[o.from] : 0} + ${c[w][o.j]} = ${o.v}`).join(', ')}. The smallest is ${dp[m]}.`,
+          asked < 2 && opts.length >= 2 ? (asked++, numq(`Mask ${bs(m)}: the options cost ${opts.map((o) => o.v).join(' or ')}. What is stored?`, dp[m], [Math.max(...opts.map((o) => o.v)), dp[m] + 1, dp[m] - 1], 'We keep the cheapest option.')) : null);
+      }
+      x.rec(view(7), 5, `The cheapest way to give every worker a different job costs ${dp[7]}.`);
+      x.result = { best: dp[7], c };
+    },
+  };
+
+  ALGOS.meet = {
+    name: 'Meet in the middle',
+    blurb: 'Trying every subset of 8 numbers means 256 sets. Instead split the numbers into two halves. List all sums of each half (only 16 each), sort them, and use two pointers to find one from each half that add to the target. Two small searches beat one huge one.',
+    facts: [['Halves', 'Two small problems'], ['Sums per half', '2ⁿ/²'], ['Then', 'Two pointers']],
+    code: ['split the numbers into a left half and a right half', 'list every subset sum of each half; sort both lists', 'left pointer at the smallest left sum, right pointer at the biggest right sum', 'if the two add to the target: found', 'if too small move the left pointer up; if too big move the right pointer down'],
+    offline: off('Halve the search', 'Paper and 6 numbers', '20 minutes', [
+      'Write 6 numbers and a target. Split them into two groups of 3.',
+      'For each group, list all 8 subset sums (including the empty set, 0). Sort each list.',
+      'Put a finger at the start of the left list and another at the end of the right list. Add the two. Too small: move the left finger right. Too big: move the right finger left.',
+      'If the fingers add to the target, you have found a subset.'], 'For 40 numbers, how many sets would you try one by one? How many sums per half here?'),
+    make() { const a = distinct(8, 1, 20), sub = a.filter(() => Math.random() < 0.5); return { a, t: Math.random() < 0.75 && sub.length ? sub.reduce((p, q) => p + q, 0) : rnd(10, 70) }; },
+    run(x, { a, t }) {
+      const sums = (h) => { let s = [0]; for (const v of h) s = s.concat(s.map((z) => z + v)); return s.sort((p, q) => p - q); };
+      const A = sums(a.slice(0, 4)), B = sums(a.slice(4));
+      let i = 0, j = B.length - 1, steps = 0, asked = 0, found = null;
+      const view = () => rows([row('left sums', A, { [i]: found ? 'found' : 'cur' }, { [i]: 'i' }), row('right sums', B, { [j]: found ? 'found' : 'cur' }, { [j]: 'j' })]);
+      x.rec(rows([row('numbers', a, {})]), -1, `Is there a set of these numbers adding to ${t}? Split into two halves of 4. Press play.`);
+      x.rec(view(), 1, `Each half has 16 subset sums (including 0). Sorted. That is 32 numbers to handle, not all 256 sets.`);
+      while (i < A.length && j >= 0) {
+        const s = A[i] + B[j]; steps++;
+        const note = s === t ? `${A[i]} + ${B[j]} = ${s}. That is ${t}: found!` : `${A[i]} + ${B[j]} = ${s}, ${s < t ? 'too small, so move the left pointer up' : 'too big, so move the right pointer down'}.`;
+        if (s === t) { found = [A[i], B[j]]; x.rec(view(), 3, note); break; }
+        x.rec(view(), s < t ? 4 : 4, note, asked < 3 ? (asked++, choice(`${A[i]} + ${B[j]} = ${s}, and the target is ${t}. What now?`, s < t ? 'Move the left pointer up' : 'Move the right pointer down', [s < t ? 'Move the right pointer down' : 'Move the left pointer up'], s < t ? 'Too small: only a bigger left sum can help.' : 'Too big: only a smaller right sum can help.')) : null, [['Steps', steps]]);
+        if (s < t) i++; else j--;
+      }
+      x.rec(view(), 3, found ? `Found: a left-half sum ${found[0]} and a right-half sum ${found[1]} make ${t}, in ${steps} steps.` : `The pointers ran out. No set adds to ${t}. It took ${steps} steps, not 256.`);
+      x.result = { found: found !== null, t, a };
+    },
+  };
+
+  ALGOS.sudoku = {
+    name: 'Sudoku',
+    blurb: 'Fill a 4 by 4 grid so every row, every column and each 2 by 2 box holds 1 to 4 once. Go through the empty squares in order, try each digit, and back up when a square has no digit that fits. That is backtracking again.',
+    facts: [['Rule', 'No repeats in row, column or box'], ['Method', 'Try, back up'], ['Bigger sudokus', 'Same idea']],
+    code: ['find the next empty square', 'for each digit 1 to 4: does it break a rule?', '  fits: write it, go on to the next empty square', '  nothing fits: go back and change the last digit', 'no empty squares: solved'],
+    offline: off('Mini sudoku', 'A 4 by 4 grid on paper with a few digits filled in, and a pencil', '15 minutes', [
+      'Draw a 4 by 4 grid in four 2 by 2 boxes and fill in a few digits.',
+      'Go to the first empty square. Write the smallest digit that does not repeat in its row, column or box (lightly, in pencil).',
+      'Move to the next. If no digit fits, rub out your last digit and try the next one up.',
+      'Continue until the grid is full.'], 'Why does rubbing out one digit fix many mistakes at once?'),
+    make() {
+      const base = [[1, 2, 3, 4], [3, 4, 1, 2], [2, 1, 4, 3], [4, 3, 2, 1]], perm = shuffle([1, 2, 3, 4]);
+      const rowsOrd = [...shuffle([0, 1]), ...shuffle([2, 3])], colsOrd = [...shuffle([0, 1]), ...shuffle([2, 3])];
+      const sol = rowsOrd.map((r) => colsOrd.map((c) => perm[base[r][c] - 1]));
+      const blank = distinct(8, 0, 15), g = sol.flat().map((v, i) => (blank.includes(i) ? 0 : v));
+      return { g };
+    },
+    run(x, { g }) {
+      const grid = g.slice(), given = g.map((v) => v !== 0), N = 4;
+      const ok = (i, d) => { const r = Math.floor(i / N), c = i % N; for (let k = 0; k < N; k++) { if (grid[r * N + k] === d && r * N + k !== i) return false; if (grid[k * N + c] === d && k * N + c !== i) return false; } const br = r - (r % 2), bc = c - (c % 2); for (let y = 0; y < 2; y++) for (let z = 0; z < 2; z++) { const j = (br + y) * N + bc + z; if (grid[j] === d && j !== i) return false; } return true; };
+      const view = (cur, bad) => ({ type: 'grid', cols: N, cells: grid.map((v, i) => ({ t: v || '', c: i === cur ? (bad ? 'swap' : 'cur') : given[i] ? 'seen' : v ? 'found' : '' })), lists: [] });
+      let tries = 0, asked = 0;
+      x.rec(view(), -1, 'Fill the empty squares so no row, column or 2 by 2 box repeats a digit. Press play.', null, [['Digits tried', 0]]);
+      const solve = (i) => {
+        while (i < N * N && grid[i]) i++;
+        if (i === N * N) return true;
+        for (let d = 1; d <= N; d++) {
+          const fits = ok(i, d); tries++;
+          grid[i] = d;
+          x.rec(view(i, !fits), 1, fits ? `Try ${d} at row ${Math.floor(i / N) + 1}, column ${(i % N) + 1}: it fits.` : `Try ${d} at row ${Math.floor(i / N) + 1}, column ${(i % N) + 1}: it repeats in its row, column or box.`,
+            asked < 3 ? (asked++, yesno(`Can ${d} go at row ${Math.floor(i / N) + 1}, column ${(i % N) + 1}?`, fits, fits ? 'No repeat in its row, column or box.' : 'That digit is already in its row, column or box.')) : null, [['Digits tried', tries]]);
+          if (fits && solve(i + 1)) return true;
+          grid[i] = 0;
+        }
+        x.rec(view(i), 3, `No digit fits at row ${Math.floor(i / N) + 1}, column ${(i % N) + 1}. Go back and change the previous digit.`, null, [['Digits tried', tries]]);
+        return false;
+      };
+      solve(0);
+      x.rec(view(), 4, `Solved after ${tries} tries.`, null, [['Digits tried', tries]]);
+      x.result = { grid: grid.slice(), given: g };
+    },
+  };
+
   VLLab.define('solve', ALGOS);
 })();

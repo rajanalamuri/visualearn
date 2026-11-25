@@ -111,7 +111,8 @@
       }
     }
     for (const n of v.nodes) {
-      out += `<g class="g-node${n.c ? ` ${n.c}` : ''}"><circle cx="${n.x}" cy="${n.y}" r="19"/><text x="${n.x}" y="${n.y + (n.s ? -1 : 5)}" text-anchor="middle" class="nm">${esc(n.t ?? n.id)}</text>${n.s ? `<text x="${n.x}" y="${n.y + 13}" text-anchor="middle" class="ds">${esc(n.s)}</text>` : ''}</g>`;
+      const shape = n.wide ? `<rect x="${n.x - Math.max(22, 4.5 * String(n.t).length + 10)}" y="${n.y - 17}" width="${2 * Math.max(22, 4.5 * String(n.t).length + 10)}" height="34" rx="9"/>` : `<circle cx="${n.x}" cy="${n.y}" r="19"/>`;
+      out += `<g class="g-node${n.c ? ` ${n.c}` : ''}">${shape}<text x="${n.x}" y="${n.y + (n.s ? -1 : 5)}" text-anchor="middle" class="nm">${esc(n.t ?? n.id)}</text>${n.s ? `<text x="${n.x}" y="${n.y + 13}" text-anchor="middle" class="ds">${esc(n.s)}</text>` : ''}</g>`;
     }
     return `${out}</svg>`;
   }

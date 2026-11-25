@@ -26,6 +26,7 @@ web/                    static site, served by a Cloudflare Worker (assets only)
   paths/                Dijkstra's shortest path (paths.js)
   dp/                   dynamic programming: fewest coins, counting walks (dp.js)
   math/grades/          grade 1 to 10 map; progress/ is the on-device diary
+  techniques/, trees/, graphs/, solve/, text/, numbers/, shapes/, big/   about 70 more lessons on the shared lab engine (assets/lab.js plus one script per page)
   parents/, privacy/    optional parent sign-in (Firebase, see below) and the privacy policy
   curriculum/           the whole DSA map: ready, next, to do (data lives in assets/catalog.js)
   manifest.webmanifest, sw.js, icons/   make /play/ installable and usable offline
@@ -96,6 +97,11 @@ Pushing to `main` deploys through Cloudflare Workers Builds, once the GitHub rep
 connected to the `visualearn` Worker and `visualearn.org` is added as its custom domain.
 
 ## Adding a lesson
+
+The quickest way is the lab engine. Add an entry to `ALGOS` in one of `web/assets/{techniques,trees,graphs,solve,text,numbers,shapes,big}.js`:
+`{ name, blurb, facts, code, offline, make(), run(x, input) }`. `run` records frames with `x.rec(view, line, note, question, stats)` and
+sets `x.result`. Add a reference-checked test to `tests/test_lab.py`, then list the lesson in `web/assets/catalog.js` (`IDEAS` and `DSA`).
+The older, hand-built way is below.
 
 Copy one of `web/searching/index.html`, `web/mazes/index.html` or `web/math/index.html` and
 write a lesson script that calls `VLPlayer.mount(lesson)`. See the comment at the top of

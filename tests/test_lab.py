@@ -582,3 +582,308 @@ def test_bit_tricks():
         inp, fr = run("solve", "xor")
         c = Counter(inp["a"])
         assert fr[-1]["result"]["single"] == next(k for k, v in c.items() if v == 1)
+
+
+# ---------- text and hashing ----------
+
+def find_all(t, p):
+    return [i for i in range(len(t) - len(p) + 1) if t.startswith(p, i)]
+
+
+def test_pattern_matchers_agree_with_python():
+    for _ in range(40):
+        for key in ("naive", "rabin", "kmp"):
+            inp, fr = run("text", key)
+            assert fr[-1]["result"]["hits"] == find_all(inp["t"], inp["p"]), key
+        inp, fr = run("text", "kmp")
+        p, lps = inp["p"], [0] * len(inp["p"])
+        k = 0
+        for i in range(1, len(p)):
+            while k and p[i] != p[k]:
+                k = lps[k - 1]
+            if p[i] == p[k]:
+                k += 1
+            lps[i] = k
+        assert fr[-1]["result"]["lps"] == lps
+
+
+def test_z_array_and_suffix_array():
+    for _ in range(30):
+        inp, fr = run("text", "zalgo")
+        s = inp["s"]
+        want = [next((k for k in range(len(s) - i + 1) if k == len(s) - i or s[k] != s[i + k]), 0) for i in range(len(s))]
+        assert fr[-1]["result"]["z"][1:] == want[1:]
+        inp, fr = run("text", "suffix")
+        s, res = inp["s"], fr[-1]["result"]
+        assert res["sa"] == sorted(range(len(s)), key=lambda i: s[i:])
+        assert res["occ"] == find_all(s, res["pat"])
+
+
+def test_huffman_is_optimal_and_prefix_free():
+    import heapq
+    for _ in range(40):
+        inp, fr = run("text", "huffman")
+        res = fr[-1]["result"]
+        codes = res["codes"]
+        assert set(codes) == {l for l, _ in inp["f"]}
+        assert not any(a != b and codes[b].startswith(codes[a]) for a in codes for b in codes)
+        h = [w for _, w in inp["f"]]
+        heapq.heapify(h)
+        cost = 0
+        while len(h) > 1:
+            a, b = heapq.heappop(h), heapq.heappop(h)
+            cost += a + b
+            heapq.heappush(h, a + b)
+        assert res["bits"] == cost == sum(w * len(codes[l]) for l, w in inp["f"])
+
+
+def test_bloom_never_forgets_and_sketch_never_undercounts():
+    def bh(w, i):
+        return (sum(map(ord, w)) * (i + 2) + i * 5) % 16
+    for _ in range(40):
+        inp, fr = run("text", "bloom")
+        res = fr[-1]["result"]
+        on = {bh(w, i) for w in inp["add"] for i in range(3)}
+        assert [k for k, b in enumerate(res["bits"]) if b] == sorted(on)
+        for w, said in res["answers"].items():
+            assert said == all(bh(w, i) in on for i in range(3))
+            if w in inp["add"]:
+                assert said  # no false negatives
+        inp, fr = run("text", "sketch")
+        res = fr[-1]["result"]
+        assert all(res["est"][c] >= res["truth"][c] for c in res["truth"])
+        assert res["truth"] == dict(Counter(inp["stream"]))
+
+
+def test_lru_and_counting():
+    from collections import OrderedDict
+    for _ in range(40):
+        inp, fr = run("text", "lru")
+        c, hits, misses = OrderedDict(), 0, 0
+        for k in inp["seq"]:
+            if k in c:
+                hits += 1
+                c.move_to_end(k)
+            else:
+                misses += 1
+                if len(c) == 3:
+                    c.popitem(last=False)
+                c[k] = 1
+        res = fr[-1]["result"]
+        assert (res["hits"], res["misses"], res["cache"]) == (hits, misses, list(c))
+        inp, fr = run("text", "freq")
+        cnt = Counter(inp["w"])
+        assert fr[-1]["result"]["first"] == next((ch for ch in inp["w"] if cnt[ch] == 1), None)
+
+
+# ---------- numbers ----------
+
+def test_number_lessons():
+    for _ in range(40):
+        inp, fr = run("numbers", "modular")
+        assert fr[-1]["result"]["pos"] == (inp["a"] + inp["b"]) % inp["m"]
+        inp, fr = run("numbers", "fastpow")
+        res = fr[-1]["result"]
+        assert res["r"] == pow(inp["b"], inp["e"], inp["mod"])
+        assert res["ops"] <= 2 * inp["e"].bit_length() < inp["e"] * 2
+        inp, fr = run("numbers", "pascal")
+        assert fr[-1]["result"]["value"] == math.comb(inp["n"], inp["k"])
+        inp, fr = run("numbers", "crt")
+        res = fr[-1]["result"]
+        assert res["count"] == 1 and res["answer"] % inp["m1"] == inp["r1"] and res["answer"] % inp["m2"] == inp["r2"]
+
+
+# ---------- shapes ----------
+
+def hull_ref(pts):
+    pts = sorted(map(tuple, pts))
+    def cr(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+    out = []
+    for seq in (pts, pts[::-1]):
+        h = []
+        for p in seq:
+            while len(h) >= 2 and cr(h[-2], h[-1], p) <= 0:
+                h.pop()
+            h.append(p)
+        out += h[:-1]
+    return set(out)
+
+
+def test_shape_lessons():
+    for _ in range(40):
+        inp, fr = run("shapes", "hull")
+        assert {tuple(p) for p in fr[-1]["result"]["hull"]} == hull_ref(inp["pts"])
+        inp, fr = run("shapes", "sweep")
+        v = inp["v"]
+        most = max(sum(1 for s, e in v if s <= t < e) for t in range(12))
+        assert fr[-1]["result"]["most"] == most
+        inp, fr = run("shapes", "closest")
+        pts = inp["pts"]
+        best = min((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 for a, b in itertools.combinations(pts, 2))
+        assert fr[-1]["result"]["best"] == best
+        i, j = fr[-1]["result"]["pair"]
+        assert (pts[i][0] - pts[j][0]) ** 2 + (pts[i][1] - pts[j][1]) ** 2 == best
+
+
+# ---------- the big questions ----------
+
+def test_big_question_lessons():
+    for _ in range(40):
+        inp, fr = run("big", "random")
+        res = fr[-1]["result"]
+        assert res["hit"] == sum(1 for a, b in inp["darts"] if (a + .5) ** 2 + (b + .5) ** 2 < 100)
+        assert abs(res["est"] - 4 * res["hit"] / res["n"]) < 1e-9
+        inp, fr = run("big", "nim")
+        W = fr[-1]["result"]["W"]
+        assert [i for i, w in enumerate(W) if w == "L"] == [i for i in range(13) if i % 4 == 0]
+        inp, fr = run("big", "hard")
+        assert fr[-1]["result"]["search"] == [2 ** n for n in range(1, 11)]
+        inp, fr = run("big", "approx")
+        res = fr[-1]["result"]
+        g, es, n = set(res["guards"]), inp["es"], inp["n"]
+        assert all(a in g or b in g for a, b in es)
+        opt = min(len(c) for r in range(n + 1) for c in itertools.combinations(range(n), r) if all(a in c or b in c for a, b in es))
+        assert len(g) <= 2 * opt
+
+
+# ---------- the last lessons ----------
+
+def test_cost_and_range_lessons():
+    inp, fr = run("techniques", "cases")
+    assert fr[-1]["result"] == {"best": 1, "worst": 8, "avg": 4.5}
+    for _ in range(30):
+        inp, fr = run("techniques", "spacetime")
+        res = fr[-1]["result"]
+
+        def steps(n):
+            c = 0
+            d = 2
+            while d * d <= n:
+                c += 1
+                if n % d == 0:
+                    break
+                d += 1
+            return max(c, 1)
+        assert res["steps"] == [steps(q) for q in inp["qs"]] and res["slow"] == sum(res["steps"]) and res["fast"] == len(inp["qs"])
+        inp, fr = run("techniques", "sqrt")
+        res = fr[-1]["result"]
+        assert res["sum"] == sum(inp["a"][inp["l"]:inp["r"] + 1]) and res["adds"] < inp["r"] - inp["l"] + 1
+
+
+def test_btree_skiplist_and_tree_dp():
+    for _ in range(40):
+        inp, fr = run("trees", "btree")
+        res = fr[-1]["result"]
+        assert res["inorder"] == sorted(inp["v"]) and len(set(res["depths"])) == 1 and res["maxKeys"] <= 2
+        inp, fr = run("trees", "skiplist")
+        res = fr[-1]["result"]
+        assert res["found"] == (inp["t"] in inp["keys"])
+        inp, fr = run("trees", "treedp")
+        root = bst_nodes(inp["v"])
+        par = {}
+        def link(n):
+            for k in (n["l"], n["r"]):
+                if k:
+                    par[k["v"]] = n["v"]
+                    link(k)
+        link(root)
+        best = 0
+        for m in range(1 << 7):
+            chosen = {v for i, v in enumerate(inp["v"]) if m >> i & 1}
+            if all(not (c in chosen and p in chosen) for c, p in par.items()):
+                best = max(best, sum(inp["w"][str(v)] for v in chosen))
+        assert fr[-1]["result"]["best"] == best
+
+
+def test_scc_bridges_and_euler():
+    for _ in range(40):
+        inp, fr = run("graphs", "scc")
+        n, es = inp["n"], inp["es"]
+        reach = [[i == j for j in range(n)] for i in range(n)]
+        for a, b in es:
+            reach[a][b] = True
+        for k in range(n):
+            for i in range(n):
+                for j in range(n):
+                    reach[i][j] = reach[i][j] or (reach[i][k] and reach[k][j])
+        comp = fr[-1]["result"]["comp"]
+        for i in range(n):
+            for j in range(n):
+                assert (comp[i] == comp[j]) == (reach[i][j] and reach[j][i])
+        inp, fr = run("graphs", "bridges")
+        n, es = inp["n"], inp["es"]
+        def connected(skip):
+            seen, st = {0}, [0]
+            while st:
+                u = st.pop()
+                for k, (a, b) in enumerate(es):
+                    if k == skip:
+                        continue
+                    for p, q in ((a, b), (b, a)):
+                        if p == u and q not in seen:
+                            seen.add(q)
+                            st.append(q)
+            return len(seen) == n
+        want = sorted([min(a, b), max(a, b)] for k, (a, b) in enumerate(es) if not connected(k))
+        assert fr[-1]["result"]["bridges"] == want
+        inp, fr = run("graphs", "euler")
+        circ, es = fr[-1]["result"]["circuit"], [tuple(sorted(e)) for e in inp["es"]]
+        used = sorted(tuple(sorted(p)) for p in zip(circ, circ[1:]))
+        assert used == sorted(es) and circ[0] == circ[-1]
+
+
+def test_bitmask_meet_in_the_middle_and_sudoku():
+    for _ in range(40):
+        inp, fr = run("solve", "bitmask")
+        c = inp["c"]
+        assert fr[-1]["result"]["best"] == min(sum(c[i][p[i]] for i in range(3)) for p in itertools.permutations(range(3)))
+        inp, fr = run("solve", "meet")
+        a, t = inp["a"], inp["t"]
+        has = any(sum(c) == t for r in range(len(a) + 1) for c in itertools.combinations(a, r))
+        assert fr[-1]["result"]["found"] == has
+    for _ in range(20):
+        inp, fr = run("solve", "sudoku")
+        g, given = fr[-1]["result"]["grid"], inp["g"]
+        assert all(given[i] in (0, g[i]) for i in range(16))
+        rowsG = [g[r * 4:r * 4 + 4] for r in range(4)]
+        assert all(sorted(r) == [1, 2, 3, 4] for r in rowsG)
+        assert all(sorted(rowsG[r][c] for r in range(4)) == [1, 2, 3, 4] for c in range(4))
+        for br, bc in itertools.product((0, 2), repeat=2):
+            assert sorted(rowsG[br + y][bc + z] for y in (0, 1) for z in (0, 1)) == [1, 2, 3, 4]
+
+
+def test_hyperloglog_counter():
+    for _ in range(30):
+        inp, fr = run("text", "hll")
+        res = fr[-1]["result"]
+        def lead(h):
+            return 8 - h.bit_length()
+        assert res["best"] == max(lead((v * 37 + 11) % 256) for v in inp["v"])
+        assert res["est"] == 2 ** (res["best"] + 1)
+
+
+# ---------- drawing ----------
+
+@pytest.fixture(scope="module")
+def drawing():
+    """The lab engine with a stub page, so its real drawing code can be run on every frame."""
+    ctx = quickjs.Context()
+    ctx.eval("globalThis.document = { getElementById: () => null, querySelector: () => null };")
+    ctx.eval((ASSETS / "lab.js").read_text(encoding="utf-8"))
+    for p in PAGES:
+        ctx.eval((ASSETS / f"{p}.js").read_text(encoding="utf-8"))
+    return ctx
+
+
+def test_every_frame_of_every_lesson_draws_cleanly(page_key, drawing):
+    page, key = page_key
+    out = drawing.eval(f"""JSON.stringify((() => {{
+      const a = VLLab.registry['{page}']['{key}'], bad = [];
+      for (let r = 0; r < 4; r++) {{
+        const fr = VLLab.record(a, a.make());
+        fr.forEach((f, i) => {{ const h = VLLab.draw(f.view); if (!h || /undefined|NaN|null|[[]object/.test(h)) bad.push([i, h.slice(0, 200)]); }});
+      }}
+      return bad;
+    }})())""")
+    assert json.loads(out) == []

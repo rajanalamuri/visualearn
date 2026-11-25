@@ -464,5 +464,90 @@
     },
   };
 
+  ALGOS.cases = {
+    name: 'Best, worst and average case',
+    blurb: 'The same method can be quick or slow depending on the luck of the input. Searching boxes one by one is quickest if the target is in the first box (best case), slowest if it is last or missing (worst case), and about half the boxes on average.',
+    facts: [['Best', 'Found first'], ['Worst', 'Last, or missing'], ['Average', 'About half']],
+    code: ['for each box from the left', '  open it', '  if it holds the target: stop', 'not found: every box was opened'],
+    offline: off('Luck of the draw', '8 cards face down in a row, and a friend', '10 minutes', [
+      'Lay 8 cards in a row, face down. Pick a target card.',
+      'Open from the left until you find it. Count the cards opened.',
+      'Repeat 8 times with the target in a different place each time (first, second, … last).',
+      'Add up the counts and divide by 8. That is the average case.'], 'Why do we usually plan for the worst case, even though it is the least likely?'),
+    make() { return { a: distinct(8, 1, 40) }; },
+    run(x, { a }) {
+      const n = a.length, mid = rnd(2, 5), open = (k) => mk(a, Object.fromEntries(a.map((_, i) => [i, i < k ? 'seen' : '']).concat(k > 0 ? [[k - 1, 'cur']] : [])));
+      x.rec(mk(a, {}), -1, 'Look for a target by opening boxes from the left. How many boxes are opened in a lucky case, an unlucky case, and on average? Press play.');
+      x.rec(open(1), 1, `Best case: the target is in box 1. Only 1 box is opened.`, numq(`The target is in box ${mid + 1}. How many boxes do we open?`, mid + 1, [mid, mid + 2, n], `We open boxes 1 to ${mid + 1}: that is ${mid + 1}.`));
+      x.rec(open(mid + 1), 1, `A middle case: the target is in box ${mid + 1}. That is ${mid + 1} boxes.`);
+      x.rec(open(n), 1, `Worst case: the target is in box ${n}. All ${n} boxes are opened.`, null, [['Opened', n]]);
+      x.rec(open(n), 3, `Also the worst case: the target is not there at all. All ${n} boxes are opened to be sure.`, null, [['Opened', n]]);
+      const avg = (n + 1) / 2;
+      x.rec({ ...mk(a, {}), lists: [{ label: 'Boxes opened for each position', items: a.map((_, i) => i + 1) }, { label: 'Average', items: [avg] }] }, 3, `Add up 1 + 2 + … + ${n} and divide by ${n}: the average is ${avg}, about half.`);
+      x.result = { best: 1, worst: n, avg };
+    },
+  };
+
+  ALGOS.spacetime = {
+    name: 'Space and time',
+    blurb: 'You can often trade memory for speed. Testing whether a number is prime by dividing takes many steps each time. Spend some memory once to write down all the answers in a table, and every later question takes one look.',
+    facts: [['Table', 'Costs space once'], ['Each question', 'One look'], ['Without', 'Many steps every time']],
+    code: ['slow way: test by dividing, every question', 'fast way: build a table of answers first', 'each question: look it up in the table', 'more memory, less time'],
+    offline: off('The answer sheet', 'Paper and a pencil', '15 minutes', [
+      'Pick 5 numbers up to 30. For each, test whether it is prime by dividing by 2, 3, 4, 5 and counting your divisions.',
+      'Now write a list of all the primes up to 30 once (your table).',
+      'Check the same 5 numbers by looking in the table. Count your looks.',
+      'Which was faster for 5 questions? For 5,000?'], 'When is it not worth building the table?'),
+    make() { return { qs: distinct(5, 4, 30) }; },
+    run(x, { qs }) {
+      const steps = (n) => { let c = 0; for (let d = 2; d * d <= n; d++) { c++; if (n % d === 0) break; } return Math.max(c, 1); };
+      const isPrime = (n) => { for (let d = 2; d * d <= n; d++) if (n % d === 0) return false; return n > 1; };
+      const nums = Array.from({ length: 30 }, (_, i) => i + 1);
+      let slow = 0, fast = 0, asked = 0;
+      const view = (q) => ({ ...rows([row('numbers 1 to 30', nums, Object.fromEntries(nums.map((v) => [v - 1, q === v ? 'cur' : table && isPrime(v) ? 'found' : ''])))]), lists: [{ label: 'Steps by dividing', items: [slow] }, { label: 'Steps by table', items: [fast] }] });
+      let table = false;
+      x.rec(view(0), -1, 'Five questions: is this number prime? Answer them two ways. Press play.', null, [['Dividing', 0], ['Table', 0]]);
+      qs.forEach((q) => {
+        const s = steps(q); slow += s;
+        x.rec(view(q), 0, `Is ${q} prime? Dividing: ${s} division${s === 1 ? '' : 's'} (${isPrime(q) ? 'no divisor found: prime' : 'a divisor was found: not prime'}).`,
+          asked < 2 ? (asked++, numq(`How many divisions to test whether ${q} is prime (stopping at the first divisor or when d × d is over ${q})?`, s, [s + 1, s + 2, Math.max(1, s - 1)], `We try 2, 3, … up to the square root of ${q}, stopping early if one divides it: ${s}.`)) : null, [['Dividing', slow], ['Table', fast]]);
+      });
+      table = true; x.rec(view(0), 1, 'Now build the table once: mark every prime up to 30 (this uses memory).', null, [['Dividing', slow], ['Table', fast]]);
+      qs.forEach((q) => { fast += 1; x.rec(view(q), 2, `Is ${q} prime? Look it up: ${isPrime(q) ? 'marked, so prime' : 'not marked, so not prime'}. One look.`, null, [['Dividing', slow], ['Table', fast]]); });
+      x.rec(view(0), 3, `${slow} divisions against ${fast} look-ups. For many more questions, the table wins by far.`, null, [['Dividing', slow], ['Table', fast]]);
+      x.result = { qs, slow, fast, steps: qs.map(steps) };
+    },
+  };
+
+  ALGOS.sqrt = {
+    name: 'Sqrt decomposition',
+    blurb: 'Cut a long row into blocks of about the square root of its length, and write down each block\'s total. A sum over any stretch then adds a few single numbers at the ragged ends and whole blocks in the middle, instead of every number.',
+    facts: [['Blocks', 'About √n numbers each'], ['Query', 'About √n steps'], ['Update', 'Fix one block total']],
+    code: ['split the row into blocks of 3; write each block\'s total', 'query(l, r):', '  add single numbers until the start of a block', '  add whole block totals while a block fits', '  add single numbers for the ragged end'],
+    offline: off('Chunked sums', 'Paper with 9 numbers in three boxes of three', '10 minutes', [
+      'Write 9 numbers. Draw a box round each group of 3 and write the group total beneath it.',
+      'Pick a stretch such as the 2nd to the 8th number.',
+      'Add the loose numbers at each end one by one, and use the written total for any full box in between.',
+      'Check with a slow sum.'], 'How many additions does this use compared with adding the whole stretch?'),
+    make() { const l = rnd(1, 2), r = rnd(6, 7); return { a: Array.from({ length: 9 }, () => rnd(1, 9)), l, r }; },
+    run(x, { a, l, r }) {
+      const B = 3, nb = a.length / B, bs = Array.from({ length: nb }, (_, b) => a.slice(b * B, b * B + B).reduce((p, q) => p + q, 0));
+      let total = 0, adds = 0;
+      const view = (marks, bm) => ({ ...rows([row('numbers', a, marks || {}, Object.fromEntries(a.map((_, i) => [i, i % B === 0 ? `block ${i / B + 1}` : '']))), row('block totals', bs, bm || {})]), lists: [{ label: 'Sum so far', items: [total] }] });
+      x.rec(view(), -1, `Blocks of ${B}, each with its total below. Add up positions ${l + 1} to ${r + 1}. Press play.`, null, [['Additions', 0]]);
+      const marks = {}, bm = {};
+      let i = l, asked = 0;
+      while (i <= r) {
+        if (i % B === 0 && i + B - 1 <= r) {
+          const b = i / B; total += bs[b]; adds++; for (let k = 0; k < B; k++) marks[i + k] = 'found'; bm[b] = 'found';
+          x.rec(view({ ...marks }, { ...bm }), 3, `Positions ${i + 1} to ${i + B} are a whole block: add its total, ${bs[b]}. Sum ${total}.`, asked < 2 ? (asked++, yesno(`Positions ${i + 1} to ${i + B} are a whole block that fits inside the stretch. Use the block total?`, true, 'A full block that fits can be added in one step using its written total.')) : null, [['Additions', adds]]);
+          i += B;
+        } else { total += a[i]; adds++; marks[i] = 'key'; x.rec(view({ ...marks }, { ...bm }), 2, `Add the single number ${a[i]}. Sum ${total}.`, null, [['Additions', adds]]); i++; }
+      }
+      x.rec(view({ ...marks }, { ...bm }), 4, `The sum of positions ${l + 1} to ${r + 1} is ${total}, in ${adds} additions instead of ${r - l + 1}.`, null, [['Additions', adds]]);
+      x.result = { sum: total, l, r, adds };
+    },
+  };
+
   VLLab.define('techniques', ALGOS);
 })();
