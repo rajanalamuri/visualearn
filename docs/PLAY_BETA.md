@@ -14,7 +14,7 @@ mid to late December at the earliest.
 
 ## Steps (you, in this order)
 1. **Developer account.** https://play.google.com/console, one-off fee, verify identity. Start today: verification can take days.
-2. **Contact email.** Replace `CONTACT-EMAIL-TO-ADD` in `web/privacy/index.html`, then push.
+2. **Contact email.** Done: the privacy page lists the contact address.
 3. **Build the app.** Needs Node 18+ and a JDK:
    `npm i -g @bubblewrap/cli`, then `bubblewrap init --manifest=https://visualearn.org/manifest.webmanifest`
    (accept the values in `twa-manifest.json`), then `bubblewrap build`. This makes `app-release-bundle.aab`.
