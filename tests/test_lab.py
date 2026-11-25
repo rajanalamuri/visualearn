@@ -318,3 +318,167 @@ def test_range_structures_agree_with_plain_python():
             assert t == sum(inp["a"][i - (i & -i):i])
         inp, fr = run("trees", "sparse")
         assert fr[-1]["result"]["min"] == min(inp["a"][inp["l"]:inp["r"] + 1])
+
+
+# ---------- graphs ----------
+
+def test_graph_picture_lists_are_symmetric_and_twice_the_edges():
+    for _ in range(20):
+        inp, fr = run("graphs", "picture")
+        r = fr[-1]["result"]
+        adj = r["adj"]
+        assert all(i in adj[j] for i, l in enumerate(adj) for j in l)
+        assert sum(map(len, adj)) == 2 * r["edges"] == 2 * len(inp["es"])
+
+
+def reach_components(n, es):
+    p = list(range(n))
+    def find(a):
+        while p[a] != a:
+            p[a] = p[p[a]]
+            a = p[a]
+        return a
+    for a, b in es:
+        p[find(a)] = find(b)
+    return len({find(i) for i in range(n)}), [find(i) for i in range(n)]
+
+
+def test_components_count_and_labels():
+    for _ in range(40):
+        inp, fr = run("graphs", "components")
+        n = len(inp["nodes"])
+        count, roots = reach_components(n, inp["es"])
+        res = fr[-1]["result"]
+        assert res["count"] == count
+        for i in range(n):
+            for j in range(n):
+                assert (res["comp"][i] == res["comp"][j]) == (roots[i] == roots[j])
+
+
+def test_cycle_detection_and_two_colouring():
+    seen = set()
+    for _ in range(60):
+        inp, fr = run("graphs", "cycle")
+        n, es = inp["n"], inp["es"]
+        assert fr[-1]["result"] == (len(es) >= n)  # connected: a tree has n - 1 edges, one more makes a cycle
+        seen.add(fr[-1]["result"])
+    assert seen == {True, False}
+    for _ in range(30):
+        inp, fr = run("graphs", "bipartite")
+        assert fr[-1]["result"] == (inp["n"] % 2 == 0)
+
+
+def test_topological_order_respects_every_dependency():
+    for _ in range(20):
+        inp, fr = run("graphs", "topo")
+        res = fr[-1]["result"]
+        pos = {v: i for i, v in enumerate(res["order"])}
+        assert len(pos) == len(inp["names"])
+        assert all(pos[a] < pos[b] for a, b in res["es"])
+
+
+def test_union_find_groups_match_a_reference():
+    for _ in range(40):
+        inp, fr = run("graphs", "unionfind")
+        _, roots = reach_components(8, inp["ps"])
+        want = {}
+        for i, r in enumerate(roots):
+            want.setdefault(r, []).append(i)
+        assert fr[-1]["result"] == sorted((sorted(g) for g in want.values()), key=lambda g: g[0])
+
+
+def test_bellman_ford_and_floyd_warshall():
+    for _ in range(40):
+        inp, fr = run("graphs", "bellman")
+        n = 5
+        dist = [math.inf] * n
+        dist[0] = 0
+        for _ in range(n):
+            for a, b, w in inp["w"]:
+                if dist[a] + w < dist[b]:
+                    dist[b] = dist[a] + w
+        assert fr[-1]["result"] == [None if d == math.inf else d for d in dist]
+        inp, fr = run("graphs", "floyd")
+        m = [[math.inf if v is None else v for v in r] for r in inp["m"]]
+        for k in range(4):
+            for i in range(4):
+                for j in range(4):
+                    m[i][j] = min(m[i][j], m[i][k] + m[k][j])
+        assert fr[-1]["result"] == [[None if v == math.inf else v for v in r] for r in m]
+
+
+def test_kruskal_total_is_the_minimum_spanning_tree_weight():
+    for _ in range(40):
+        inp, fr = run("graphs", "kruskal")
+        n, es = inp["n"], inp["es"]
+        # Prim as an independent check
+        inside, total = {0}, 0
+        while len(inside) < n:
+            e = min((w, a, b) for a, b, w in es if (a in inside) != (b in inside))
+            total += e[0]
+            inside |= {e[1], e[2]}
+        assert fr[-1]["result"]["total"] == total and fr[-1]["result"]["count"] == n - 1
+
+
+def test_astar_path_is_as_short_as_breadth_first_search():
+    for _ in range(30):
+        inp, fr = run("graphs", "astar")
+        R, C, walls = inp["R"], inp["C"], set(inp["walls"])
+        dist, q = {0: 0}, deque([0])
+        while q:
+            c = q.popleft()
+            r, k = divmod(c, C)
+            for dr, dk in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nr, nk = r + dr, k + dk
+                i = nr * C + nk
+                if 0 <= nr < R and 0 <= nk < C and i not in walls and i not in dist:
+                    dist[i] = dist[c] + 1
+                    q.append(i)
+        res = fr[-1]["result"]
+        assert res["steps"] == dist[R * C - 1]
+        assert all(p not in walls for p in res["path"]) and res["path"][0] == 0
+
+
+def max_flow(c, n=6, s=0, t=5):
+    cap = [[0] * n for _ in range(n)]
+    for a, b, k in c:
+        cap[a][b] += k
+    total = 0
+    while True:
+        par = [-1] * n
+        par[s] = s
+        q = deque([s])
+        while q:
+            u = q.popleft()
+            for v in range(n):
+                if par[v] < 0 and cap[u][v] > 0:
+                    par[v] = u
+                    q.append(v)
+        if par[t] < 0:
+            return total
+        b, v = math.inf, t
+        while v != s:
+            b = min(b, cap[par[v]][v])
+            v = par[v]
+        v = t
+        while v != s:
+            cap[par[v]][v] -= b
+            cap[v][par[v]] += b
+            v = par[v]
+        total += b
+
+
+def test_flow_is_the_maximum_and_matching_is_the_largest():
+    for _ in range(60):
+        inp, fr = run("graphs", "flow")
+        assert fr[-1]["result"]["flow"] == max_flow(inp["c"])
+    for _ in range(60):
+        inp, fr = run("graphs", "matching")
+        es = inp["es"]
+        best = max(sum(1 for a, b in zip(range(4), perm) if [a, b] in es) for perm in itertools.permutations(range(4)))
+        res = fr[-1]["result"]
+        assert res["size"] == best
+        used = [m for m in res["match"] if m >= 0]
+        assert len(used) == len(set(used)) == res["size"]
+        for r, l in enumerate(res["match"]):
+            assert l < 0 or [l, r] in es
