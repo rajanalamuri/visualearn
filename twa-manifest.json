@@ -1,0 +1,22 @@
+{
+  "packageId": "org.visualearn.app",
+  "host": "visualearn.org",
+  "name": "VisuaLearn",
+  "launcherName": "VisuaLearn",
+  "display": "standalone",
+  "orientation": "default",
+  "themeColor": "#fffbea",
+  "navigationColor": "#fffbea",
+  "backgroundColor": "#fffbea",
+  "startUrl": "/play/",
+  "iconUrl": "https://visualearn.org/icons/icon-512.png",
+  "maskableIconUrl": "https://visualearn.org/icons/maskable-512.png",
+  "appVersion": "0.1.0",
+  "appVersionCode": 1,
+  "enableNotifications": false,
+  "enableSiteSettingsShortcut": false,
+  "fallbackType": "customtabs",
+  "signingKey": { "path": "./android.keystore", "alias": "visualearn" },
+  "minSdkVersion": 23,
+  "isChromeOSOnly": false
+}

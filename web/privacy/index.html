@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy · VisuaLearn</title>
+<meta name="description" content="VisuaLearn collects nothing about children. No accounts, ads or tracking.">
+<meta property="og:title" content="Privacy · VisuaLearn">
+<meta property="og:url" content="https://visualearn.org/privacy/">
+<link rel="canonical" href="https://visualearn.org/privacy/">
+<meta name="theme-color" content="#fffbea">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/arith.css">
+<script src="/assets/progress.js" defer></script>
+<script src="/assets/limit.js" defer></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/assets/app.js" defer></script>
+</head>
+<body class="home">
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="VisuaLearn home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="b-bg"/><rect x="7" y="18" width="4" height="7" rx="1" class="b-1"/><rect x="14" y="12" width="4" height="13" rx="1" class="b-2"/><rect x="21" y="7" width="4" height="18" rx="1" class="b-3"/></svg>
+      <span>visua<b>learn</b></span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="/play/">Play</a>
+      <a href="/math/grades/">Grades</a>
+      <a href="/progress/">Diary</a>
+    </nav>
+    <span class="timer" id="timer" hidden></span>
+  </div>
+</header>
+
+<main class="wrap ar pg legal">
+  <h1>Privacy</h1>
+  <p class="lede">VisuaLearn is made for children. It collects nothing about them.</p>
+  <h2>Children</h2>
+  <ul>
+    <li>No accounts, names, emails or photos.</li>
+    <li>No ads. No analytics. No tracking of any kind.</li>
+    <li>No requests to other sites. Fonts and code are served from this site.</li>
+    <li>The diary and the daily time limit are saved on the device only (browser storage). Clearing site data removes them.</li>
+    <li>Read aloud uses the device's own voice. Nothing is recorded or sent.</li>
+  </ul>
+  <h2>Parents (optional)</h2>
+  <ul>
+    <li>A grown-up can sign in with Google on the <a href="/parents/">parents page</a> to keep the diary in step across devices.</li>
+    <li>We store the diary (which ideas, on which days) under the parent's account id. Nothing else, and no child details.</li>
+    <li>Delete the cloud copy at any time from the parents page. Signing out leaves the on-device diary untouched.</li>
+    <li>Google handles the sign-in. See Google's own privacy policy for how it treats your account.</li>
+  </ul>
+  <h2>Contact</h2>
+  <p>Questions or deletion requests: CONTACT-EMAIL-TO-ADD</p>
+  <p class="fine">Last updated 25 November 2026.</p>
+</main>
+
+<div class="rest" id="rest" role="dialog" aria-modal="true" aria-labelledby="rest-h" hidden>
+  <div class="rest-card">
+    <div id="rest-body">
+      <p class="eyebrow">Screen time is up for today</p>
+      <h2 id="rest-h">Your turn.</h2>
+      <p>Put the screen down and try one for real.</p>
+      <div class="rest-actions">
+        <button class="btn" id="rest-bye" type="button">See you tomorrow</button>
+        <button class="link" id="rest-more" type="button">A grown-up says 5 more minutes</button>
+      </div>
+    </div>
+    <div id="rest-done" hidden>
+      <h2>Great choice.</h2>
+      <p>You can close this tab now.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>© 2026 VisuaLearn</span>
+    <span>Free for everyone.</span>
+  </div>
+</footer>
+</body>
+</html>

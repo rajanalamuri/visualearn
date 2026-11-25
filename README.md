@@ -6,7 +6,7 @@ Live at https://visualearn.org.
 
 Design rules, in order:
 
-1. **Free for everyone.** No accounts, ads, tracking or paywalls.
+1. **Free for everyone.** No child accounts, ads, tracking or paywalls. A grown-up may optionally sign in with Google (parents page) to sync the diary; children never do.
 2. **Immersive, not addictive.** No streaks, points, badges, notifications or autoplay into
    the next lesson. A daily time limit covers the whole site.
 3. **The screen is the shortest part.** Every algorithm ends with an activity done with
@@ -26,6 +26,7 @@ web/                    static site, served by a Cloudflare Worker (assets only)
   paths/                Dijkstra's shortest path (paths.js)
   dp/                   dynamic programming: fewest coins, counting walks (dp.js)
   math/grades/          grade 1 to 10 map; progress/ is the on-device diary
+  parents/, privacy/    optional parent sign-in (Firebase, see below) and the privacy policy
   curriculum/           the whole DSA map: ready, next, to do (data lives in assets/catalog.js)
   manifest.webmanifest, sw.js, icons/   make /play/ installable and usable offline
   404.html
@@ -69,6 +70,18 @@ stops), no scores, streaks or timers. It installs from the browser on tablets, p
 computers (Chrome: Install; iPad: Share, then Add to Home Screen) and opens offline.
 A Play Store APK can be wrapped around the live site with PWABuilder or Bubblewrap, which need a
 Google Play developer account and the Android SDK.
+
+## Parent sign-in (optional)
+
+`/parents/` lets a grown-up sign in with Google to sync the on-device diary. It is client-only:
+Firebase Auth and Firestore load from Google on that page alone, after a grown-up check. To switch it on:
+
+1. Create a Firebase project; enable Authentication > Google and a Firestore database.
+2. Add `visualearn.org` under Authentication > Settings > Authorized domains.
+3. Paste the web app config into `web/assets/firebase-config.js`.
+4. Publish `firestore.rules` (Firestore > Rules).
+
+Until the config is filled in, the page says sign-in is not switched on.
 
 ## Test
 

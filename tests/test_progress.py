@@ -170,3 +170,36 @@ def test_read_aloud_loads_only_where_there_is_a_player():
     for page in ("sorting", "searching", "mazes", "structures", "paths", "dp", "math/advanced"):
         html = (WEB / page / "index.html").read_text(encoding="utf-8")
         assert 'src="/assets/speak.js"' in html and 'class="knobs"' in html and 'id="note"' in html
+
+
+# ---------- parents ----------
+
+def test_diary_merge_never_double_counts_and_keeps_both_sides():
+    ctx = boot("parents.js")
+    a = {"2026-11-24": {"ideas": {"math:add": 2, "play:ten": 1}, "sec": 300}}
+    b = {"2026-11-24": {"ideas": {"math:add": 3}, "sec": 120}, "2026-11-25": {"ideas": {"dp:coins": 1}}}
+    m = call(ctx, f"VLParents.merge({json.dumps(a)}, {json.dumps(b)})")
+    assert m["2026-11-24"] == {"ideas": {"math:add": 3, "play:ten": 1}, "sec": 300}
+    assert m["2026-11-25"] == {"ideas": {"dp:coins": 1}}
+    assert call(ctx, f"VLParents.merge({json.dumps(m)}, {json.dumps(m)})") == m  # syncing again changes nothing
+    assert call(ctx, "VLParents.merge(null, {'x': 5, '2026-01-01': {'ideas': {'a': 'junk'}}})") == {"2026-01-01": {"ideas": {"a": 0}}}
+
+
+def test_grown_up_gate_has_a_checkable_answer():
+    ctx = boot("parents.js")
+    for r in (0, 0.5, 0.99):
+        g = call(ctx, f"VLParents.gate(() => {r})")
+        a, b = (int(x) for x in g["text"].replace("What is ", "").replace("?", "").split(" × "))
+        assert g["answer"] == a * b and 6 <= a <= 12 and 6 <= b <= 12
+
+
+def test_parents_page_is_off_until_configured_and_kids_pages_load_no_firebase():
+    cfg = (WEB / "assets" / "firebase-config.js").read_text(encoding="utf-8")
+    assert "apiKey: ''" in cfg  # shipped switched off
+    assert (WEB.parent / "firestore.rules").is_file()
+    for html in WEB.rglob("*.html"):
+        text = html.read_text(encoding="utf-8")
+        assert "googleapis.com" not in text and "gstatic.com" not in text, html
+        if html.parent.name != "parents":
+            assert "parents.js" not in text and "firebase" not in text, html
+    assert "gstatic.com/firebasejs" in (WEB / "assets" / "parents.js").read_text(encoding="utf-8")
