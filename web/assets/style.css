@@ -409,3 +409,48 @@ body.resting{overflow:hidden}
 .p-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .p-row input{width:7em;padding:10px 12px;font:inherit;font-size:18px;border-radius:10px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink)}
 .p-who{margin:0;color:var(--ink-2);overflow-wrap:anywhere}
+
+/* lab: shared lesson engine */
+.labview{width:100%;display:flex;flex-direction:column;align-items:center;gap:14px}
+.lrows{display:flex;flex-direction:column;gap:12px;width:100%;align-items:center}
+.lrow{display:flex;align-items:flex-end;gap:10px;max-width:100%}
+.llab{min-width:4.2em;text-align:right;color:var(--muted);font-size:13px;padding-bottom:20px}
+.lcells{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.lcell{display:flex;flex-direction:column;align-items:center;gap:2px}
+.lcell b{min-width:42px;height:46px;padding:0 6px;display:grid;place-items:center;border-radius:9px;background:var(--surface);box-shadow:inset 0 0 0 1.5px var(--line);
+  font-family:var(--font-code);font-size:17px;font-variant-numeric:tabular-nums;transition:background-color .15s, opacity .15s, transform .15s}
+.lcell em{font-style:normal;font-size:11.5px;color:var(--muted);min-height:15px;font-family:var(--font-code)}
+.lcell.cur b{background:var(--cmp);color:#2a2312;box-shadow:none;transform:translateY(-3px)}
+.lcell.found b,.lcell.done b{background:var(--done);color:#fff;box-shadow:none}
+.lcell.swap b{background:var(--swap);color:#fff;box-shadow:none}
+.lcell.key b{background:var(--accent);color:var(--on-accent);box-shadow:none}
+.lcell.seen b{background:var(--line)}
+.lcell.alt b{background:var(--pivot);color:#fff;box-shadow:none}
+.lcell.out b{opacity:.3}
+.llists{display:flex;flex-direction:column;gap:6px;align-items:center}
+.llists p{margin:0;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center}
+.llists b{color:var(--muted);font-weight:600;font-size:14px}
+.quiet{color:var(--muted);font-size:14px}
+.labgraph{width:100%;max-width:640px;height:auto}
+.labgrid{max-width:520px}
+.labgrid .cell{font-size:clamp(12px, 2.2vw, 17px)}
+.labgrid .cell.found,.labgrid .cell.done{background:var(--done);color:#fff}
+.labgrid .cell.swap{background:var(--swap);color:#fff}
+.labgrid .cell.key{background:var(--accent);color:var(--on-accent)}
+.labgrid .cell.alt{background:var(--pivot);color:#fff}
+.labgrid .cell.out{opacity:.3}
+.g-node.found circle,.g-node.done circle{fill:var(--done);stroke:var(--done)}
+.g-node.found text,.g-node.done text{fill:#fff}
+.g-node.key circle{fill:var(--accent);stroke:var(--accent)}
+.g-node.key text{fill:var(--on-accent)}
+.g-node.swap circle{fill:var(--swap);stroke:var(--swap)}
+.g-node.swap text{fill:#fff}
+.g-node.alt circle{fill:var(--pivot);stroke:var(--pivot)}
+.g-node.alt text{fill:#fff}
+.g-node.seen circle{fill:var(--line)}
+.g-node.out{opacity:.35}
+.g-edge.on{stroke:var(--cmp);stroke-width:4}
+.g-edge.path,.g-edge.done{stroke:var(--done);stroke-width:5}
+.g-edge.cut{stroke:var(--swap);stroke-dasharray:6 5}
+.g-edge.dim{opacity:.3}
+.g-arrow{fill:var(--ink-2)}
