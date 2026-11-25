@@ -58,34 +58,49 @@
   // With no ref it is still to do ("tbd"); next = true marks what gets built soon.
   const DSA = [
     ['Think like a computer', [
-      ['Steps and loops'], ['Big O', '/sorting/#compare'], ['Recursion', 'play:towers'], ['Invariants'],
+      ['Steps and loops'], ['Big O', '/sorting/#compare'], ['Best, worst and average case'], ['Space and time'], ['Recursion', 'play:towers'],
+      ['Invariants'], ['Amortised cost'],
     ]],
     ['Search and order', [
-      ['Linear search', 'searching:linear'], ['Binary search', 'searching:binary'],
+      ['Linear search', 'searching:linear'], ['Binary search', 'searching:binary'], ['Binary search on the answer'],
       ['Bubble sort', 'sorting:bubble'], ['Selection sort', 'sorting:selection'], ['Insertion sort', 'sorting:insertion'],
-      ['Merge sort', 'sorting:merge'], ['Quick sort', 'sorting:quick'], ['Heap sort'], ['Counting sort'],
+      ['Merge sort', 'sorting:merge'], ['Quick sort', 'sorting:quick'], ['Heap sort'], ['Counting sort'], ['Radix sort'],
     ]],
     ['Lists and lines', [
-      ['Arrays', null, true], ['Linked lists'], ['Stacks', 'play:pile'], ['Queues', 'play:line'], ['Deques'],
+      ['Arrays', null, true], ['Strings'], ['Two pointers'], ['Sliding window'], ['Prefix sums'], ['Linked lists'],
+      ['Cycle detection'], ['Stacks', 'play:pile'], ['Queues', 'play:line'], ['Deques'], ['Monotonic stacks'], ['Matrices and grids'],
     ]],
     ['Trees', [
-      ['Binary trees', null, true], ['Binary search trees'], ['Heaps and priority queues'], ['Tries'], ['Balanced trees'], ['Segment trees'],
+      ['Binary trees', null, true], ['Tree traversals'], ['Lowest common ancestor'], ['Binary search trees'], ['Heaps and priority queues'],
+      ['Tries'], ['Balanced trees (AVL, red-black)'], ['B-trees'], ['Fenwick trees'], ['Segment trees'], ['Sparse tables'],
+      ['Treaps and skip lists'], ['Heavy-light decomposition'],
     ]],
     ['Graphs', [
-      ['Breadth-first search', 'mazes:bfs'], ['Depth-first search', 'mazes:dfs'],
-      ['Shortest paths (Dijkstra)', null, true], ['A* search'], ['Topological sort'], ['Minimum spanning trees'], ['Union-find'], ['Network flow'],
+      ['Graphs as pictures'], ['Breadth-first search', 'mazes:bfs'], ['Depth-first search', 'mazes:dfs'], ['Connected components'],
+      ['Cycle detection in graphs'], ['Two-colouring (bipartite)'], ['Topological sort'], ['Union-find'],
+      ['Shortest paths (Dijkstra)', null, true], ['Bellman-Ford'], ['All-pairs shortest paths (Floyd-Warshall)'], ['A* search'],
+      ['Minimum spanning trees'], ['Strongly connected components'], ['Bridges and cut points'], ['Euler and Hamilton paths'],
+      ['Network flow'], ['Bipartite matching'],
     ]],
     ['Ways to solve it', [
-      ['Divide and conquer'], ['Greedy choices'], ['Backtracking'], ['Dynamic programming', null, true], ['Bit tricks'],
+      ['Divide and conquer'], ['Greedy choices'], ['Interval scheduling'], ['Backtracking'], ['N-Queens and Sudoku'],
+      ['Dynamic programming', null, true], ['Knapsack'], ['Longest common subsequence'], ['Longest increasing subsequence'],
+      ['Grid and tree DP'], ['Bitmask DP'], ['Bit tricks'], ['Meet in the middle'], ['Sqrt decomposition and Mo’s algorithm'],
     ]],
     ['Hashing and text', [
-      ['Hash tables', null, true], ['Pattern matching'], ['Edit distance'], ['Compression (Huffman)'], ['Bloom filters'], ['Caches (LRU)'],
+      ['Hash tables', null, true], ['Collisions'], ['Counting with hashes'], ['Pattern matching'], ['Rolling hash (Rabin-Karp)'],
+      ['KMP and the Z-algorithm'], ['Edit distance'], ['Compression (Huffman)'], ['Suffix arrays'], ['Aho-Corasick'],
+      ['Bloom filters'], ['Count-min sketch and HyperLogLog'], ['Caches (LRU)'],
     ]],
     ['Number magic', [
       ['Primes (the sieve)', 'advanced:sieve'], ['Common factors (GCD)', 'advanced:euclid'], ['Modular arithmetic'], ['Fast powers'],
+      ['Counting (nCr)'], ['Chinese remainder theorem'],
+    ]],
+    ['Shapes and space', [
+      ['Line sweep'], ['Convex hull'], ['Closest pair of points'],
     ]],
     ['The big questions', [
-      ['Randomised algorithms'], ['Easy and hard problems (P vs NP)'], ['Approximation'],
+      ['Randomised algorithms'], ['Game theory (minimax)'], ['Easy and hard problems (P vs NP)'], ['Approximation'],
     ]],
   ];
 
