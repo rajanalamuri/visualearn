@@ -22,6 +22,9 @@ web/                    static site, served by a Cloudflare Worker (assets only)
   mazes/                breadth-first (queue) and depth-first (stack) search on a grid graph
   math/                 ten math cartoons (arith.js): + − × ÷, regrouping, negatives, fractions, powers, π, Fibonacci; math/advanced/ has the sieve and Euclid
   play/                 installable puzzle app: Ten, Balance, Share, Find, Line, Pile, Towers (play.js, play.css)
+  structures/           arrays, hash tables, binary search trees (structures.js)
+  paths/                Dijkstra's shortest path (paths.js)
+  dp/                   dynamic programming: fewest coins, counting walks (dp.js)
   math/grades/          grade 1 to 10 map; progress/ is the on-device diary
   curriculum/           the whole DSA map: ready, next, to do (data lives in assets/catalog.js)
   manifest.webmanifest, sw.js, icons/   make /play/ installable and usable offline
@@ -36,6 +39,20 @@ web/                    static site, served by a Cloudflare Worker (assets only)
 wrangler.jsonc          Worker config
 tests/                  pytest; runs the real lesson JavaScript in QuickJS
 ```
+
+## Set up on a new computer
+
+Needs only Git and Python 3.10+. Nothing else is required to run or test the site.
+
+```bash
+git clone https://github.com/rajanalamuri/visualearn.git
+cd visualearn
+pip install -r requirements-dev.txt
+pytest -q
+python -m http.server 8080 --directory web
+```
+
+To deploy by hand instead of through GitHub: `npx wrangler deploy` (log in to Cloudflare first).
 
 ## Run locally
 
