@@ -30,7 +30,7 @@
         x.rec(view(), -1, `Sorted row. Find two numbers that add up to ${t}.`, null, [['Pairs checked', 0]]);
         while (l < h) {
           const s = a[l] + a[h]; c++;
-          if (s === t) { x.rec(view({ [l]: 'found', [h]: 'found' }), 3, `${a[l]} + ${a[h]} = ${s}. That's ${t}. Found, after ${plural(c, 'pair')}.`, null, [['Pairs checked', c]]); x.result = [l, h]; return; }
+          if (s === t) { x.rec(view({ [l]: 'found', [h]: 'found' }), 3, `${a[l]} + ${a[h]} = ${s}. That's ${t}. Found, after ${plural(c, 'pair')}.`, null, [['Pairs checked', c]]); x.rec(view({ [l]: 'found', [h]: 'found' }), 3, `Only ${plural(c, 'pair')} checked, out of ${(a.length * (a.length - 1)) / 2} possible.`, null, [['Pairs checked', c]]); x.result = [l, h]; return; }
           const q = asked < 3 ? (asked++, choice(`${a[l]} + ${a[h]} = ${s}, and we want ${t}. Which pointer moves?`, s < t ? 'Left pointer moves right' : 'Right pointer moves left',
             [s < t ? 'Right pointer moves left' : 'Left pointer moves right'], s < t ? `${s} is too small. Only moving the left pointer right can make the sum bigger.` : `${s} is too big. Only moving the right pointer left can make the sum smaller.`)) : null;
           x.rec(view({ [l]: 'cur', [h]: 'cur' }), s < t ? 4 : 5, `${a[l]} + ${a[h]} = ${s}. ${s < t ? 'Too small' : 'Too big'}.`, q, [['Pairs checked', c]]);

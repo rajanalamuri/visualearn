@@ -482,3 +482,103 @@ def test_flow_is_the_maximum_and_matching_is_the_largest():
         assert len(used) == len(set(used)) == res["size"]
         for r, l in enumerate(res["match"]):
             assert l < 0 or [l, r] in es
+
+
+# ---------- solve ----------
+
+def test_divide_and_conquer_matches_kadane():
+    for _ in range(50):
+        inp, fr = run("solve", "divide")
+        best = cur = -math.inf
+        cur = 0
+        best = -math.inf
+        for v in inp["a"]:
+            cur = max(v, cur + v)
+            best = max(best, cur)
+        assert fr[-1]["result"] == best
+
+
+def test_greedy_change_and_when_it_fails():
+    fails = set()
+    for _ in range(60):
+        inp, fr = run("solve", "greedy")
+        res = fr[-1]["result"]
+        assert sum(res["taken"]) == res["amt"]
+        assert all(c in inp["coins"] for c in res["taken"])
+        dp = [0] + [10**9] * res["amt"]
+        for v in range(1, res["amt"] + 1):
+            dp[v] = 1 + min(dp[v - c] for c in inp["coins"] if c <= v)
+        assert res["optimal"] == dp[res["amt"]] <= len(res["taken"])
+        fails.add(len(res["taken"]) > res["optimal"])
+    assert fails == {True, False}  # the lesson shows both: greedy right, and greedy fooled
+
+
+def test_interval_scheduling_is_optimal():
+    for _ in range(40):
+        inp, fr = run("solve", "intervals")
+        v = inp["v"]
+        best = 0
+        for mask in range(1 << len(v)):
+            ch = sorted(v[i] for i in range(len(v)) if mask >> i & 1)
+            if all(ch[k][1] <= ch[k + 1][0] for k in range(len(ch) - 1)):
+                best = max(best, len(ch))
+        assert fr[-1]["result"]["count"] == best
+
+
+def test_backtracking_subset_sum_and_queens():
+    found = set()
+    for _ in range(60):
+        inp, fr = run("solve", "backtrack")
+        a, t = inp["a"], inp["t"]
+        possible = any(sum(c) == t for r in range(len(a) + 1) for c in itertools.combinations(a, r))
+        res = fr[-1]["result"]
+        assert (res is not None) == possible
+        if res:
+            assert sum(res) == t and all(x in a for x in res)
+        found.add(res is not None)
+    assert found == {True, False}
+    for _ in range(10):
+        inp, fr = run("solve", "nqueens")
+        cols = fr[-1]["result"]["cols"]
+        n = inp["n"]
+        assert len(cols) == n and len(set(cols)) == n
+        assert all(abs(cols[i] - cols[j]) != j - i for i in range(n) for j in range(i + 1, n))
+
+
+def test_dynamic_programming_tables_match_references():
+    for _ in range(30):
+        inp, fr = run("solve", "knapsack")
+        items, cap = inp["items"], inp["cap"]
+        best = max(sum(items[i][1] for i in range(4) if m >> i & 1) for m in range(16) if sum(items[i][0] for i in range(4) if m >> i & 1) <= cap)
+        assert fr[-1]["result"]["best"] == best
+        inp, fr = run("solve", "lcs")
+        a, b = inp["a"], inp["b"]
+        T = [[0] * (len(b) + 1) for _ in range(len(a) + 1)]
+        for i in range(1, len(a) + 1):
+            for j in range(1, len(b) + 1):
+                T[i][j] = T[i - 1][j - 1] + 1 if a[i - 1] == b[j - 1] else max(T[i - 1][j], T[i][j - 1])
+        assert fr[-1]["result"]["length"] == T[-1][-1]
+        inp, fr = run("solve", "lis")
+        a = inp["a"]
+        L = [1] * len(a)
+        for i in range(len(a)):
+            for j in range(i):
+                if a[j] < a[i]:
+                    L[i] = max(L[i], L[j] + 1)
+        assert fr[-1]["result"]["length"] == max(L)
+        inp, fr = run("solve", "edit")
+        a, b = inp["a"], inp["b"]
+        D = [[i + j if i * j == 0 else 0 for j in range(len(b) + 1)] for i in range(len(a) + 1)]
+        for i in range(1, len(a) + 1):
+            for j in range(1, len(b) + 1):
+                D[i][j] = D[i - 1][j - 1] if a[i - 1] == b[j - 1] else 1 + min(D[i - 1][j], D[i][j - 1], D[i - 1][j - 1])
+        assert fr[-1]["result"]["distance"] == D[-1][-1]
+
+
+def test_bit_tricks():
+    for _ in range(40):
+        inp, fr = run("solve", "popcount")
+        assert fr[-1]["result"]["count"] == bin(inp["n"]).count("1")
+        inp, fr = run("solve", "xor")
+        c = Counter(inp["a"])
+        assert fr[-1]["result"]["single"] == next(k for k, v in c.items() if v == 1)

@@ -32,7 +32,8 @@
   }
   // Number question: options are sorted so the order gives nothing away.
   function numq(text, correct, extras, why) {
-    const rest = [...new Set(extras)].filter((v) => v !== correct && Number.isFinite(v) && v >= 0).slice(0, 3);
+    const rest = [...new Set(extras)].filter((v) => v !== correct && Number.isFinite(v) && (correct < 0 || v >= 0)).slice(0, 3);
+    for (let k = 1; rest.length < 2; k++) if (!rest.includes(correct + k)) rest.push(correct + k); // never fewer than three choices
     const all = [correct, ...rest].sort((a, b) => a - b);
     return { text, options: all.map(String), answer: all.indexOf(correct), why };
   }
