@@ -2,7 +2,7 @@
    counting and radix sort, monotonic stacks, deques, linked lists, strings, grids and a few ideas about cost. */
 (() => {
   'use strict';
-  const { rnd, pick, distinct, row, rows, choice, numq, yesno, plural } = VLLab;
+  const { rnd, pick, distinct, row, rows, choice, numq, yesno, plural, treePos } = VLLab;
   const off = (title, need, time, steps, think) => ({ title, need, time, steps, think });
   const mk = (cells, marks, ptr, label) => rows([row(label || '', cells, marks, ptr)]);
 
@@ -581,6 +581,84 @@
       const naive = qs.reduce((s, [l, r]) => s + (r - l + 1), 0);
       x.rec(view(), 4, `All answered in ${moves} window moves. Counting each stretch afresh would take ${naive} steps here. With thousands of questions, sliding one window in a good order wins by far.`, null, [['Window moves', moves]]);
       x.result = { ans: ans.slice(), moves, naive, qs, a };
+    },
+  };
+
+  ALGOS.recursion = {
+    name: 'Recursion',
+    blurb: 'A function that solves a problem by calling itself on a smaller version of it. 5! means 5 × 4!, and 4! means 4 × 3!, all the way down to 1!, which is just 1. That smallest case is the base case. Then every waiting call finishes on the way back up.',
+    facts: [['Needs', 'A base case'], ['Each call', 'A smaller problem'], ['Remembers', 'A stack of waiting calls']],
+    code: ['factorial(n):', '  if n is 1: answer 1 (the base case)', '  otherwise: ask factorial(n − 1)', '  when it answers: multiply by n', '  give that answer back'],
+    offline: off('Russian dolls', 'A set of nesting dolls (or 5 cups that stack), paper and a pencil', '10 minutes', [
+      'Open the biggest doll. Inside is a smaller one: open that. Keep going until the smallest, which holds nothing. That is the base case.',
+      'Now close them back up from the smallest. Each time, you finish the job for that doll.',
+      'Write 5! as 5 × 4!, 4! as 4 × 3!, and so on down to 1. Then work back up multiplying.',
+      'Notice you needed to remember every unfinished doll on the way down.'], 'What would happen if the dolls never ended, with no smallest one?'),
+    make() { return { n: rnd(4, 6) }; },
+    run(x, { n }) {
+      const stack = [], done = [];
+      const view = (cur) => ({ ...rows([row('n', Array.from({ length: n }, (_, i) => n - i), cur !== undefined ? { [n - cur]: 'cur' } : {}), row('answer', Array.from({ length: n }, (_, i) => (done[n - i] === undefined ? '' : done[n - i])), {})]), lists: [{ label: 'Waiting calls (top on the right)', items: stack.map((k) => `factorial(${k})`) }] });
+      x.rec(view(), -1, `Work out ${n}! (${n} × ${n - 1} × … × 1) by asking a smaller question each time. Press play.`);
+      let asked = 0;
+      const f = (k) => {
+        stack.push(k);
+        x.rec(view(k), 0, `factorial(${k}) is called.`, asked < 2 && k > 1 ? (asked++, yesno(`Is ${k} the base case (the smallest question, 1)?`, false, `No: ${k} is bigger than 1, so we must ask factorial(${k - 1}) first.`)) : null);
+        if (k === 1) {
+          done[1] = 1; x.rec(view(1), 1, 'Base case: factorial(1) is just 1. No more calls. Now every waiting call can finish.');
+          stack.pop(); return 1;
+        }
+        x.rec(view(k), 2, `${k} needs factorial(${k - 1}) first, so it waits.`);
+        const r = f(k - 1), ans = k * r;
+        done[k] = ans;
+        x.rec(view(k), 3, `factorial(${k - 1}) answered ${r}. So factorial(${k}) = ${k} × ${r} = ${ans}.`, asked < 4 && k > 2 ? (asked++, numq(`factorial(${k - 1}) answered ${r}. What is factorial(${k}) = ${k} × ${r}?`, ans, [ans + k, r + k, ans - r], `${k} × ${r} = ${ans}.`)) : null);
+        stack.pop();
+        return ans;
+      };
+      const res = f(n);
+      x.rec(view(n), 4, `${n}! = ${res}. The calls went down ${n} levels and came back up.`);
+      x.result = { n, value: res };
+    },
+  };
+
+  ALGOS.fibtree = {
+    name: 'Recursion: the call tree',
+    blurb: 'Each Fibonacci number is the two before it added: fib(n) = fib(n − 1) + fib(n − 2). Written as recursion, every call makes two more calls, and the same small questions get asked again and again. The tree of calls shows how wasteful that is.',
+    facts: [['Calls', 'Grow very fast'], ['Repeats', 'The same fib asked many times'], ['Fix', 'Remember answers (DP)']],
+    code: ['fib(n):', '  if n is 0 or 1: answer n (the base case)', '  otherwise: ask fib(n − 1) and fib(n − 2)', '  add the two answers', '  give the sum back'],
+    offline: off('Draw the calls', 'Paper and a pencil', '15 minutes', [
+      'Draw fib(5) at the top. Under it draw its two calls, fib(4) and fib(3). Keep drawing each call\'s two calls until you reach fib(1) or fib(0).',
+      'Count the circles. How many say fib(2)? How many say fib(3)?',
+      'Write the answer in each circle from the bottom up.',
+      'Now think: how could you avoid answering fib(2) more than once?'], 'If fib(5) needs 15 calls, roughly how many would fib(10) need? What would writing answers down save?'),
+    make() { return { n: rnd(4, 5) }; },
+    run(x, { n }) {
+      let id = 0; const mkNode = (k) => ({ v: id++, k, l: null, r: null, val: null });
+      const root = mkNode(n);
+      (function grow(nd) { if (nd.k >= 2) { nd.l = mkNode(nd.k - 1); nd.r = mkNode(nd.k - 2); grow(nd.l); grow(nd.r); } })(root);
+      const { pos, h } = treePos(root);
+      const finished = new Set(), seenK = {}, counts = {}; let calls = 0, asked = 0, cur = null;
+      const allNodes = []; (function c(nd) { if (nd) { allNodes.push(nd); c(nd.l); c(nd.r); } })(root);
+      const started = new Set();
+      const view = (marks) => ({ type: 'graph', h: Math.max(h, 120), nodes: allNodes.filter((nd) => started.has(nd.v)).map((nd) => { const p = pos.get(nd); return { id: nd.v, x: p.x, y: p.y, t: `f${nd.k}`, s: nd.val === null ? '' : String(nd.val), c: (marks && marks[nd.v]) || (finished.has(nd.v) ? 'done' : '') }; }),
+        edges: allNodes.filter((nd) => started.has(nd.v)).flatMap((nd) => [nd.l, nd.r].filter((z) => z && started.has(z.v)).map((z) => ({ a: nd.v, b: z.v }))),
+        lists: [{ label: 'Calls so far', items: [calls] }, { label: 'Times each is asked', items: Object.keys(counts).sort((a, b) => b - a).map((k) => `f${k}×${counts[k]}`) }] });
+      started.add(root.v);
+      x.rec(view(), -1, `Work out fib(${n}) with recursion and watch the calls. f${n} means fib(${n}). Press play.`, null, [['Calls', 0]]);
+      const go = (nd) => {
+        started.add(nd.v); calls++; counts[nd.k] = (counts[nd.k] || 0) + 1;
+        const repeat = counts[nd.k] > 1;
+        x.rec(view({ [nd.v]: repeat ? 'swap' : 'cur' }), nd.k < 2 ? 1 : 2, repeat ? `fib(${nd.k}) is asked again. That is the ${counts[nd.k]}${counts[nd.k] === 2 ? 'nd' : counts[nd.k] === 3 ? 'rd' : 'th'} time!` : `Call fib(${nd.k}).`,
+          asked < 3 && nd.k >= 2 && counts[nd.k] === 1 && calls > 3 ? (asked++, yesno(`Has fib(${nd.k}) already been asked somewhere else in the tree?`, false, `Not yet, so this is new work. Later calls will repeat it.`)) : null, [['Calls', calls]]);
+        if (nd.k < 2) { nd.val = nd.k; finished.add(nd.v); x.rec(view({ [nd.v]: 'found' }), 1, `Base case: fib(${nd.k}) = ${nd.k}.`, null, [['Calls', calls]]); return nd.val; }
+        const a = go(nd.l), b = go(nd.r);
+        nd.val = a + b; finished.add(nd.v);
+        x.rec(view({ [nd.v]: 'found' }), 3, `fib(${nd.k}) = ${a} + ${b} = ${nd.val}.`, asked < 3 && nd.k >= 3 ? (asked++, numq(`fib(${nd.k - 1}) = ${a} and fib(${nd.k - 2}) = ${b}. What is fib(${nd.k})?`, a + b, [a, a + b + 1, Math.abs(a - b)], `Add the two answers: ${a} + ${b} = ${a + b}.`)) : null, [['Calls', calls]]);
+        return nd.val;
+      };
+      const value = go(root);
+      const worst = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+      x.rec(view(), 4, `fib(${n}) = ${value}, but it took ${calls} calls. fib(${worst[0]}) alone was worked out ${worst[1]} times. Writing answers down would avoid that.`, null, [['Calls', calls]]);
+      x.result = { n, value, calls, counts };
     },
   };
 

@@ -127,6 +127,8 @@
     'graphs:hamilton': ['Hamilton paths', '/graphs/#hamilton'],
     'techniques:mo': ['Mo’s algorithm', '/techniques/#mo'],
     'text:aho': ['Aho-Corasick', '/text/#aho'],
+    'techniques:recursion': ['Recursion', '/techniques/#recursion'],
+    'techniques:fibtree': ['Recursion: the call tree', '/techniques/#fibtree'],
     'sorting:bubble': ['Bubble sort', '/sorting/'],
     'sorting:selection': ['Selection sort', '/sorting/'],
     'sorting:insertion': ['Insertion sort', '/sorting/'],
@@ -153,7 +155,7 @@
   // With no ref it is still to do ("tbd"); next = true marks what gets built soon.
   const DSA = [
     ['Think like a computer', [
-      ['Steps and loops', 'techniques:loops'], ['Big O', '/sorting/#compare'], ['Best, worst and average case', 'techniques:cases'], ['Space and time', 'techniques:spacetime'], ['Recursion', 'play:towers'],
+      ['Steps and loops', 'techniques:loops'], ['Big O', '/sorting/#compare'], ['Best, worst and average case', 'techniques:cases'], ['Space and time', 'techniques:spacetime'], ['Recursion', 'techniques:recursion'],
       ['Invariants', 'techniques:invariants'], ['Amortised cost', 'techniques:amortised'],
     ]],
     ['Search and order', [

@@ -972,3 +972,17 @@ def test_aho_corasick_finds_every_word_in_one_pass():
         inp, fr = run("text", "aho")
         want = sorted(([w, i] for w in inp["words"] for i in range(len(inp["text"])) if inp["text"].startswith(w, i)), key=lambda m: (m[1], m[0]))
         assert fr[-1]["result"]["found"] == want
+
+
+# ---------- recursion ----------
+
+def test_recursion_lessons():
+    for _ in range(20):
+        inp, fr = run("techniques", "recursion")
+        assert fr[-1]["result"]["value"] == math.factorial(inp["n"])
+        inp, fr = run("techniques", "fibtree")
+        fib = lambda k: k if k < 2 else fib(k - 1) + fib(k - 2)
+        res = fr[-1]["result"]
+        assert res["value"] == fib(inp["n"])
+        assert res["calls"] == 2 * fib(inp["n"] + 1) - 1  # the number of calls in the naive recursion
+        assert res["counts"]["1"] >= 2  # the repeated work the lesson is about
