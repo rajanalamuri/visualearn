@@ -392,3 +392,176 @@ def test_percent_squares_balance_and_pythagoras(arith):
         for b in range(1, 9):
             ca, cb = call(arith, f"VLArith.clamp('eq', {a}, {b})")
             assert cb >= ca  # x is never negative
+
+
+# ---------- structures, shortest paths, dynamic programming ----------
+
+@pytest.fixture(scope="module")
+def structs():
+    return load("structures.js")
+
+
+def lesson_ok(ctx, glob, key, frames):
+    al = call(ctx, f"{glob}.ALGOS.{key}")
+    assert al["name"] and al["blurb"] and len(al["facts"]) == 3
+    check_offline(al["offline"])
+    check_frames(frames, len(al["code"]))
+
+
+def test_array_insert_shifts_the_right_numbers(structs):
+    rng = random.Random(31)
+    for _ in range(30):
+        a = rng.sample(range(10, 99), 5)
+        val = next(v for v in range(10, 99) if v not in a)
+        pos, read = rng.randint(0, 2), rng.randint(0, 4)
+        inp = {"a": a, "val": val, "pos": pos, "read": read}
+        fr = call(structs, f"VLStructures.record('array', {json.dumps(inp)})")
+        lesson_ok(structs, "VLStructures", "array", fr)
+        want = a[:pos] + [val] + a[pos:] + [None] * 2
+        assert fr[-1]["cells"] == want and fr[-2]["cells"] == want
+        assert fr[-1]["c"] == len(a) - pos
+        for f in fr:
+            if f["q"] and "must move" in f["q"]["text"]:
+                assert int(f["q"]["options"][f["q"]["answer"]]) == len(a) - pos
+            if f["q"] and "read slot" in f["q"]["text"]:
+                assert f["q"]["options"][f["q"]["answer"]] == "1"
+
+
+def test_hash_puts_every_number_on_its_shelf_and_finds_it(structs):
+    rng = random.Random(32)
+    for _ in range(30):
+        keys = rng.sample(range(10, 99), 8)
+        t = rng.choice(keys)
+        fr = call(structs, f"VLStructures.record('hash', {json.dumps({'keys': keys, 'find': t})})")
+        lesson_ok(structs, "VLStructures", "hash", fr)
+        shelves = fr[-1]["shelves"]
+        assert sorted(sum(shelves, [])) == sorted(keys)
+        for b, items in enumerate(shelves):
+            assert all(k % 7 == b for k in items)
+        chain = shelves[t % 7]
+        assert fr[-1]["c"] == chain.index(t) + 1
+        for f in fr:  # a question about a shelf has the true remainder as its answer
+            if f["q"] and "remainder" in f["q"]["text"]:
+                k = int(f["q"]["text"].split()[0])
+                assert int(f["q"]["options"][f["q"]["answer"]]) == k % 7
+
+
+def test_tree_follows_the_rule_and_search_costs_depth_plus_one(structs):
+    rng = random.Random(33)
+    for _ in range(30):
+        keys = rng.sample(range(10, 99), 7)
+        t = rng.choice(keys)
+        fr = call(structs, f"VLStructures.record('bst', {json.dumps({'keys': keys, 'target': t})})")
+        lesson_ok(structs, "VLStructures", "bst", fr)
+        assert sorted(fr[-1]["placed"]) == sorted(keys) and fr[-1]["found"] == t
+        lay = call(structs, f"(() => {{ const L = VLStructures.layout({json.dumps(keys)}); return {{ d: [...L.depth], p: [...L.parent] }}; }})()")
+        depth = dict(lay["d"])
+        assert fr[-1]["c"] == depth[t] + 1
+        for f in fr:  # left means smaller; the question compares the number being placed or searched
+            if f["q"] and f["q"]["options"][0].startswith("Left"):
+                v, n = (int(x) for x in f["q"]["text"].replace(":", "").split(" against ")[0:1] + f["q"]["text"].split(" against ")[1].split(":")[0:1])
+                assert (f["q"]["answer"] == 0) == (v < n)
+
+
+def test_every_structures_lesson_is_complete(structs):
+    assert list(call(structs, "VLStructures.ALGOS")) == ["array", "hash", "bst"]
+    for key in ("array", "hash", "bst"):
+        for _ in range(5):
+            inp = call(structs, f"VLStructures.make('{key}')")
+            lesson_ok(structs, "VLStructures", key, call(structs, f"VLStructures.record('{key}', {json.dumps(inp)})"))
+
+
+@pytest.fixture(scope="module")
+def paths():
+    return load("paths.js")
+
+
+def reference_dijkstra(w, edges, n):
+    adj = {i: [] for i in range(n)}
+    for (a, b), x in zip(edges, w):
+        adj[a].append((b, x)); adj[b].append((a, x))
+    dist = [float("inf")] * n
+    dist[0] = 0
+    todo = set(range(n))
+    while todo:
+        u = min(todo, key=lambda i: dist[i])
+        todo.remove(u)
+        for v, x in adj[u]:
+            dist[v] = min(dist[v], dist[u] + x)
+    return dist
+
+
+def test_dijkstra_matches_a_reference_and_the_route_adds_up(paths):
+    edges = call(paths, "VLPaths.EDGES")
+    rng = random.Random(34)
+    for _ in range(60):
+        w = [rng.randint(1, 9) for _ in edges]
+        fr = call(paths, f"VLPaths.record({json.dumps({'w': w})})")
+        lesson_ok(paths, "VLPaths", "dijkstra", fr)
+        ref = reference_dijkstra(w, edges, 6)
+        last = fr[-1]
+        assert last["dist"][5] == ref[5]
+        route = last["path"]
+        assert route[0] == 0 and route[-1] == 5
+        length = 0
+        for a, b in zip(route, route[1:]):
+            length += next(x for (p, q), x in zip(edges, w) if {p, q} == {a, b})
+        assert length == ref[5]
+        for f in fr:  # settled distances are final, and the quiz picks the true minimum
+            for i, d in enumerate(f["dist"]):
+                if f["done"][i]:
+                    assert d == ref[i]
+            if f["q"]:
+                best = f["q"]["options"][f["q"]["answer"]]
+                assert int(best.split("(")[1].rstrip(")")) == min(int(o.split("(")[1].rstrip(")")) for o in f["q"]["options"])
+
+
+@pytest.fixture(scope="module")
+def dp():
+    return load("dp.js")
+
+
+def test_coin_table_is_optimal_and_greedy_is_not_always(dp):
+    for coins in ([1, 3, 4], [1, 4, 5], [1, 5, 6], [1, 4, 6]):
+        for amount in range(8, 13):
+            best = [0] + [10**9] * amount
+            for a in range(1, amount + 1):
+                best[a] = min(best[a - c] + 1 for c in coins if c <= a)
+            fr = call(dp, f"VLDp.record('coins', {json.dumps({'coins': coins, 'amount': amount})})")
+            lesson_ok(dp, "VLDp", "coins", fr)
+            assert fr[-1]["dp"] == best
+            for f in fr:
+                if f["q"]:
+                    a = int(f["q"]["text"].split("make ")[1].rstrip("?"))
+                    assert int(f["q"]["options"][f["q"]["answer"]]) == best[a]
+    assert call(dp, "VLDp.greedy([1, 3, 4], 6)") == 3  # 4 + 1 + 1, though 3 + 3 uses only 2
+
+
+def test_grid_counts_every_walk(dp):
+    rng = random.Random(35)
+    for _ in range(40):
+        inp = call(dp, "VLDp.make('grid')")
+        rows, cols, walls = inp["rows"], inp["cols"], set(inp["walls"])
+        assert 0 not in walls and rows * cols - 1 not in walls
+        table = [[0] * cols for _ in range(rows)]
+        for r in range(rows):
+            for c in range(cols):
+                if r * cols + c in walls:
+                    continue
+                table[r][c] = 1 if (r, c) == (0, 0) else (table[r - 1][c] if r else 0) + (table[r][c - 1] if c else 0)
+        assert table[-1][-1] > 0
+        fr = call(dp, f"VLDp.record('grid', {json.dumps(inp)})")
+        lesson_ok(dp, "VLDp", "grid", fr)
+        assert [v for row in table for v in row] == fr[-1]["table"]
+    assert list(call(dp, "VLDp.ALGOS")) == ["coins", "grid"]
+
+
+@pytest.mark.parametrize("page,script", [("structures", "structures.js"), ("paths", "paths.js"), ("dp", "dp.js")])
+def test_new_lesson_pages_have_what_the_player_needs(page, script):
+    html = (ASSETS.parent / page / "index.html").read_text(encoding="utf-8")
+    for i in ("algos", "note", "code", "stats", "scrub", "b-play", "b-fwd", "b-reset", "b-back", "b-new", "b-print", "speed", "predict",
+              "quiz", "quiz-q", "quiz-opts", "quiz-fb", "quiz-skip", "done", "done-text", "algo-name", "algo-blurb", "algo-facts",
+              "off-title", "off-need", "off-time", "off-steps", "off-think", "off-algo", "view"):
+        assert f'id="{i}"' in html, i
+    assert f'src="/assets/{script}"' in html and 'src="/assets/player.js"' in html
+    assert f"https://visualearn.org/{page}/" in html and "maze" not in html.lower()

@@ -362,3 +362,35 @@ body.resting{overflow:hidden}
 @media (prefers-reduced-motion: reduce){
   .box,.cell,.sieve div,.card{transition:none}
 }
+
+/* data structures, paths and dynamic programming lessons */
+.box.gap{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line);color:var(--muted)}
+.shelves{display:grid;gap:6px;max-width:560px;width:100%;margin:0 auto}
+.shelf{display:flex;align-items:center;gap:10px;min-height:42px;padding:4px 10px;border-radius:8px;background:var(--paper);box-shadow:inset 0 0 0 1px var(--line);transition:background-color .15s}
+.shelf.on{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+.shelf>b{font-family:var(--font-code);width:1.4em;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-block;min-width:2.4em;padding:3px 9px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);
+  font-family:var(--font-code);font-variant-numeric:tabular-nums;text-align:center}
+.chip.cur{background:var(--cmp);color:#151a2d;box-shadow:none}
+.chip.found{background:var(--done);color:#fff;box-shadow:none}
+.pocket{margin:6px 0 0;text-align:center;color:var(--muted)}
+.treewrap,.graphwrap{display:flex;flex-direction:column;align-items:center;width:100%}
+.tree,.graph{width:100%;max-width:640px;height:auto}
+.t-edge,.g-edge{stroke:var(--line);stroke-width:2.5;vector-effect:non-scaling-stroke}
+.t-node circle,.g-node circle{fill:var(--surface);stroke:var(--ink-2);stroke-width:2;vector-effect:non-scaling-stroke;transition:fill .15s}
+.t-node text,.g-node text{fill:var(--ink);font-family:var(--font-code);font-size:15px;font-weight:600}
+.t-node.cur circle,.g-node.cur circle{fill:var(--cmp);stroke:var(--cmp)}
+.t-node.cur text,.g-node.cur text{fill:#151a2d}
+.t-node.found circle,.g-node.path circle{fill:var(--done);stroke:var(--done)}
+.t-node.found text,.g-node.path text{fill:#fff}
+.g-node.done circle{fill:var(--accent);stroke:var(--accent)}
+.g-node.done text{fill:#fff}
+.g-node.seen circle{stroke:var(--cmp);stroke-width:3}
+.g-node .nm{font-size:12px;font-weight:600}
+.g-node .ds{font-size:14px}
+.g-edge.now{stroke:var(--cmp);stroke-width:4}
+.g-edge.path{stroke:var(--done);stroke-width:5}
+.g-len rect{fill:var(--paper);stroke:var(--line);vector-effect:non-scaling-stroke}
+.g-len text{fill:var(--ink);font-family:var(--font-code);font-size:13px}
+.maze.dpgrid .cell.cur{background:var(--cmp);color:#151a2d}
