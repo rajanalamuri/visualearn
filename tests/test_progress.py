@@ -150,3 +150,23 @@ def test_curriculum_page_loads_the_toc_after_the_content():
     html = (WEB / "curriculum" / "index.html").read_text(encoding="utf-8")
     assert "data-toc" in html and "/assets/toc.css" in html
     assert html.index("/assets/catalog.js") < html.index("/assets/toc.js")  # headings are drawn first
+
+
+# ---------- read aloud ----------
+
+def test_read_aloud_turns_symbols_into_words():
+    ctx = boot("speak.js")
+    say = lambda t: call(ctx, f"VLSpeak.clean({json.dumps(t)})")
+    assert say("3 × 4 = 12") == "3 times 4 = 12"
+    assert say("12 ÷ 3") == "12 divided by 3"
+    assert say("Home → A → School") == "Home to A to School"
+    assert say("5 − 2") == "5 minus 2" and say("2 + 3") == "2 plus 3"
+    assert say("At most log₂ n + 1 boxes") == "At most log base two n plus 1 boxes"
+    assert say("Work: O(n²)") == "Work: order n squared"
+    assert say("  plain   words  ") == "plain words"
+
+
+def test_read_aloud_loads_only_where_there_is_a_player():
+    for page in ("sorting", "searching", "mazes", "structures", "paths", "dp", "math/advanced"):
+        html = (WEB / page / "index.html").read_text(encoding="utf-8")
+        assert 'src="/assets/speak.js"' in html and 'class="knobs"' in html and 'id="note"' in html
