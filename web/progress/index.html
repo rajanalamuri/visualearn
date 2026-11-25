@@ -18,6 +18,7 @@
 <script src="/assets/limit.js" defer></script>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/assets/profile.js" defer></script>
 <script src="/assets/app.js" defer></script>
 <link rel="stylesheet" href="/assets/genz.css">
 </head>
@@ -40,6 +41,21 @@
 
 <main class="wrap ar pg">
   <h1>What have I explored?</h1>
+  <p class="lede" id="greet"></p>
+
+  <section class="diary me-section" id="me" aria-labelledby="me-h">
+    <h2 id="me-h">Who's playing?</h2>
+    <ul class="people" id="people"></ul>
+    <form class="join" id="join" autocomplete="off" novalidate>
+      <label for="nick">Pick a nickname <small>(not your real name)</small></label>
+      <input id="nick" name="nick" maxlength="12" autocapitalize="words" spellcheck="false" aria-describedby="join-msg">
+      <div class="swatches" id="swatches" role="radiogroup" aria-label="Pick a colour"></div>
+      <button class="btn primary" type="submit">Join</button>
+      <p class="fine" id="join-msg" role="alert"></p>
+    </form>
+    <button class="btn" id="add-person" type="button" hidden>+ Add someone</button>
+    <p class="fine">Nicknames live on this device only. No email, no password.</p>
+  </section>
 
   <section class="diary" aria-labelledby="d-today">
     <h2 id="d-today">Today</h2>

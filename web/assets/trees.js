@@ -117,7 +117,7 @@
 
     heap: {
       name: 'Heaps and priority queues',
-      blurb: 'A heap keeps the smallest number at the top. A new number goes in at the bottom and swaps upward while it is smaller than its parent. To take the smallest, remove the top and sift the last number down.',
+      blurb: 'A heap keeps the smallest number on top. A new number goes in at the bottom and swaps up while it is smaller than its parent. To take the smallest, remove the top and sink the last number down.',
       facts: [['Smallest', 'Always on top'], ['Add or remove', 'O(log n)'], ['Stored as', 'A plain array']],
       code: ['add: put the new number at the end', '  while it is smaller than its parent: swap up', 'remove: take the top', '  move the last number to the top', '  while it is bigger than a child: swap with the smaller child'],
       offline: off('The family pyramid', 'Number cards and a pyramid drawn on paper', '15 minutes', [
@@ -168,7 +168,7 @@
 
     heapsort: {
       name: 'Heap sort',
-      blurb: 'Turn the row into a heap with the biggest on top. Swap the top with the last place, and that last number is finished. Sift the new top down to fix the heap. Repeat until all are finished.',
+      blurb: 'Turn the row into a heap with the biggest on top. Swap the top with the last place: that number is finished. Fix the heap and repeat until every number is finished.',
       facts: [['Time', 'O(n log n)'], ['Extra memory', 'None'], ['Compares', 'Parent against children']],
       code: ['build a max-heap (biggest on top)', 'repeat:', '  swap the top with the last unfinished place', '  that place is now finished', '  sift the new top down to rebuild the heap'],
       offline: off('Pyramid sort', 'Number cards (7) and a pyramid drawn on paper', '15 minutes', [
@@ -266,7 +266,7 @@
 
     avl: {
       name: 'Balanced trees (AVL)',
-      blurb: 'A search tree stays fast only if it stays bushy. Adding numbers in order would make a lopsided stick. An AVL tree watches the height on each side of every node, and rotates the tree when one side gets two taller.',
+      blurb: 'A search tree is fast only if it stays bushy. Adding numbers in order makes a lopsided stick. An AVL tree checks each node, and when one side gets two levels taller than the other, it rotates to fix it.',
       facts: [['Height', 'About log₂ n'], ['Find or add', 'O(log n)'], ['Fix', 'Rotate']],
       code: ['add the number like a normal search tree', 'going back up, check each node: left height − right height', 'if it is 2 or −2, this node is lopsided', 'rotate it to even the sides out', 'the tree is balanced again'],
       offline: off('Tip the tree', 'Paper, a pencil and 6 numbers in increasing order', '15 minutes', [
@@ -311,7 +311,7 @@
 
     segment: {
       name: 'Segment trees',
-      blurb: 'A segment tree stores the sum of every dyadic chunk of a row: the whole row at the top, halves below, and single numbers at the bottom. Any stretch is then answered by combining a few chunks.',
+      blurb: 'A segment tree keeps the sum of every chunk of a row: the whole row on top, halves below, single numbers at the bottom. Any stretch can be added up by combining just a few chunks.',
       facts: [['Build', 'O(n)'], ['Range query', 'O(log n)'], ['Update one number', 'O(log n)']],
       code: ['leaves hold the numbers', 'each parent holds the sum of its two children', 'query(range): if a chunk is fully inside, use it', 'if it only partly overlaps, ask both children', 'if it is outside, skip it'],
       offline: off('Sum pyramid', 'Paper and 8 numbers', '15 minutes', [
@@ -342,7 +342,7 @@
 
     fenwick: {
       name: 'Fenwick trees',
-      blurb: 'A Fenwick tree (or BIT) stores running totals in a clever way: cell i holds the sum of the last (lowest set bit of i) numbers. A prefix sum then needs only a few cells, found by stripping the lowest set bit.',
+      blurb: 'A Fenwick tree stores running totals in a clever way. Each cell adds up a block of numbers that ends there. A total of the first few numbers needs only a few cells.',
       facts: [['Prefix sum', 'O(log n)'], ['Memory', 'Same as the row'], ['Trick', 'i − (i & −i)']],
       code: ['T[i] = sum of the last (lowest set bit of i) numbers', 'prefix(k): total ← 0, i ← k', 'while i > 0:', '  total ← total + T[i]', '  i ← i − (lowest set bit of i)'],
       offline: off('Binary jumps', 'Paper and 8 numbers', '15 minutes', [
@@ -374,7 +374,7 @@
 
     sparse: {
       name: 'Sparse tables',
-      blurb: 'A sparse table pre-computes the smallest number in every block whose length is a power of 2. Any stretch is then covered by two overlapping blocks, so each question takes one look-up.',
+      blurb: 'A sparse table writes down the smallest number in every block that is 1, 2, 4 or 8 long. Any stretch is covered by two blocks that overlap, so each question takes one look.',
       facts: [['Build', 'O(n log n)'], ['Query', 'O(1)'], ['Works for', 'Min, max, gcd']],
       code: ['level 0: the numbers themselves', 'level k: min of two blocks of level k−1', 'query(l, r): k ← biggest power of 2 that fits', 'answer ← min(block at l, block ending at r)'],
       offline: off('Overlapping blocks', 'Paper and 8 numbers', '15 minutes', [
@@ -404,7 +404,7 @@
 
   ALGOS.btree = {
     name: 'B-trees',
-    blurb: 'A B-tree keeps several numbers in each node, so the tree is short and wide. That suits disks and databases, where fetching a node is slow. When a node gets too full it splits: the middle number moves up, and the tree grows from the top.',
+    blurb: 'A B-tree keeps several numbers in each node, so the tree is short and wide. Databases love that. When a node gets too full it splits, and the middle number moves up.',
     facts: [['Keys per node', 'Up to 2 here'], ['All leaves', 'Same depth'], ['Used for', 'Databases, file systems']],
     code: ['walk down to the leaf where the number belongs', 'put the number in that leaf, in order', 'if the node now holds 3 numbers: split it', '  the middle number moves up to the parent', 'if the root splits, the tree grows taller'],
     offline: off('Boxes of numbers', 'Paper, a pencil and 7 numbers', '15 minutes', [
@@ -450,7 +450,7 @@
 
   ALGOS.skiplist = {
     name: 'Skip lists',
-    blurb: 'A skip list is a sorted list with express lanes. The top lane has only a few numbers and lets you leap far. Go right while the next number is not too big, then drop down a lane and keep going. It searches like a tree, but is only lists.',
+    blurb: 'A skip list is a sorted list with express lanes. The top lane leaps far. Go right while the next number is not too big, then drop down a lane. It searches fast, like a tree, but it is only lists.',
     facts: [['Search', 'About log n steps'], ['Built from', 'Sorted lanes'], ['Uses', 'Chance to choose lanes']],
     code: ['start at the top lane, left end', 'if the next number on this lane is not past the target: move right', 'otherwise: drop down one lane', 'on the bottom lane: stop at the target, or it is missing'],
     offline: off('Express lanes', 'Paper: a bottom row of 8 sorted numbers, and shorter rows above', '15 minutes', [
@@ -490,7 +490,7 @@
 
   ALGOS.treedp = {
     name: 'Tree DP',
-    blurb: 'Pick nodes of a tree for the most total value, but never two joined nodes. For each node work out the best total if you take it, and the best if you skip it, using answers already worked out for its children.',
+    blurb: 'Pick nodes in a tree to get the most total value, but never two nodes that are joined. For each node work out the best total if you take it and if you skip it, using what its children already found.',
     facts: [['Order', 'Children first'], ['Per node', 'Take or skip'], ['Time', 'O(nodes)']],
     code: ['for each node, children first', '  take it: its value + each child\'s skip total', '  skip it: each child\'s better of take and skip', 'the answer is the bigger of the root\'s two totals'],
     offline: off('Pick without neighbours', 'A tree of 7 circles on paper, each with a value', '15 minutes', [
@@ -523,7 +523,7 @@
 
   ALGOS.treap = {
     name: 'Treaps',
-    blurb: 'A treap is a search tree and a heap at the same time. Numbers are ordered by key like a normal search tree, and every node also gets a random priority, with the highest priority kept at the top. Random priorities keep the tree bushy, even if the keys arrive in order.',
+    blurb: 'A treap is a search tree with a random priority on every node. Keys keep the order left to right. Priorities keep the biggest at the top. The randomness keeps the tree bushy, even when the keys arrive in order.',
     facts: [['Order by', 'Key (left < right)'], ['Heap by', 'Random priority'], ['Height', 'About log n, by luck']],
     code: ['add the node like a normal search tree, by key', 'give it a random priority (p)', 'while its priority is higher than its parent\'s:', '  rotate it above its parent', 'search order and priority order both hold'],
     offline: off('Keys and dice', 'Paper, a pencil, a dice or number cards for priorities, and 7 numbers in order', '20 minutes', [
@@ -561,7 +561,7 @@
 
   ALGOS.hld = {
     name: 'Heavy-light decomposition',
-    blurb: 'To make paths in a tree quick, split the tree into long chains. Each node keeps going down through its heaviest child (the one with the biggest subtree). A path from any node to the top then crosses only a few chains, because every time you leave a chain the subtree at least doubles.',
+    blurb: 'Split a tree into long chains by always going down to the child with the biggest subtree. Any path then crosses only a few chains, because each time you leave a chain the tree at least doubles.',
     facts: [['Heavy child', 'Biggest subtree'], ['Chains crossed', 'At most about log n'], ['Used for', 'Fast path queries']],
     code: ['size[node] ← 1 + the sizes of its children', 'heavy child ← the child with the biggest size', 'a heavy child continues its parent\'s chain', 'every other child starts a new chain', 'path query: while the chains differ, jump the deeper chain\'s head to its parent'],
     offline: off('Chains in a tree', 'A tree of 9 circles on paper and coloured pencils', '20 minutes', [

@@ -73,7 +73,7 @@
   const ALGOS = {
     dijkstra: {
       name: "Dijkstra's shortest path",
-      blurb: 'Keep the best distance found so far to every town. Always settle the closest unsettled town, because nothing can beat it now. Then check each road out of it: does it give a neighbour a shorter way?',
+      blurb: 'Keep the best distance found so far to each town. Always settle the closest town you have not settled, because nothing can beat it now. Then see if its roads give a neighbour a shorter way.',
       facts: [['Finds', 'Shortest way'], ['Roads', 'Never negative'], ['Work', 'O(E log V)']],
       code: [
         'Home is 0; every other town is ?',

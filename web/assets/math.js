@@ -6,7 +6,7 @@
   const ALGOS = {
     sieve: {
       name: 'Sieve of Eratosthenes',
-      blurb: 'A prime is a number with exactly two factors: 1 and itself. Over 2,000 years ago Eratosthenes found them all by crossing out multiples. Whatever is never crossed out is prime.',
+      blurb: 'A prime is a number whose only factors are 1 and itself. More than 2,000 years ago Eratosthenes found them by crossing out multiples. The numbers left uncrossed are prime.',
       facts: [['Invented', 'About 240 BC'], ['Stops at', '√N'], ['Work', 'O(N log log N)']],
       code: [
         'write the numbers 2 … N',
@@ -32,7 +32,7 @@
 
     euclid: {
       name: "Euclid's GCD",
-      blurb: 'The greatest common divisor of two numbers is the biggest number that divides both. Euclid found it by cutting the biggest squares he could off a rectangle, again and again, until no strip was left.',
+      blurb: 'The greatest common divisor is the biggest number that divides both numbers. Euclid found it by cutting the biggest squares he could off a rectangle, again and again, until nothing was left.',
       facts: [['Invented', 'About 300 BC'], ['Uses', 'Fractions, gears'], ['Work', 'O(log n)']],
       code: [
         'gcd(a, b)   // a × b rectangle',

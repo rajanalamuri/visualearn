@@ -235,7 +235,7 @@
 
     deque: {
       name: 'Deques',
-      blurb: 'A deque is a line you can add to or take from at both ends. It finds the biggest number in every window of 3 by keeping only candidates, the big ones, and dropping the small ones behind them.',
+      blurb: 'A deque is a line you can add to or remove from at both ends. To find the biggest number in every window, keep only the numbers that might still win and drop the smaller ones behind a bigger newcomer.',
       facts: [['Ends', 'Both open'], ['Time', 'O(n)'], ['Used for', 'Window maximum']],
       code: ['deque ← empty (holds positions)', 'for each number n', '  drop from the BACK while the back is ≤ n', '  add n at the back', '  drop from the FRONT if it left the window', '  the front is the window maximum'],
       offline: off('Candidates in a queue', '9 number cards and a strip of paper', '15 minutes', [
@@ -292,7 +292,7 @@
 
     cycle: {
       name: 'Cycle detection',
-      blurb: 'Is a chain of links a loop? Send a slow walker (1 step) and a fast walker (2 steps). On a loop the fast one laps the slow one and they meet. On a straight chain the fast one runs off the end.',
+      blurb: 'Is a chain of links a loop? Send a slow walker (1 step) and a fast walker (2 steps). On a loop the fast one catches the slow one. On a straight chain the fast one runs off the end.',
       facts: [['Memory', 'O(1)'], ['Time', 'O(n)'], ['Also called', "Floyd's tortoise and hare"]],
       code: ['slow ← head; fast ← head', 'while fast and fast.next exist', '  slow ← slow.next', '  fast ← fast.next.next', '  if slow = fast: a cycle!', 'fast ran off the end: no cycle'],
       offline: off('Tortoise and hare', 'A drawing of 7 dots joined by arrows, and two coins', '10 minutes', [
@@ -350,7 +350,7 @@
 
     spiral: {
       name: 'Matrices and grids',
-      blurb: 'A grid is a list of lists. To walk all of it in a spiral, go right until the edge, then down, left, and up, turning each time you hit the edge or a square you have already visited.',
+      blurb: 'A grid is a list of rows. To visit it in a spiral, go right until the edge, then down, left and up. Turn whenever the next square is off the grid or already visited.',
       facts: [['Squares', 'rows × columns'], ['Time', 'O(rows × columns)'], ['Turns at', 'Edges and visited squares']],
       code: ['direction ← right', 'repeat rows × columns times', '  visit this square', '  if the next square is off the grid or visited: turn clockwise', '  step forward'],
       offline: off('Spiral walk', 'Squared paper (3 rows by 4 columns) and a pencil', '10 minutes', [
@@ -386,7 +386,7 @@
 
     amortised: {
       name: 'Amortised cost',
-      blurb: 'A growing list is stored in a box with spare room. Adding is cheap until the box is full; then everything is copied to a box twice as big. That copy is rare enough that the average cost per add stays small.',
+      blurb: 'A growing list lives in a box with spare room. Adding is cheap until the box is full. Then everything is copied into a box twice as big. That copy is rare, so adding stays cheap on average.',
       facts: [['One add', 'Usually 1 step'], ['Average add', 'Under 3 steps'], ['Trick', 'Double when full']],
       code: ['if the box is full:', '  make a box twice as big', '  copy everything across', 'put the new item in', 'average cost = total work ÷ adds'],
       offline: off('The doubling shelf', 'Paper cups and small objects', '10 minutes', [
@@ -414,7 +414,7 @@
 
     invariants: {
       name: 'Invariants',
-      blurb: 'An invariant is a promise that stays true every time round a loop. In insertion sort the promise is: everything to the left of the arrow is already in order. If it holds at the start and every step keeps it, the end is sorted.',
+      blurb: 'An invariant is a promise that stays true every time round a loop. In insertion sort the promise is that everything left of the arrow is in order. If every step keeps the promise, the end is sorted.',
       facts: [['Promise', 'Left part is sorted'], ['Start', 'True for 1 number'], ['End', 'Whole row sorted']],
       code: ['invariant: a[0 … i−1] is sorted', 'for i = 1 … n−1', '  take a[i] out', '  slide bigger numbers right', '  drop it in the gap', '  (invariant: a[0 … i] is sorted)'],
       offline: off('Keep the promise', 'A hand of 6 playing cards', '10 minutes', [
@@ -466,7 +466,7 @@
 
   ALGOS.cases = {
     name: 'Best, worst and average case',
-    blurb: 'The same method can be quick or slow depending on the luck of the input. Searching boxes one by one is quickest if the target is in the first box (best case), slowest if it is last or missing (worst case), and about half the boxes on average.',
+    blurb: 'The same method can be lucky or unlucky. Opening boxes one by one is fastest when the target is in the first box. It is slowest when the target is last or missing. On average it takes about half the boxes.',
     facts: [['Best', 'Found first'], ['Worst', 'Last, or missing'], ['Average', 'About half']],
     code: ['for each box from the left', '  open it', '  if it holds the target: stop', 'not found: every box was opened'],
     offline: off('Luck of the draw', '8 cards face down in a row, and a friend', '10 minutes', [
@@ -490,7 +490,7 @@
 
   ALGOS.spacetime = {
     name: 'Space and time',
-    blurb: 'You can often trade memory for speed. Testing whether a number is prime by dividing takes many steps each time. Spend some memory once to write down all the answers in a table, and every later question takes one look.',
+    blurb: 'You can often swap memory for speed. Checking if a number is prime by dividing takes many steps each time. Write all the answers in a table once, and every question after that takes one look.',
     facts: [['Table', 'Costs space once'], ['Each question', 'One look'], ['Without', 'Many steps every time']],
     code: ['slow way: test by dividing, every question', 'fast way: build a table of answers first', 'each question: look it up in the table', 'more memory, less time'],
     offline: off('The answer sheet', 'Paper and a pencil', '15 minutes', [
@@ -521,7 +521,7 @@
 
   ALGOS.sqrt = {
     name: 'Sqrt decomposition',
-    blurb: 'Cut a long row into blocks of about the square root of its length, and write down each block\'s total. A sum over any stretch then adds a few single numbers at the ragged ends and whole blocks in the middle, instead of every number.',
+    blurb: 'Cut a long row into blocks and write down each block\'s total. To add up a stretch, use the written totals for whole blocks and add the few loose numbers at the ends.',
     facts: [['Blocks', 'About √n numbers each'], ['Query', 'About √n steps'], ['Update', 'Fix one block total']],
     code: ['split the row into blocks of 3; write each block\'s total', 'query(l, r):', '  add single numbers until the start of a block', '  add whole block totals while a block fits', '  add single numbers for the ragged end'],
     offline: off('Chunked sums', 'Paper with 9 numbers in three boxes of three', '10 minutes', [
@@ -551,7 +551,7 @@
 
   ALGOS.mo = {
     name: "Mo's algorithm",
-    blurb: 'Many questions each ask about a stretch of a row, like "how many different numbers are in this stretch?" Instead of starting afresh each time, keep a window and slide its ends. Answer the questions in a clever order, grouped by block, so the window moves as little as possible.',
+    blurb: 'You have lots of questions about stretches of a row. Keep one window and slide its ends instead of starting over each time. Answer the questions in a smart order so the window barely moves.',
     facts: [['Window', 'Slides, never restarts'], ['Order', 'By block, then right end'], ['Total moves', 'About n√q']],
     code: ['sort the questions by (block of the left end, right end)', 'for each question in that order', '  move the left end to the question\'s left, adding or removing one number at a time', '  move the right end the same way', '  the window now holds exactly the question\'s stretch: read the answer'],
     offline: off('Sliding frame', 'A strip of 9 numbers from 1 to 4, and a card with a window', '20 minutes', [
@@ -586,7 +586,7 @@
 
   ALGOS.recursion = {
     name: 'Recursion',
-    blurb: 'A function that solves a problem by calling itself on a smaller version of it. 5! means 5 × 4!, and 4! means 4 × 3!, all the way down to 1!, which is just 1. That smallest case is the base case. Then every waiting call finishes on the way back up.',
+    blurb: 'A function can solve a problem by calling itself on a smaller version. 5! is 5 times 4!, and so on down to 1!, which is just 1. That smallest case is the base case. Then each waiting call finishes on the way back up.',
     facts: [['Needs', 'A base case'], ['Each call', 'A smaller problem'], ['Remembers', 'A stack of waiting calls']],
     code: ['factorial(n):', '  if n is 1: answer 1 (the base case)', '  otherwise: ask factorial(n − 1)', '  when it answers: multiply by n', '  give that answer back'],
     offline: off('Russian dolls', 'A set of nesting dolls (or 5 cups that stack), paper and a pencil', '10 minutes', [
@@ -622,7 +622,7 @@
 
   ALGOS.fibtree = {
     name: 'Recursion: the call tree',
-    blurb: 'Each Fibonacci number is the two before it added: fib(n) = fib(n − 1) + fib(n − 2). Written as recursion, every call makes two more calls, and the same small questions get asked again and again. The tree of calls shows how wasteful that is.',
+    blurb: 'Each Fibonacci number is the two before it added together. Written as recursion, every call makes two more calls, and the same small questions get asked again and again. The tree of calls shows the waste.',
     facts: [['Calls', 'Grow very fast'], ['Repeats', 'The same fib asked many times'], ['Fix', 'Remember answers (DP)']],
     code: ['fib(n):', '  if n is 0 or 1: answer n (the base case)', '  otherwise: ask fib(n − 1) and fib(n − 2)', '  add the two answers', '  give the sum back'],
     offline: off('Draw the calls', 'Paper and a pencil', '15 minutes', [

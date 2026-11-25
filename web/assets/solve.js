@@ -10,7 +10,7 @@
   const ALGOS = {
     divide: {
       name: 'Divide and conquer',
-      blurb: 'Split a big problem into two halves, solve each half the same way, then combine. Here: the best run of numbers in a row. The best run is in the left half, in the right half, or straddles the middle.',
+      blurb: 'Split a big problem into two halves, solve each half the same way, then combine the answers. Here the problem is the best run of numbers in a row. It is in the left half, in the right half, or across the middle.',
       facts: [['Steps', 'Split, solve, combine'], ['Time', 'O(n log n)'], ['Smallest piece', 'One number']],
       code: ['solve(range): if one number, that is the answer', 'split the range in the middle', 'best of the left half', 'best of the right half', 'best run straddling the middle', 'answer ← the biggest of the three'],
       offline: off('Halve and combine', 'Paper and 8 numbers, some negative', '15 minutes', [
@@ -43,7 +43,7 @@
 
     greedy: {
       name: 'Greedy choices',
-      blurb: 'A greedy method always takes the best-looking choice right now and never looks back. It is quick and often right, like giving change with the biggest coins first. But it can fail: with some coins, the quick choice is not the best.',
+      blurb: 'A greedy method always takes the best-looking choice right now and never looks back. Giving change with the biggest coins first works for many coins. But with some coins it gives a worse answer.',
       facts: [['Idea', 'Best choice now'], ['Speed', 'Very fast'], ['Risk', 'Can be wrong']],
       code: ['coins taken ← none; left ← the amount', 'repeat while something is left:', '  take the biggest coin that fits', '  subtract it from what is left', 'count the coins; compare with the best possible'],
       offline: off('Change maker', 'Coins or paper discs worth 25, 10, 5 and 1 (or 4, 3 and 1)', '10 minutes', [
@@ -69,7 +69,7 @@
 
     intervals: {
       name: 'Interval scheduling',
-      blurb: 'Many meetings want one room. To fit the most, sort them by when they end. Take the first. Then take the next one that starts after the last one chosen ended. Finishing early leaves the most room.',
+      blurb: 'Many meetings want one room. To fit the most, sort them by when they end. Take the first, then the next one that starts after the last one ended. Finishing early leaves the most room.',
       facts: [['Sort by', 'Finish time'], ['Time', 'O(n log n)'], ['Method', 'Greedy']],
       code: ['sort meetings by finish time', 'chosen ← none; last end ← 0', 'for each meeting in order', '  if it starts after the last end: choose it', '  else skip it'],
       offline: off('Fit the meetings', 'Paper strips of different lengths and a long line marked 1 to 12', '15 minutes', [
@@ -97,7 +97,7 @@
 
     backtrack: {
       name: 'Backtracking',
-      blurb: 'Try a choice. If it leads nowhere, undo it and try the next one. For each number, either take it or leave it. As soon as the total goes over the target, give up on that branch without trying the rest.',
+      blurb: 'Try a choice. If it leads nowhere, undo it and try another. For each number, take it or leave it. As soon as the total goes over the target, give up on that branch.',
       facts: [['Idea', 'Try, undo, try again'], ['Saves time by', 'Giving up early'], ['Used for', 'Puzzles, mazes, Sudoku']],
       code: ['for each number, in order:', '  try taking it', '  if the total is over the target: give up (backtrack)', '  if the total equals the target: found!', '  then try leaving it out', 'every choice tried: no answer'],
       offline: off('Pick and undo', 'Paper, a pencil and 5 number cards', '15 minutes', [
@@ -132,7 +132,7 @@
 
     nqueens: {
       name: 'N-Queens',
-      blurb: 'Place queens on a board so none can capture another. Put one queen in each row, left to right across the choices. If a row has no safe square, go back to the row above and move its queen.',
+      blurb: 'Place queens on a board so none can capture another. Put one queen in each row. If a row has no safe square, go back to the row above and move its queen.',
       facts: [['Goal', 'No two queens attack'], ['Method', 'Backtracking'], ['Rows', 'One queen each']],
       code: ['for each row', '  for each column: is it safe?', '    safe: place a queen, go to the next row', '    no safe column: go back and move the queen above', 'every row has a queen: solved'],
       offline: off('Queens on paper', 'A 5 by 5 grid on paper, and 5 coins', '20 minutes', [
@@ -168,7 +168,7 @@
 
     knapsack: {
       name: 'Knapsack',
-      blurb: 'A bag holds a limited weight. Which items give the most value? Build a table: for each bag size and each new item, the best is either to leave the item (best without it) or take it (its value plus the best for the room that is left).',
+      blurb: 'A bag can only hold so much weight. Which items give the most value? Fill a table. For each item, either leave it, or take it and add its value to the best for the room that is left.',
       facts: [['Table', 'items × bag sizes'], ['Time', 'O(items × size)'], ['Method', 'Dynamic programming']],
       code: ['table[0][size] ← 0 (no items, no value)', 'for each item i, each bag size s', '  leave it: table[i−1][s]', '  take it (if it fits): value + table[i−1][s − weight]', '  table[i][s] ← the bigger of the two', 'the answer is the last cell'],
       offline: off('Pack the bag', 'Paper, a pencil and 4 items with weights and values', '20 minutes', [
@@ -198,7 +198,7 @@
 
     lcs: {
       name: 'Longest common subsequence',
-      blurb: 'Two words share letters in the same order, though not always next to each other. Fill a table: if two letters match, it is one more than the cell diagonally up-left; if not, take the bigger of the cell above and the cell to the left.',
+      blurb: 'Two words can share letters in the same order, even if the letters are not side by side. Fill a table. If two letters match, add 1 to the cell up-left. If not, copy the bigger of the cell above and the cell to the left.',
       facts: [['Compares', 'Two sequences'], ['Time', 'O(m × n)'], ['Used for', 'File diffs, DNA']],
       code: ['table[0][·] and table[·][0] are 0', 'for each letter pair (i, j)', '  if the letters match: table[i][j] ← table[i−1][j−1] + 1', '  else: table[i][j] ← the bigger of the cell above and the cell to the left', 'the last cell is the length'],
       offline: off('Shared letters', 'Two short words on paper and a grid', '15 minutes', [
@@ -229,7 +229,7 @@
 
     lis: {
       name: 'Longest increasing subsequence',
-      blurb: 'Pick numbers from a row, left to right, so each is bigger than the one before. For each number, the longest chain ending there is one more than the best chain ending at any smaller number to its left.',
+      blurb: 'Pick numbers from a row, left to right, so each one is bigger than the last. For each number, its best chain is 1 more than the best chain that ends at a smaller number before it.',
       facts: [['Time', 'O(n²) here'], ['Table', 'One cell per number'], ['Method', 'Dynamic programming']],
       code: ['best[i] ← 1 for every number', 'for each number i, left to right', '  for each earlier number j with a[j] < a[i]', '    best[i] ← the bigger of best[i] and best[j] + 1', 'the answer is the biggest best[i]'],
       offline: off('Climbing the row', 'Paper and 8 numbers in a row', '10 minutes', [
@@ -257,7 +257,7 @@
 
     edit: {
       name: 'Edit distance',
-      blurb: 'How many single-letter edits (add, remove, change) turn one word into another? Fill a table: each cell is the cheapest way to turn the first i letters of one word into the first j letters of the other.',
+      blurb: 'How many edits turn one word into another? An edit is adding, removing or changing one letter. A table stores the cheapest way to turn each start of one word into each start of the other.',
       facts: [['Edits', 'Add, remove, change'], ['Time', 'O(m × n)'], ['Used for', 'Spell-checkers']],
       code: ['table[i][0] ← i; table[0][j] ← j', 'for each letter pair (i, j)', '  if the letters match: copy the cell up-left', '  else: 1 + the smallest of up, left and up-left', 'the last cell is the distance'],
       offline: off('Fix the word', 'Two short words, paper and a pencil', '15 minutes', [
@@ -289,7 +289,7 @@
 
     popcount: {
       name: 'Bit tricks: counting 1s',
-      blurb: 'Computers store numbers as bits, 0s and 1s. Subtracting 1 flips the lowest 1 to 0 and everything after it to 1s. So n AND (n − 1) removes exactly the lowest 1. Count how often you can do that before reaching 0.',
+      blurb: 'Computers store numbers as bits. Subtracting 1 flips the last 1 bit to 0. So n AND (n minus 1) removes exactly one 1 bit. Count how many times until you reach 0.',
       facts: [['Trick', 'n AND (n − 1)'], ['Time', 'One step per 1-bit'], ['Used for', 'Fast counting and checks']],
       code: ['count ← 0', 'while n is not 0', '  n ← n AND (n − 1)  (removes the lowest 1)', '  count ← count + 1', 'count is the number of 1-bits'],
       offline: off('Flip the last 1', 'Paper and a pencil', '10 minutes', [
@@ -316,7 +316,7 @@
 
     xor: {
       name: 'Bit tricks: XOR',
-      blurb: 'XOR of two bits is 1 only when they differ. Any number XOR itself is 0, and XOR with 0 changes nothing. So if every number appears twice except one, XOR-ing them all makes the pairs cancel and leaves the loner.',
+      blurb: 'XOR gives 1 only where two bits are different, and a number XOR itself is 0. If every number appears twice except one, XOR them all. The pairs cancel and the loner is left.',
       facts: [['Rule', 'a XOR a = 0'], ['Time', 'One pass'], ['Extra memory', 'None']],
       code: ['answer ← 0', 'for each number n', '  answer ← answer XOR n', 'pairs cancel to 0, so answer is the number with no partner'],
       offline: off('Cancelling pairs', 'Paper and 7 numbers (3 pairs and 1 single)', '10 minutes', [
@@ -341,7 +341,7 @@
 
   ALGOS.bitmask = {
     name: 'Bitmask DP',
-    blurb: 'A bitmask is a row of 0s and 1s saying which jobs are already taken. Store the best cost for each possible mask. To fill a mask, remove one job and use the answer already stored for the smaller mask, plus that job\'s cost for the next worker.',
+    blurb: 'A bitmask is a row of 0s and 1s that shows which jobs are taken. Store the cheapest cost for every mask. Build each answer from a smaller mask plus one more job.',
     facts: [['Masks', '2ⁿ states'], ['Each', 'One cell per set'], ['Good for', 'Small sets (about 20)']],
     code: ['best[000] ← 0 (no jobs taken)', 'for each mask, smallest first', '  worker ← the number of jobs taken', '  for each job j in the mask: best[mask without j] + cost[worker][j]', '  best[mask] ← the smallest of those', 'the answer is best[111]'],
     offline: off('Jobs and workers', 'A 3 by 3 table of costs, paper and a pencil', '20 minutes', [
@@ -369,7 +369,7 @@
 
   ALGOS.meet = {
     name: 'Meet in the middle',
-    blurb: 'Trying every subset of 8 numbers means 256 sets. Instead split the numbers into two halves. List all sums of each half (only 16 each), sort them, and use two pointers to find one from each half that add to the target. Two small searches beat one huge one.',
+    blurb: 'Trying every subset of 8 numbers means 256 sets. Instead split the numbers in half. List the sums of each half, sort them, and use two pointers to find a pair that adds up to the target.',
     facts: [['Halves', 'Two small problems'], ['Sums per half', '2ⁿ/²'], ['Then', 'Two pointers']],
     code: ['split the numbers into a left half and a right half', 'list every subset sum of each half; sort both lists', 'left pointer at the smallest left sum, right pointer at the biggest right sum', 'if the two add to the target: found', 'if too small move the left pointer up; if too big move the right pointer down'],
     offline: off('Halve the search', 'Paper and 6 numbers', '20 minutes', [
@@ -399,7 +399,7 @@
 
   ALGOS.sudoku = {
     name: 'Sudoku',
-    blurb: 'Fill a 4 by 4 grid so every row, every column and each 2 by 2 box holds 1 to 4 once. Go through the empty squares in order, try each digit, and back up when a square has no digit that fits. That is backtracking again.',
+    blurb: 'Fill a 4 by 4 grid so every row, column and 2 by 2 box has 1 to 4 once. Try a digit in each empty square. If a square has nothing that fits, go back and change the last digit.',
     facts: [['Rule', 'No repeats in row, column or box'], ['Method', 'Try, back up'], ['Bigger sudokus', 'Same idea']],
     code: ['find the next empty square', 'for each digit 1 to 4: does it break a rule?', '  fits: write it, go on to the next empty square', '  nothing fits: go back and change the last digit', 'no empty squares: solved'],
     offline: off('Mini sudoku', 'A 4 by 4 grid on paper with a few digits filled in, and a pencil', '15 minutes', [

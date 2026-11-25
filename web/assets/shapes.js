@@ -16,7 +16,7 @@
   const ALGOS = {
     hull: {
       name: 'Convex hull',
-      blurb: 'Stretch a rubber band around a set of points. The points it touches form the convex hull. Walk the points from left to right keeping a chain; whenever the last three do not turn the right way, drop the middle one.',
+      blurb: 'Stretch a rubber band around some points. The points it touches make the convex hull. Walk the points from left to right, and whenever a point sticks inwards, drop it.',
       facts: [['Result', 'The outer boundary'], ['Time', 'O(n log n)'], ['Test', 'Which way do three points turn?']],
       code: ['sort the points from left to right', 'build the lower chain: add each point', '  while the last three turn the wrong way: drop the middle one', 'build the upper chain the same way, right to left', 'join the two chains'],
       offline: off('Rubber band', 'A board, 8 pins or coins, and a loop of string or a rubber band', '15 minutes', [
@@ -59,7 +59,7 @@
 
     sweep: {
       name: 'Line sweep',
-      blurb: 'Sweep an imaginary line across time from left to right, and only stop where something starts or ends. Add one when a meeting starts, take one away when it ends, and note the biggest count. That is how many meetings overlap at once.',
+      blurb: 'Sweep an invisible line across time and stop only when a meeting starts or ends. Add 1 at a start, take away 1 at an end, and remember the biggest number. That is how many meetings overlap.',
       facts: [['Stops at', 'Starts and ends only'], ['Time', 'O(n log n)'], ['Answer', 'Most at the same time']],
       code: ['list every start (+1) and end (−1) as an event', 'sort the events by time (ends before starts at a tie)', 'sweep through the events', '  add its +1 or −1 to the running count', '  remember the biggest count'],
       offline: off('Sweep the timeline', 'Paper strips marking meetings on a timeline from 0 to 12', '15 minutes', [
@@ -87,7 +87,7 @@
 
     closest: {
       name: 'Closest pair of points',
-      blurb: 'Which two points are nearest? Checking every pair is slow. Sort the points left to right. For each point, only look at points to its right, and stop as soon as the gap across is bigger than the best distance found.',
+      blurb: 'Which two points are nearest? Checking every pair is slow. Sort the points left to right. For each point, only look at points to its right, and stop when the sideways gap is already bigger than the best distance.',
       facts: [['Naive', 'O(n²)'], ['With sorting', 'Much faster in practice'], ['Trick', 'Stop when the x-gap is too big']],
       code: ['sort the points by x', 'best ← the distance of the first pair', 'for each point i', '  look at later points j', '  stop if the x-gap is already at least best', '  update best if the pair is closer'],
       offline: off('Nearest neighbours', 'Squared paper with 7 dots', '15 minutes', [

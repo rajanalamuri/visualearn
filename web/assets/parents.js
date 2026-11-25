@@ -43,7 +43,8 @@
     fb = { A, F, auth: A.getAuth(a), db: F.getFirestore(a) };
     return fb;
   }
-  const localLog = () => { try { return JSON.parse(localStorage.getItem('vl-log') || '{}') || {}; } catch { return {}; } };
+  const logKey = () => (globalThis.VLProgress ? VLProgress.logKey() : 'vl-log');
+  const localLog = () => { try { return JSON.parse(localStorage.getItem(logKey()) || '{}') || {}; } catch { return {}; } };
   const ref = () => fb.F.doc(fb.db, 'parents', fb.auth.currentUser.uid);
 
   function show(user) {
@@ -58,7 +59,7 @@
       const snap = await fb.F.getDoc(ref());
       const remote = snap.exists() ? JSON.parse(snap.data().log || '{}') : {};
       const merged = merge(localLog(), remote);
-      try { localStorage.setItem('vl-log', JSON.stringify(merged)); } catch { /* private mode */ }
+      try { localStorage.setItem(logKey(), JSON.stringify(merged)); } catch { /* private mode */ }
       await fb.F.setDoc(ref(), { log: JSON.stringify(merged), updated: Date.now() });
       say('Up to date on this device.');
     } catch { say('Could not sync. Check the connection and try again.'); }

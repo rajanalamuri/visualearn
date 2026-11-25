@@ -9,7 +9,7 @@
   const ALGOS = {
     random: {
       name: 'Randomised algorithms',
-      blurb: 'Sometimes chance can answer a question you cannot easily work out. Throw darts at random onto a square with a quarter-circle in it. The fraction that land inside the curve tells you the area, and so the number π.',
+      blurb: 'Sometimes luck can answer a hard question. Throw darts at a square with a quarter-circle in it. The share that land inside tells you about the circle, and so about the number pi.',
       facts: [['Uses', 'Random choices'], ['More darts', 'Better answer'], ['Name', 'Monte Carlo']],
       code: ['inside ← 0', 'throw a dart at a random square', '  if it lands inside the quarter-circle: inside ← inside + 1', 'after n darts: π ≈ 4 × inside ÷ n'],
       offline: off('Dart board', 'Squared paper (10 by 10), a dice or coin to choose squares, and a ruler', '20 minutes', [
@@ -37,7 +37,7 @@
 
     nim: {
       name: 'Game theory (minimax)',
-      blurb: 'Two players take turns removing 1, 2 or 3 stones. Whoever takes the last stone wins. Work backward: a pile is a win if some move leaves your opponent in a losing pile. A pile is a loss if every move leaves them winning.',
+      blurb: 'Two players take turns removing 1, 2 or 3 stones. Whoever takes the last stone wins. Work backwards: a pile is a win if one move leaves your opponent a losing pile.',
       facts: [['Players', 'Both play perfectly'], ['Win', 'Some move leaves a loss'], ['Loss', 'Every move leaves a win']],
       code: ['a pile of 0: the player to move has lost', 'for each pile size n, smallest first', '  look at the piles after taking 1, 2 or 3', '  if any of them is a loss for the opponent: n is a win', '  else n is a loss'],
       offline: off('Play the stones', '13 coins or counters and a friend', '15 minutes', [
@@ -63,7 +63,7 @@
 
     hard: {
       name: 'Easy and hard problems (P vs NP)',
-      blurb: 'Some problems are quick to check but seem slow to solve. Is there a set of these numbers that adds to the target? Checking a guess takes one pass. Finding one may mean trying every set, and the number of sets doubles with each new number. Nobody knows if a fast way always exists.',
+      blurb: 'Some problems are quick to check but seem slow to solve. Checking a guess takes one pass. Finding an answer may mean trying every set, and the number of sets doubles with each new number.',
       facts: [['Checking a guess', 'Fast'], ['Finding an answer', 'Maybe not'], ['Sets of n numbers', '2ⁿ']],
       code: ['to check a guess: add it up, compare with the target', 'to find one: try every set', 'with n numbers there are 2ⁿ sets', 'each new number doubles the work'],
       offline: off('Doubling sets', 'Paper and a pencil', '10 minutes', [
@@ -88,7 +88,7 @@
 
     approx: {
       name: 'Approximation',
-      blurb: 'Some problems are too hard to solve perfectly in time. A good approximation is quick and promises to be nearly as good. To guard every road with as few guards as possible, take an uncovered road and put guards at both ends. You never use more than twice the best.',
+      blurb: 'Some problems are too hard to solve perfectly in time. A good guess that is fast and never too far off is useful. Guard roads by putting guards at both ends of an unguarded road. You never use more than twice the best.',
       facts: [['Gives', 'Nearly the best'], ['Promise', 'At most twice as many'], ['Speed', 'Fast']],
       code: ['guards ← none', 'pick any road with no guard at either end', 'put guards at both ends', 'now every road touching those towns is guarded', 'repeat until every road is guarded'],
       offline: off('Guard the roads', 'Paper and a pencil, and a small map of 6 towns and 7 roads', '15 minutes', [

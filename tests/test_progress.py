@@ -6,7 +6,7 @@ import quickjs
 
 ASSETS = Path(__file__).resolve().parent.parent / "web" / "assets"
 WEB = ASSETS.parent
-FAKE_STORE = "var store = {}; var localStorage = { getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } };"
+FAKE_STORE = "var store = {}; var localStorage = { getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: k => { delete store[k]; } };"
 
 
 def boot(*names):
@@ -203,3 +203,107 @@ def test_parents_page_is_off_until_configured_and_kids_pages_load_no_firebase():
         if html.parent.name != "parents":
             assert "parents.js" not in text and "firebase" not in text, html
     assert "gstatic.com/firebasejs" in (WEB / "assets" / "parents.js").read_text(encoding="utf-8")
+
+
+# ---------- profiles (sign-up) ----------
+
+def signup(ctx, name, color="null"):
+    return call(ctx, f"VLProgress.signUp({json.dumps(name)}, {color})")
+
+
+def test_nickname_rules_keep_real_details_out():
+    ctx = boot("progress.js")
+    bad = {"": "Pick", "   ": "Pick", "abcdefghijklmn": "12", "a@b.com": "letters", "<script>": "letters", "0412345678": "numbers", "Nova!": "letters"}
+    for name, why in bad.items():
+        r = signup(ctx, name)
+        assert r["ok"] is False and why.lower() in r["why"].lower(), (name, r)
+    for name in ["Nova", "  Ava   Mae ", "Zoë", "李雷", "Jo-Jo", "O'Neil", "Max 7"]:
+        assert call(ctx, f"VLProgress.checkName({json.dumps(name)})")["ok"], name
+    assert call(ctx, "VLProgress.checkName('  Ava   Mae ')")["name"] == "Ava Mae"  # tidy spacing
+    assert call(ctx, "VLProgress.profiles()") == []  # nothing was created by the rejects
+
+
+def test_sign_up_creates_an_active_profile_with_its_own_diary():
+    ctx = boot("progress.js")
+    ctx.eval("VLProgress.mark('math:add');")  # a diary from before profiles existed
+    r = signup(ctx, "Nova", "'#5be3b0'")
+    assert r["ok"] and r["profile"]["name"] == "Nova" and r["profile"]["color"] == "#5be3b0"
+    assert call(ctx, "VLProgress.active().name") == "Nova"
+    assert call(ctx, "VLProgress.everMet()") == ["math:add"]  # the first profile adopts the old diary
+    assert "vl-log" not in call(ctx, "Object.keys(store)")  # and the shared key is gone
+    ctx.eval("VLProgress.mark('trees:heap');")
+    assert sorted(call(ctx, "VLProgress.everMet()")) == ["math:add", "trees:heap"]
+
+
+def test_profiles_never_see_each_others_diaries():
+    ctx = boot("progress.js")
+    a = signup(ctx, "Ava")["profile"]
+    ctx.eval("VLProgress.mark('play:ten');")
+    b = signup(ctx, "Ben")["profile"]
+    assert call(ctx, "VLProgress.everMet()") == []  # Ben starts fresh
+    ctx.eval("VLProgress.mark('graphs:topo');")
+    assert call(ctx, "VLProgress.everMet()") == ["graphs:topo"]
+    assert call(ctx, f"VLProgress.switchTo('{a['id']}')") is True
+    assert call(ctx, "VLProgress.everMet()") == ["play:ten"]
+    assert call(ctx, "VLProgress.switchTo('nobody')") is False
+    assert call(ctx, "VLProgress.active().name") == "Ava"
+    assert b["id"] != a["id"]
+
+
+def test_duplicate_names_the_limit_and_removal():
+    ctx = boot("progress.js")
+    assert signup(ctx, "Ava")["ok"]
+    assert "already" in signup(ctx, "ava")["why"]  # not case-sensitive
+    for n in ["Ben", "Cy", "Di", "Ed"]:
+        assert signup(ctx, n)["ok"]
+    assert "5 profiles" in signup(ctx, "Flo")["why"]
+    me = call(ctx, "VLProgress.active().id")
+    ctx.eval("VLProgress.mark('math:pi');")
+    assert call(ctx, f"VLProgress.remove('{me}')") is True
+    assert not any(k.endswith(me) for k in call(ctx, "Object.keys(store)") if k.startswith("vl-log:"))  # the diary went with them
+    assert call(ctx, "VLProgress.active().name") == "Ava"  # falls back to someone who is still here
+    assert call(ctx, "VLProgress.remove('nobody')") is False
+
+
+def test_a_broken_profile_list_is_survivable():
+    ctx = boot("progress.js")
+    ctx.eval("store['vl-profiles'] = '{not json'; store['vl-active'] = 'x';")
+    assert call(ctx, "VLProgress.profiles()") == [] and call(ctx, "VLProgress.active()") is None
+    ctx.eval("VLProgress.mark('math:add');")  # still works, in the shared diary
+    assert call(ctx, "VLProgress.everMet()") == ["math:add"]
+    assert signup(ctx, "Nova")["ok"]
+
+
+# ---------- the end-of-lesson card ----------
+
+def test_finish_card_text():
+    ctx = boot("finish.js")
+    idea = lambda b: call(ctx, f"VLFinish.idea({json.dumps(b)})")
+    assert idea("Open the middle box. Each box you open throws away half.") == "Open the middle box."
+    assert idea("No full stop here") == "No full stop here" and idea("") == ""
+    assert idea("A. B.") == "A."
+    prog = lambda n, m, t: call(ctx, f"VLFinish.progressLine({json.dumps(n)}, {m}, {t})")
+    assert prog("Nova", 12, 108) == "Nova, you have explored 12 of 108 ideas on this device."
+    assert prog(None, 0, 108) == "You have explored 0 of 108 ideas on this device."
+    assert "every idea" in prog("Nova", 108, 108)
+    btns = [{"key": k, "name": k.upper(), "pressed": i == 1} for i, k in enumerate("abc")]
+    assert call(ctx, f"VLFinish.nextLesson({json.dumps(btns)})")["key"] == "c"
+    btns[1]["pressed"], btns[2]["pressed"] = False, True
+    assert call(ctx, f"VLFinish.nextLesson({json.dumps(btns)})") is None  # the last lesson on a page points to the roadmap
+
+
+def test_every_pages_with_a_lesson_gets_the_card_and_the_profile_chip():
+    for page in WEB.rglob("*.html"):
+        html = page.read_text(encoding="utf-8")
+        if page.name.startswith("_"):
+            continue
+        assert "/assets/profile.js" in html, page
+        assert html.index("/assets/progress.js") < html.index("/assets/profile.js"), page
+        if 'id="done"' in html and 'id="algos"' in html:
+            assert "/assets/finish.js" in html and "/assets/catalog.js" in html, page
+
+
+def test_the_diary_page_has_the_sign_up_form():
+    html = (WEB / "progress" / "index.html").read_text(encoding="utf-8")
+    for i in ("people", "join", "nick", "swatches", "join-msg", "add-person", "greet"):
+        assert f'id="{i}"' in html, i

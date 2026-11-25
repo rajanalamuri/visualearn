@@ -35,7 +35,7 @@ mid to late December at the earliest.
 
 ## Store listing (draft)
 **Title (30 max):** VisuaLearn: Think Puzzles
-**Short (80):** Calm picture puzzles that teach children how to think. No ads, no accounts.
+**Short (80):** Calm picture puzzles that teach children how to think. No ads, no email needed.
 **Full:**
 Short picture puzzles and ten-minute lessons on how computers think: searching, sorting, mazes, trees, shortest paths and more.
 Children guess first, then watch it happen, then try it away from the screen with paper, cards or coins.

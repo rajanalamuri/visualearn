@@ -47,7 +47,7 @@
 
     components: {
       name: 'Connected components',
-      blurb: 'A graph can fall into separate islands. Start anywhere, explore everything you can reach, and colour it. Then start again from a dot you have not reached. The number of fresh starts is the number of islands.',
+      blurb: 'A graph can be split into separate islands. Start anywhere and colour everything you can reach. Then start again at a dot you have not reached. The number of fresh starts is the number of islands.',
       facts: [['Islands', 'Components'], ['Time', 'O(dots + lines)'], ['Uses', 'DFS or BFS']],
       code: ['for each dot', '  if it is not reached yet:', '    a new island! explore it all', '    mark everything reached with this colour', 'count the fresh starts'],
       offline: off('Count the islands', 'A drawing of 9 dots and some lines, and 3 coloured pencils', '10 minutes', [
@@ -126,7 +126,7 @@
 
     bipartite: {
       name: 'Two-colouring (bipartite)',
-      blurb: 'Can you colour the dots with two colours so every line joins different colours? Colour one dot, then colour its neighbours the other colour, and so on. If a line joins two dots of the same colour, it cannot be done.',
+      blurb: 'Can you colour the dots with two colours so every line joins different colours? Colour one dot, then give its neighbours the other colour, and keep going. If a line joins two of the same colour, it cannot be done.',
       facts: [['Possible when', 'No odd-length loop'], ['Time', 'O(dots + lines)'], ['Uses', 'BFS']],
       code: ['colour the first dot green', 'take a dot from the queue', '  each neighbour gets the opposite colour', '  if a neighbour already has the same colour: impossible', 'every dot coloured: it works'],
       offline: off('Two crayons', 'A drawing of a loop of dots, and 2 crayons', '10 minutes', [
@@ -199,7 +199,7 @@
 
     unionfind: {
       name: 'Union-find',
-      blurb: 'Keep groups of things as small trees. Each item points to a parent, and the top of a tree names the group. To join two groups, hang one top under the other. Pointing items straight at the top makes later look-ups fast.',
+      blurb: 'Keep groups as small trees. Each item points to a parent, and the top of a tree is the group\'s name. To join two groups, hang one top under the other.',
       facts: [['Find', 'Follow parents to the top'], ['Union', 'Join two tops'], ['Speed-up', 'Path compression']],
       code: ['find(x): follow parents until an item is its own parent', '  point everything on the way straight at the top', 'union(a, b): find both tops', '  if they differ, hang one under the other', 'same top = same group'],
       offline: off('Friend circles', '8 name cards and some string', '15 minutes', [
@@ -230,7 +230,7 @@
 
     bellman: {
       name: 'Bellman-Ford',
-      blurb: 'Dijkstra needs every road to cost something. If a road can give you a refund (a negative length), try every road again and again. Each round, any road that gives a town a shorter way updates it. After enough rounds nothing changes.',
+      blurb: 'Dijkstra needs every road to cost something. Bellman-Ford can handle a road that gives you a refund. It tries every road again and again, and keeps any shorter way it finds, until nothing changes.',
       facts: [['Handles', 'Negative roads'], ['Time', 'O(towns × roads)'], ['Rounds', 'Up to towns − 1']],
       code: ['start: 0 for Home, ∞ for every other town', 'repeat up to (towns − 1) times:', '  for every road u → v of length w:', '    if dist[u] + w < dist[v]: update dist[v]', 'if a whole round changes nothing: stop'],
       offline: off('Try every road', 'Paper, a pencil and a small map with one negative road', '15 minutes', [
@@ -263,7 +263,7 @@
 
     floyd: {
       name: 'All-pairs shortest paths (Floyd-Warshall)',
-      blurb: 'A table of the shortest way between every pair of towns. Try each town k in turn as a stop-over: if going i → k → j is shorter than the best way i → j known so far, update the table.',
+      blurb: 'Make a table of the shortest way between every pair of towns. Try each town as a stop-over, one at a time. If going through it is shorter, update the table.',
       facts: [['Answers', 'Every pair at once'], ['Time', 'O(towns³)'], ['Idea', 'Allow one more stop-over']],
       code: ['table[i][j] ← direct road, or ∞', 'for each stop-over town k', '  for each pair i, j:', '    if table[i][k] + table[k][j] < table[i][j]:', '      table[i][j] ← that sum', 'table holds every shortest distance'],
       offline: off('The distance table', 'Paper (a 4 by 4 grid) and a small map', '20 minutes', [
@@ -326,7 +326,7 @@
 
     astar: {
       name: 'A* search',
-      blurb: 'Like breadth-first search, but with a nose for the goal. Rate each square by the steps taken so far (g) plus a guess of the steps left (h, the straight-line count). Always explore the square with the smallest total f = g + h.',
+      blurb: 'Like breadth-first search, but it has a nose for the goal. Score each square by the steps so far plus a guess of the steps left. Always explore the square with the lowest score.',
       facts: [['Finds', 'Shortest path'], ['Needs', 'A guess that never over-estimates'], ['Faster than', 'Blind searching']],
       code: ['open ← [start]', 'take the open square with the smallest f = g + h', 'if it is the goal: stop', 'for each neighbour: g ← g + 1, f ← g + h', 'add it to the open list', 'follow the way back to draw the path'],
       offline: off('Guided walk', 'Squared paper, a pencil and a pair of coloured pencils', '15 minutes', [
@@ -371,7 +371,7 @@
 
     flow: {
       name: 'Network flow',
-      blurb: 'Pipes with limits: how much can flow from the source S to the sink T? Find any route with spare room, push as much as fits, and repeat. When no route is left, you have found the most.',
+      blurb: 'Pipes have limits. How much can flow from the start S to the end T? Find a route with room, push as much as fits, and repeat. When no route is left, you have found the most.',
       facts: [['Finds', 'The biggest flow'], ['Method', 'Keep finding routes with room'], ['Time', 'O(V·E²)']],
       code: ['flow ← 0', 'find a route S → T where every pipe has spare room', 'push as much as the tightest pipe allows', 'add it to the flow; use up that room', 'no route left: the flow is the most possible'],
       offline: off('Pipes and buckets', 'Paper, a pencil and a drawing of 6 dots joined by arrows with limits', '20 minutes', [
@@ -404,7 +404,7 @@
 
     matching: {
       name: 'Bipartite matching',
-      blurb: 'Pair each person on the left with one different friend on the right, using only the links allowed. Try the first free partner. If it is taken, ask whether the person holding it can switch to another. That chain of switches is an augmenting path.',
+      blurb: 'Pair each person on the left with a different friend on the right, using only the allowed links. If their favourite is taken, ask the one holding it to switch. A chain of switches can make room.',
       facts: [['Finds', 'The most pairs'], ['Method', 'Try, and ask to switch'], ['Time', 'O(V·E)']],
       code: ['for each person on the left', '  for each allowed partner on the right', '    if the partner is free: pair them', '    else ask their current partner to try someone else', '    if that works: pair them', 'count the pairs'],
       offline: off('Dance partners', '4 names on the left, 4 on the right, and lines for who may pair', '15 minutes', [
@@ -441,7 +441,7 @@
 
   ALGOS.scc = {
     name: 'Strongly connected components',
-    blurb: 'In a graph of one-way roads, a strongly connected group is a set of towns where you can get from any one to any other. Kosaraju\'s method: search once to find the order towns finish, then search the reversed roads starting from the last to finish.',
+    blurb: 'On one-way roads, a strongly connected group is a set of towns where you can get from any town to any other. Search once to see which towns finish first. Then search the roads backwards, starting from the last one.',
     facts: [['Group', 'Everyone reaches everyone'], ['Searches', 'Two depth-first passes'], ['Time', 'O(towns + roads)']],
     code: ['pass 1: depth-first search, note the order towns finish', 'reverse every road', 'pass 2: take towns in reverse finish order', '  search the reversed roads from it', '  everything reached is one group'],
     offline: off('One-way streets', 'Paper, a pencil and a drawing of 7 towns with one-way arrows', '20 minutes', [
@@ -475,7 +475,7 @@
 
   ALGOS.bridges = {
     name: 'Bridges and cut points',
-    blurb: 'A bridge is a road whose removal splits the network. Walk depth-first and note when you first arrive at each town (disc) and the earliest town you can get back to without that road (low). If a child cannot get back above its parent, the road to it is a bridge.',
+    blurb: 'A bridge is a road that splits the network if you close it. Walk depth-first and note when you reach each town and the earliest town it can get back to. If a town cannot get back past its parent, the road to it is a bridge.',
     facts: [['Bridge', 'Removing it disconnects'], ['Test', 'low[child] > disc[parent]'], ['Time', 'O(towns + roads)']],
     code: ['disc[u] ← the time we first reach u; low[u] ← disc[u]', 'for each road u – v (not the one we came by)', '  new town: search it, then low[u] ← min(low[u], low[v])', '    if low[v] > disc[u]: the road is a bridge', '  seen town: low[u] ← min(low[u], disc[v])'],
     offline: off('Which road is a lifeline?', 'A drawing of 7 towns and 8 roads, and a pencil', '15 minutes', [
@@ -509,7 +509,7 @@
 
   ALGOS.euler = {
     name: 'Euler circuits',
-    blurb: 'Can you walk along every road exactly once and end where you started? Yes, if every town has an even number of roads. Walk until you are stuck, then splice in any loops you skipped. This is how a snow plough could clear every street once.',
+    blurb: 'Can you walk along every road exactly once and end where you started? Yes, if every town has an even number of roads. Walk until you are stuck, then add in any loops you skipped.',
     facts: [['Needs', 'Every town has even degree'], ['Each road', 'Used once'], ['Method', "Hierholzer's walk"]],
     code: ['check: every town has an even number of roads', 'walk along unused roads, noting each town', 'when stuck, back up and add that town to the finished route', 'keep going until nothing is left', 'the finished route (reversed) is the circuit'],
     offline: off('Snow plough', 'A drawing of a ring of 6 towns with three extra roads, and a pencil', '15 minutes', [
@@ -536,7 +536,7 @@
 
   ALGOS.hamilton = {
     name: 'Hamilton paths',
-    blurb: 'An Euler walk uses every road once. A Hamilton path visits every town exactly once. It sounds similar but is much harder: there is no quick test. Try a path, and if you get stuck, step back and try another way.',
+    blurb: 'An Euler walk uses every road once. A Hamilton path visits every town once. It sounds similar but is much harder, and nobody knows a quick test. Try a path, and step back when you get stuck.',
     facts: [['Visits', 'Every town once'], ['Quick test?', 'None known'], ['Method here', 'Backtracking']],
     code: ['start in a town', 'go to a neighbour you have not visited', 'if every town is visited: found a Hamilton path', 'if stuck: step back and try another neighbour', 'tried every start: there is no Hamilton path'],
     offline: off('Visit every town', 'A drawing of 6 towns joined by roads, and a pencil', '15 minutes', [

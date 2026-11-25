@@ -35,7 +35,7 @@
 
     fastpow: {
       name: 'Fast powers',
-      blurb: 'To work out 3 to the power 13 you do not need 12 multiplications. Write the power in binary. Square the running answer for each bit, and multiply by 3 when the bit is 1. A few steps are enough, even for huge powers.',
+      blurb: 'You do not need 12 multiplications to work out 3 to the power 13. Write the power in binary. Square your answer for every bit, and also multiply by 3 when the bit is 1.',
       facts: [['Steps', 'About log₂ of the power'], ['Idea', 'Square, and sometimes multiply'], ['Used for', 'Codes and security']],
       code: ['result ← 1', 'for each bit of the power, from the left', '  square the result (keep the remainder)', '  if the bit is 1: multiply by the base', 'result is base^power'],
       offline: off('Square and multiply', 'Paper and a calculator (optional)', '15 minutes', [
@@ -88,7 +88,7 @@
 
     crt: {
       name: 'Chinese remainder theorem',
-      blurb: 'If you know the remainder of a number after dividing by 3 and also by 5, you can find the number (below 15). Mark the numbers that fit the first remainder, mark those that fit the second, and the one that is in both is your answer.',
+      blurb: 'Say a number leaves remainder 2 when divided by 3, and remainder 3 when divided by 5. Mark the numbers that fit the first clue, then the second. The number in both lists is the answer.',
       facts: [['Needs', 'Moduli with no common factor'], ['Unique below', 'Their product'], ['Used for', 'Big-number tricks, codes']],
       code: ['list the numbers 0 up to the product of the moduli − 1', 'mark those with the first remainder', 'mark those with the second remainder', 'the number marked twice is the answer'],
       offline: off('Two clues', 'A number line from 0 to 14 on paper, and two coloured pencils', '10 minutes', [

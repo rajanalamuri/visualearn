@@ -47,7 +47,7 @@
 
     binary: {
       name: 'Binary search',
-      blurb: 'When the boxes are in order, open the middle one. If your number is bigger, it must be on the right; if smaller, on the left. Each box you open throws away half of what is left.',
+      blurb: 'When the boxes are in order, open the middle one. If your number is bigger it must be on the right, and if smaller, on the left. Each box you open throws away half of what is left.',
       facts: [['Fewest opens', '1'], ['Most opens', 'log₂ n + 1'], ['Needs order?', 'Yes']],
       code: [
         'lo ← first box; hi ← last box',

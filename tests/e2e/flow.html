@@ -1,0 +1,121 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>flow</title>
+<iframe id="f" style="width:1000px;height:800px"></iframe>
+<pre id="out">running</pre>
+<script>
+/* End-to-end walk through the real site, driven from outside the pages. Writes JSON into #out. */
+const log = { steps: [], errors: [] };
+const f = document.getElementById('f');
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const ok = (name, cond, extra) => { log.steps.push({ name, ok: !!cond, extra: extra === undefined ? '' : String(extra) }); if (!cond) log.errors.push(name + (extra === undefined ? '' : ' :: ' + extra)); };
+const doc = () => f.contentDocument;
+const q = (s) => doc().querySelector(s);
+const qa = (s) => [...doc().querySelectorAll(s)];
+async function until(fn, what, ms = 8000) {
+  const end = Date.now() + ms;
+  for (;;) { try { const v = fn(); if (v) return v; } catch (e) { /* page not ready yet */ } if (Date.now() > end) { log.errors.push('timeout: ' + what); throw new Error('timeout ' + what); } await sleep(40); }
+}
+async function open(url, ready) {
+  f.contentWindow && (f.contentWindow.__old = 1);
+  f.src = url;
+  await until(() => f.contentDocument && f.contentDocument.readyState === 'complete' && !f.contentWindow.__old && f.contentWindow.VLProgress, 'load ' + url);
+  if (ready) await until(ready, 'ready ' + url);
+  f.contentWindow.confirm = () => true; // "are you sure?" boxes say yes
+}
+// Runs an action that makes the page reload itself, then waits for the fresh page.
+async function act(fn, ready) {
+  f.contentWindow.__old = 1;
+  fn();
+  await until(() => f.contentDocument.readyState === 'complete' && !f.contentWindow.__old && f.contentWindow.VLProgress, 'page reload after action');
+  if (ready) await until(ready, 'ready after action');
+  f.contentWindow.confirm = () => true;
+}
+async function reload(ready) {
+  f.contentWindow.__old = 1;
+  f.contentWindow.location.reload();
+  await until(() => f.contentDocument.readyState === 'complete' && !f.contentWindow.__old && f.contentWindow.VLProgress, 'reload');
+  if (ready) await until(ready, 'ready after reload');
+  f.contentWindow.confirm = () => true;
+}
+function type(input, text) { input.value = text; input.dispatchEvent(new Event('input', { bubbles: true })); }
+const submit = () => q('#join').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+const chip = () => (q('.top-in .me') || {}).textContent || '';
+
+(async () => {
+  try {
+    // 1. a first visit: no profile, a Join chip, the form is open
+    await open('/progress/', () => q('#join') && q('.top-in .me'));
+    ok('first visit shows a Join chip', /Join/.test(chip()), chip());
+    ok('the sign-up form is open on a first visit', !q('#join').hidden);
+    ok('greeting invites a nickname', /nickname/i.test(q('#greet').textContent), q('#greet').textContent);
+
+    // 2. rejects an email-like nickname
+    type(q('#nick'), 'a@b.com'); submit();
+    await until(() => q('#join-msg').textContent, 'error message');
+    ok('an email is refused with a reason', /letters/i.test(q('#join-msg').textContent), q('#join-msg').textContent);
+    ok('nothing was created', f.contentWindow.VLProgress.profiles().length === 0);
+
+    // 3. sign up for real
+    type(q('#nick'), 'Nova'); qa('.swatch')[1].click();
+    await act(submit, () => q('#people li'));
+    ok('header chip shows the nickname', /Nova/.test(chip()), chip());
+    ok('greeting says hi', /Hi, Nova/.test(q('#greet').textContent), q('#greet').textContent);
+    ok('one person listed, playing', qa('#people li').length === 1 && /playing/.test(q('#people li').textContent));
+    ok('chosen colour was kept', f.contentWindow.VLProgress.active().color === f.contentWindow.VLProgress.COLORS[1]);
+
+    // 4. play a whole lesson to the end
+    await open('/techniques/#twoptr', () => q('#algos button') && q('#b-fwd') && q('#predict'));
+    ok('lesson page shows the profile chip', /Nova/.test(chip()), chip());
+    q('#predict').click(); // guess-first off, so playing never stops to ask
+    let clicks = 0;
+    while (q('#done').hidden && clicks < 300) { q('#b-fwd').click(); clicks++; await sleep(5); }
+    ok('the lesson reaches its last step', !q('#done').hidden, clicks + ' clicks');
+    await until(() => !q('.finish').hidden && q('.finish-idea'), 'finish card');
+    ok('the final card says the big idea', q('.finish-idea').textContent.length > 15, q('.finish-idea').textContent);
+    ok('the final card names the child and the progress', /Nova, you have explored \d+ of \d+ ideas/.test(q('.finish-prog').textContent), q('.finish-prog').textContent);
+    ok('the final card offers the next lesson', /Next: Sliding window/.test(q('.finish .btn.primary').textContent), q('.finish .btn.primary').textContent);
+    ok('the final card links to the roadmap', !!qa('.finish a').find((a) => a.getAttribute('href') === '/curriculum/'));
+    ok('the lesson was written to the diary', f.contentWindow.VLProgress.everMet().includes('techniques:twoptr'), f.contentWindow.VLProgress.everMet());
+
+    // 5. Next moves on to the next lesson
+    q('.finish .btn.primary').click();
+    await until(() => q('#algos [aria-pressed="true"]').textContent === 'Sliding window', 'next lesson');
+    ok('Next switched to the next lesson', true);
+    ok('and the final card went away', q('#done').hidden);
+
+    // 6. the diary shows it
+    await open('/progress/', () => q('#diary-today .topic'));
+    ok('the diary lists today\'s lesson', /Two pointers/.test(q('#diary-today').textContent), q('#diary-today').textContent);
+    ok('the diary counts ideas', /^\d+ of \d+/.test(q('#diary-count').textContent.trim()), q('#diary-count').textContent);
+
+    // 7. a second child, with their own empty diary
+    q('#add-person').click();
+    await until(() => !q('#join').hidden, 'form opens');
+    type(q('#nick'), 'Ben');
+    await act(submit, () => q('#people li'));
+    ok('second profile is active', /Ben/.test(chip()) && qa('#people li').length === 2, chip());
+    ok('their diary starts empty', /Nothing yet/.test(q('#diary-today').textContent) && f.contentWindow.VLProgress.everMet().length === 0, q('#diary-today').textContent);
+
+    // 8. switch back: Nova's diary is intact
+    await act(() => qa('#people li').find((li) => /Nova/.test(li.textContent)).querySelector('.link').click(), () => q('#diary-today .topic'));
+    ok('switching restores the first diary', /Nova/.test(chip()) && /Two pointers/.test(q('#diary-today').textContent), chip());
+
+    // 9. remove Ben
+    await act(() => qa('#people li').find((li) => /Ben/.test(li.textContent)).querySelector('.link.danger').click(), () => q('#people li'));
+    ok('removing a person leaves the other', qa('#people li').length === 1 && /Nova/.test(q('#people').textContent));
+    ok('and deletes their diary key', Object.keys(f.contentWindow.localStorage).filter((k) => k.startsWith('vl-log:')).length === 1);
+
+    // 10. the closing cards and the chip on other pages
+    await open('/', () => q('.closing-card'));
+    ok('home page ends with the closing card', /remember every algorithm/i.test(q('.closing-card h2').textContent));
+    ok('home page shows the nickname chip', /Nova/.test(chip()));
+    await open('/curriculum/', () => q('.closing-card') && q('.track'));
+    ok('roadmap ends with its closing card', /every idea/i.test(q('.closing-card h2').textContent));
+    await open('/graphs/#kruskal', () => q('#algos button') && q('.top-in .me'));
+    ok('a graph lesson loads with the chip', /Nova/.test(chip()));
+  } catch (e) { log.errors.push('crash: ' + e.message); }
+  document.getElementById('out').textContent = JSON.stringify(log);
+  document.title = 'finished';
+})();
+</script>

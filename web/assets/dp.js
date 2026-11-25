@@ -98,7 +98,7 @@
   const ALGOS = {
     coins: {
       name: 'Fewest coins',
-      blurb: 'Dynamic programming solves small versions of a problem first and writes each answer in a table. A bigger answer is then built from answers already in the table, so nothing is ever worked out twice.',
+      blurb: 'Solve the small problems first and write each answer in a table. Then build each bigger answer from answers you already wrote down. Nothing is worked out twice.',
       facts: [['Idea', 'Reuse answers'], ['Table size', 'One per amount'], ['Beats', 'Biggest-coin-first']],
       code: [
         'table[0] ← 0 coins',
@@ -122,7 +122,7 @@
     },
     grid: {
       name: 'Counting walks',
-      blurb: 'To reach a square you must come from the square above or the square to its left. So its count is simply the two counts added together. Fill the grid from the top-left, and the answer appears in the last corner.',
+      blurb: 'To reach a square you must come from the square above or the square on the left. So its count is those two counts added. Fill the grid from the top left and the answer appears in the last corner.',
       facts: [['Idea', 'Add the two before'], ['Squares', 'rows × columns'], ['Without a table', 'Far slower']],
       code: [
         'start square ← 1 way',

@@ -986,3 +986,12 @@ def test_recursion_lessons():
         assert res["value"] == fib(inp["n"])
         assert res["calls"] == 2 * fib(inp["n"] + 1) - 1  # the number of calls in the naive recursion
         assert res["counts"]["1"] >= 2  # the repeated work the lesson is about
+
+
+def test_lesson_blurbs_stay_short_and_simple(page_key):
+    page, key = page_key
+    blurb = algos(page)[key]["blurb"]
+    words = blurb.split()
+    assert len(words) <= 55, f"{page}:{key} blurb is {len(words)} words"
+    longest = max(len(s.split()) for s in blurb.replace("?", ".").split(".") if s.strip())
+    assert longest <= 32, f"{page}:{key} has a {longest}-word sentence"

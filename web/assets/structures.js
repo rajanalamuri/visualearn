@@ -163,7 +163,7 @@
   const ALGOS = {
     array: {
       name: 'Arrays',
-      blurb: 'An array is a row of slots side by side. Because the slots sit next to each other, the computer can jump straight to any slot. The price: squeezing a new number into the middle means shuffling its neighbours along.',
+      blurb: 'An array is a row of slots side by side, so the computer can jump straight to any slot. The price: squeezing a new number into the middle means shuffling its neighbours along.',
       facts: [['Read a slot', '1 step'], ['Insert in the middle', 'about n steps'], ['Memory', 'One block']],
       code: [
         'read slot i: jump straight to it',
@@ -187,7 +187,7 @@
     },
     hash: {
       name: 'Hash tables',
-      blurb: 'A hash table does not search at all. A tiny rule (here: the remainder after dividing) says which shelf a number lives on. To find it later, apply the same rule and look on just that one shelf.',
+      blurb: 'A hash table does not search at all. A tiny rule, here the remainder after dividing, tells you which shelf a number lives on. To find it later, use the same rule and look on just that shelf.',
       facts: [['Find a number', 'about 1 step'], ['Collisions', 'Share a shelf'], ['Needs order?', 'No']],
       code: [
         'shelf ← number mod 7',
@@ -210,7 +210,7 @@
     },
     bst: {
       name: 'Binary search trees',
-      blurb: 'A tree puts every number in a spot where it can be found by asking one question at a time: smaller or bigger? Each answer throws away a whole branch, just like binary search on a sorted row.',
+      blurb: 'A search tree puts every number where you can find it by asking one question at a time: smaller or bigger? Each answer throws away a whole branch.',
       facts: [['Find a number', 'about log₂ n steps'], ['Rule', 'Small left, big right'], ['Worst case', 'A lopsided tree']],
       code: [
         'start at the root',

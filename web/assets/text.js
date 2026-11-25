@@ -40,7 +40,7 @@
 
     rabin: {
       name: 'Rolling hash (Rabin-Karp)',
-      blurb: 'Give each stretch of text a fingerprint number. Compare fingerprints first, which is quick. Only when two fingerprints agree do you check the letters. The fingerprint of the next stretch is cheap to update: drop the old digit, add the new one.',
+      blurb: 'Give every stretch of text a fingerprint number and compare fingerprints first. Only when two fingerprints match, check the letters. Sliding along is cheap: drop the old digit, add the new one.',
       facts: [['Fingerprint', 'A number from the digits'], ['Update', 'O(1) per slide'], ['Then', 'Check only on a match']],
       code: ['fingerprint of the word', 'fingerprint of the first stretch of text', 'for each stretch', '  if the fingerprints match: check the letters', '  slide: drop the old digit, add the new one', 'report every real match'],
       offline: off('Fingerprints', 'Digits on paper (a text of 12 digits) and a 3-digit word', '15 minutes', [
@@ -72,7 +72,7 @@
 
     kmp: {
       name: 'KMP (prefix table)',
-      blurb: 'When a mismatch happens, the part you already matched tells you how far you can safely slide, so the text pointer never goes backward. A table built from the word alone says where to restart.',
+      blurb: 'When a letter does not match, you already know the letters before it matched. A table made from the word tells you how far back to restart, so you never move back in the text.',
       facts: [['Time', 'O(text + word)'], ['Text pointer', 'Never goes back'], ['Needs', 'A prefix table']],
       code: ['table[i] ← length of the longest start of the word that is also an end of its first i+1 letters', 'for each letter of the text', '  while the word letter differs: fall back using the table', '  if it matches: move on in the word', '  if the whole word matched: found'],
       offline: off('Slide smartly', 'A paper strip with the word ABAB, and a text of 12 letters from A and B', '20 minutes', [
@@ -109,7 +109,7 @@
 
     zalgo: {
       name: 'Z-algorithm',
-      blurb: 'For every position in a word, the Z-value says how many letters from there match the start of the word. A window of the longest match so far lets you reuse earlier work instead of comparing again.',
+      blurb: 'For each place in a word, the Z-number says how many letters from there match the start of the word. Remembering the longest match so far saves comparing the same letters again.',
       facts: [['Time', 'O(length)'], ['Z[i]', 'Match length with the start'], ['Used for', 'Pattern search']],
       code: ['Z[0] ← the whole word (skip it)', 'keep the window [l, r] of the furthest match', 'for each position i', '  inside the window: start from a known value', '  extend by comparing letters', '  grow the window if we passed r'],
       offline: off('How much matches the start?', 'A short word on paper', '10 minutes', [
@@ -135,7 +135,7 @@
 
     suffix: {
       name: 'Suffix arrays',
-      blurb: 'Write down every ending (suffix) of a word and sort them alphabetically. Any pattern is the start of some suffixes, and those sit next to each other in the sorted list, so you can find them by binary search.',
+      blurb: 'Write every ending of a word and sort them like a dictionary. Words that start the same end up next to each other, so you can find them fast.',
       facts: [['Stores', 'Sorted suffix starts'], ['Search', 'O(pattern × log n)'], ['Used for', 'Text search, DNA']],
       code: ['list every suffix of the word', 'sort the suffixes alphabetically', 'to find a pattern: binary search the sorted list', 'compare the pattern with the start of the middle suffix', 'all suffixes starting with the pattern are the matches'],
       offline: off('Sorted endings', 'A short word like BANANA, paper and a pencil', '15 minutes', [
@@ -169,7 +169,7 @@
 
     huffman: {
       name: 'Compression (Huffman)',
-      blurb: 'Common letters get short codes and rare letters get long ones. Repeatedly join the two rarest items into one. Reading the joins as a tree gives every letter a code of 0s and 1s, and no code is the start of another.',
+      blurb: 'Give common letters short codes and rare letters long ones. Keep joining the two rarest items into one. The joins form a tree, and the path to each letter is its code of 0s and 1s.',
       facts: [['Idea', 'Short codes for common letters'], ['Method', 'Join the two smallest'], ['Result', 'Fewest bits possible']],
       code: ['put every letter in the queue with its count', 'take the two smallest items', 'join them into one item (add their counts)', 'put it back; repeat until one item is left', 'left branch = 0, right branch = 1'],
       offline: off('Make a code', 'Paper, a pencil and a short message', '20 minutes', [
@@ -204,7 +204,7 @@
 
     bloom: {
       name: 'Bloom filters',
-      blurb: 'A Bloom filter remembers a set in a tiny row of bits. Each word switches on three bits. To ask "have I seen this?", check its three bits: any 0 means definitely not; all 1 means probably yes (some other words may have switched them on).',
+      blurb: 'A Bloom filter remembers words using a tiny row of bits. Each word switches on three bits. If any of a word\'s bits is off, it was definitely not added. If all are on, it was probably added.',
       facts: [['Memory', 'Tiny'], ['"No" means', 'Definitely no'], ['"Yes" means', 'Probably yes']],
       code: ['start with 16 bits, all 0', 'add: switch on the 3 bits the word points to', 'ask: look at the word\'s 3 bits', 'any bit is 0: definitely not added', 'all bits 1: probably added'],
       offline: off('Bit board', '16 small squares on paper (or coins), and some words', '15 minutes', [
@@ -232,7 +232,7 @@
 
     sketch: {
       name: 'Count-min sketch',
-      blurb: 'Count how often things appear in a huge stream using only a small table. Each item bumps one counter in each of three rows. To ask for a count, look at its three counters and take the smallest. It can only over-count, never under-count.',
+      blurb: 'Count how often things appear in a huge stream using a small table. Each item adds 1 to one counter in each of three rows. To ask for a count, take the smallest of its three counters.',
       facts: [['Memory', 'A small fixed table'], ['Estimate', 'Never too low'], ['Answer', 'Smallest of the counters']],
       code: ['three rows of counters, all 0', 'for each item in the stream', '  add 1 to one counter in each row', 'to ask: look at its three counters', 'answer ← the smallest'],
       offline: off('Tally boards', 'Three rows of 6 boxes on paper and a stream of letters', '15 minutes', [
@@ -262,7 +262,7 @@
 
     lru: {
       name: 'Caches (LRU)',
-      blurb: 'A cache is a small, fast shelf for things you use often. When it is full and something new arrives, throw out the item you used longest ago: the least recently used. Each use moves an item to the front of the line.',
+      blurb: 'A cache is a small, fast shelf for things you use a lot. When it is full, throw out the thing you used longest ago. Every time you use something, move it to the front.',
       facts: [['Evicts', 'Least recently used'], ['Hit', 'Item already there'], ['Miss', 'Must fetch it']],
       code: ['cache holds 3 items, ordered by last use', 'item asked for:', '  in the cache (a hit): move it to the newest end', '  not there (a miss): fetch it', '    if full: remove the oldest', '    add it at the newest end'],
       offline: off('The small desk', '3 spaces on a desk, and cards A to D', '10 minutes', [
@@ -292,7 +292,7 @@
 
     freq: {
       name: 'Counting with hashes',
-      blurb: 'A hash map is a notebook where you look things up by name instantly. To count letters, look up the letter, add one to its tally. Afterwards, the first letter whose tally is 1 is the first letter that never repeats.',
+      blurb: 'A hash map is like a notebook where you find things by name straight away. Look up each letter and add 1 to its tally. Then the first letter with a tally of 1 is the first that never repeats.',
       facts: [['Look-up', 'About 1 step'], ['Time', 'O(length)'], ['Instead of', 'Rescanning for each letter']],
       code: ['counts ← an empty hash map', 'for each letter: counts[letter] ← counts[letter] + 1', 'for each letter in order', '  if counts[letter] is 1: that is the answer', 'every letter repeats: no answer'],
       offline: off('Tally the letters', 'A word on paper and a pencil', '10 minutes', [
@@ -321,7 +321,7 @@
   const lead = (h) => { let z = 0; for (let b = 7; b >= 0 && !((h >> b) & 1); b--) z++; return z; };
   ALGOS.hll = {
     name: 'HyperLogLog',
-    blurb: 'How many different items have gone past? Give each item a random-looking 8-bit number. Rare patterns reveal a big crowd: if some number starts with 4 zeros, you have probably seen about 2⁵ different items. Keep just one counter, the longest run of leading zeros.',
+    blurb: 'How many different things went past? Scramble each one into bits and count the zeros at the start. Seeing a long run of zeros is rare, so a long run means a big crowd. One small counter gives a rough answer.',
     facts: [['Memory', 'One tiny counter'], ['Estimate', '2 to the power (zeros + 1)'], ['Used for', 'Counting visitors']],
     code: ['best ← 0', 'for each item: scramble it into 8 bits', '  count the zeros at the start', '  best ← the larger of best and that count', 'estimate ← 2 to the power (best + 1)'],
     offline: off('Rare coin runs', 'A coin', '10 minutes', [
@@ -345,7 +345,7 @@
 
   ALGOS.aho = {
     name: 'Aho-Corasick',
-    blurb: 'Search a text for many words at once. Build a trie of all the words. Give every node a "fail link": where to go if the next letter does not fit, keeping as much of what you matched as possible. Then read the text once, never going back.',
+    blurb: 'Search a text for many words at once. Build a trie of the words and give each node a fall-back link. Then read the text one time and never go back.',
     facts: [['Words', 'Many at once'], ['Text', 'Read once'], ['Time', 'O(text + words + matches)']],
     code: ['build a trie of all the words', 'fail link of a node ← the longest shorter ending that is also a start in the trie', 'for each letter of the text', '  while no branch for the letter: follow the fail link', '  step along the branch, then report every word that ends here (following fail links)'],
     offline: off('Many words, one pass', 'Paper, a pencil, a few short words and a text', '25 minutes', [

@@ -6,7 +6,7 @@ Live at https://visualearn.org.
 
 Design rules, in order:
 
-1. **Free for everyone.** No child accounts, ads, tracking or paywalls. A grown-up may optionally sign in with Google (parents page) to sync the diary; children never do.
+1. **Free for everyone.** No emails or passwords for children, no ads, tracking or paywalls. A child may pick a nickname and colour for their own page, kept on the device only (`progress.js`, `profile.js`). A grown-up may optionally sign in with Google (parents page) to sync the diary; children never do.
 2. **Immersive, not addictive.** No streaks, points, badges, notifications or autoplay into
    the next lesson. A daily time limit covers the whole site.
 3. **The screen is the shortest part.** Every algorithm ends with an activity done with
