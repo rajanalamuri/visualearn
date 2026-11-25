@@ -35,6 +35,7 @@ web/                    static site, served by a Cloudflare Worker (assets only)
   assets/player.js      shared player for every other lesson: play, step, scrub, Predict mode, offline card
   assets/search.js, graph.js, math.js   one lesson each
   assets/lite.css, lite.js   quieter lesson pages: explanations fold away
+  assets/toc.js, toc.css     floating table of contents with scroll spy: add data-toc to any long page
   assets/limit.js       daily screen-time limit (localStorage only)
 wrangler.jsonc          Worker config
 tests/                  pytest; runs the real lesson JavaScript in QuickJS

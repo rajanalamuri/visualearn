@@ -16,8 +16,10 @@
 <link rel="stylesheet" href="/assets/style.css">
 <link rel="stylesheet" href="/assets/home.css">
 <link rel="stylesheet" href="/assets/arith.css">
+<link rel="stylesheet" href="/assets/toc.css">
 <script src="/assets/progress.js" defer></script>
 <script src="/assets/catalog.js" defer></script>
+<script src="/assets/toc.js" defer></script>
 <script src="/assets/limit.js" defer></script>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
@@ -39,7 +41,7 @@
   </div>
 </header>
 
-<main class="wrap ar pg cur">
+<main class="wrap ar pg cur" data-toc>
   <h1>Ultimate DSA</h1>
   <p class="cur-count" id="cur-count"></p>
   <div class="cbar" aria-hidden="true"><i id="cur-fill"></i></div>
@@ -51,7 +53,6 @@
 
   <div id="curriculum" class="curriculum"></div>
 
-  <p class="pg-note">Each row goes from easiest to hardest. A yellow dot means you have played it on this device.</p>
 </main>
 
 <div class="rest" id="rest" role="dialog" aria-modal="true" aria-labelledby="rest-h" hidden>

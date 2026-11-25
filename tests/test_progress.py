@@ -124,3 +124,29 @@ def test_curriculum_page_has_what_the_script_needs():
     for i in ("curriculum", "cur-count", "cur-fill"):
         assert f'id="{i}"' in html
     assert "/assets/catalog.js" in html
+
+
+# ---------- table of contents ----------
+
+def test_toc_slugs_are_safe_and_unique():
+    ctx = boot("toc.js")
+    assert call(ctx, "(() => { const t = new Set(); return ['Trees', 'Trees', 'Search & order', '  Ünïcode!  ', '???'].map((x) => VLToc.slug(x, t)); })()") == [
+        "trees", "trees-2", "search-and-order", "unicode", "section"]
+    assert call(ctx, "VLToc.slug('Graphs', new Set(['graphs']))") == "graphs-2"  # never reuses an id already on the page
+
+
+def test_toc_scroll_spy_picks_the_last_heading_passed():
+    ctx = boot("toc.js")
+    pick = lambda tops, line=100, bottom=False: call(ctx, f"VLToc.activeIndex({tops}, {line}, {str(bottom).lower()})")
+    assert pick([300, 900, 1500]) == -1             # still above the first heading
+    assert pick([40, 900, 1500]) == 0
+    assert pick([-800, 60, 700]) == 1               # the heading under the line, not the one far above
+    assert pick([-1500, -900, -20]) == 2
+    assert pick([-800, -200, 500], 100, True) == 2  # at the bottom the last one wins, even if it never reaches the line
+    assert pick([], 100, True) == -1
+
+
+def test_curriculum_page_loads_the_toc_after_the_content():
+    html = (WEB / "curriculum" / "index.html").read_text(encoding="utf-8")
+    assert "data-toc" in html and "/assets/toc.css" in html
+    assert html.index("/assets/catalog.js") < html.index("/assets/toc.js")  # headings are drawn first
