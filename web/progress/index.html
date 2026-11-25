@@ -25,6 +25,7 @@
 <script src="/assets/profile.js" defer></script>
 <script src="/assets/app.js" defer></script>
 <link rel="stylesheet" href="/assets/genz.css">
+<script src="/assets/i18n.js" defer></script>
 </head>
 <body class="home">
 <header class="top">
@@ -70,6 +71,17 @@
   <section class="diary" aria-labelledby="d-all">
     <h2 id="d-all">Ideas met so far <span id="diary-count"></span></h2>
     <div class="chips-row" id="diary-all"></div>
+  </section>
+
+  <section class="diary" aria-labelledby="d-copy">
+    <h2 id="d-copy">Keep a copy</h2>
+    <div class="p-row">
+      <button class="btn" id="save-file" type="button">Save to a file</button>
+      <label class="btn" for="load-file">Load a file</label>
+      <input id="load-file" type="file" accept="application/json,.json" hidden>
+    </div>
+    <p class="pg-note" id="copy-msg" role="status" aria-live="polite"></p>
+    <p class="pg-note">The file stays on your device. Use it as a backup, or to move to a new phone.</p>
   </section>
 
   <p class="pg-note">Saved in this browser only. Nobody else can see it, and there are no streaks to keep. <button class="link" id="diary-clear" type="button">Clear the diary</button></p>

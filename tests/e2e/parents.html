@@ -1,22 +1,44 @@
 <!doctype html><meta charset="utf-8"><title>parents</title>
 <iframe id="f" style="width:900px;height:700px"></iframe><pre id="out">running</pre>
 <script>
+/* The parent page, live: the grown-up check (hard question, lockout, remembered pass) and the sign-in choices. */
 const f = document.getElementById('f'), sleep = (ms) => new Promise((r) => setTimeout(r, ms)), res = {};
+const D = () => f.contentDocument, W = () => f.contentWindow, $ = (id) => D().getElementById(id);
+const solve = () => { // what a grown-up would work out from the question on screen
+  const t = $('p-q').textContent, sum = t.match(/\((\d+) × (\d+)\) \+ (\d+)/);
+  if (sum) return String(sum[1] * sum[2] + Number(sum[3]));
+  const phrase = (t.split('using digits:')[1] || '').trim().replace(/\.$/, ''); // the whole spelled number, not a piece of it
+  for (let n = 101; n < 1000; n++) if (W().VLParents.words(n) === phrase) return String(n);
+  return '';
+};
+const submit = (v) => { $('p-a').value = v; $('p-gate').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true })); };
+async function reload() { // waits for the fresh page, not just a fixed time
+  W().__old = 1; W().location.reload();
+  await until(() => D().readyState === 'complete' && !W().__old && W().VLParents && $('p-q') && $('p-q').textContent, 20000);
+}
+async function until(fn, ms = 20000) { const end = Date.now() + ms; while (Date.now() < end) { try { if (fn()) return true; } catch (e) { /* not ready */ } await sleep(100); } return false; }
 (async () => {
-  f.src = '/parents/'; await sleep(1500);
-  const d = f.contentDocument;
-  res.gateFirst = !d.getElementById('p-gate').hidden && d.getElementById('p-out').hidden; // sign-in is hidden behind the grown-up check
-  res.configured = !!f.contentWindow.VL_FIREBASE.apiKey;
-  d.getElementById('p-a').value = '1';
-  d.getElementById('p-gate').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-  res.wrongAnswerStaysLocked = !d.getElementById('p-gate').hidden && /grown-ups/.test(d.getElementById('p-status').textContent);
-  const m = d.getElementById('p-q').textContent.match(/(\d+) × (\d+)/); // the sum changes after a wrong answer
-  d.getElementById('p-a').value = String(m[1] * m[2]);
-  d.getElementById('p-gate').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-  for (let i = 0; i < 300 && d.getElementById('p-out').hidden && !/Could not/.test(d.getElementById('p-status').textContent); i++) await sleep(100);
-  res.signInButtonShown = !d.getElementById('p-out').hidden;
-  res.signedInPanelHidden = d.getElementById('p-in').hidden;
-  res.status = d.getElementById('p-status').textContent;
+  try {
+    f.src = '/parents/'; await sleep(1500);
+    res.gateFirst = !$('p-gate').hidden && $('p-out').hidden; // sign-in is hidden behind the grown-up check
+    res.configured = !!W().VL_FIREBASE.apiKey;
+    res.hardQuestion = /\(\d+ × \d+\) \+ \d+|using digits/.test($('p-q').textContent);
+    submit('1');
+    res.wrongAnswerStaysLocked = !$('p-gate').hidden && /grown-ups/.test($('p-status').textContent);
+    submit('2'); submit('3'); // the third miss locks the check
+    res.locksAfterThreeMisses = $('p-a').disabled && /wait/i.test($('p-status').textContent) && $('p-out').hidden;
+    W().sessionStorage.removeItem('vl-gate'); // pretend the minute passed
+    await reload();
+    submit(solve());
+    res.signInButtonShown = await until(() => !$('p-out').hidden);
+    res.emailFormShown = await until(() => !!$('p-email-form') && $('p-email-form').offsetParent !== null, 5000);
+    res.signedInPanelHidden = $('p-in').hidden;
+    $('p-email').value = 'nope'; $('p-email-form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    res.badEmailRefused = /does not look like/.test($('p-status').textContent);
+    await reload(); // a pass lasts the visit: no second question
+    res.passRemembered = await until(() => $('p-gate').hidden && !$('p-out').hidden);
+    res.status = $('p-status').textContent;
+  } catch (e) { res.crash = String(e); }
   document.getElementById('out').textContent = JSON.stringify(res);
 })();
 </script>

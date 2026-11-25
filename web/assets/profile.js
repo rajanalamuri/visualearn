@@ -23,6 +23,34 @@
     bar.insertBefore(a, timer || null);
   }
 
+  // ---- keep a copy (diary page only) ----
+  const saveBtn = $('save-file'), loadInput = $('load-file'), copyMsg = $('copy-msg');
+  if (saveBtn && loadInput) {
+    saveBtn.addEventListener('click', () => {
+      const blob = new Blob([P.exportText()], { type: 'application/json' }), url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `visualearn-progress-${P.dayKey()}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      copyMsg.textContent = 'Saved. Keep the file somewhere safe.';
+    });
+    loadInput.addEventListener('change', () => {
+      const file = loadInput.files && loadInput.files[0];
+      if (!file) return;
+      if (file.size > 300000) { copyMsg.textContent = 'That file is too big to be a VisuaLearn file.'; return; }
+      const r = new FileReader();
+      r.onload = () => {
+        const res = P.importText(String(r.result));
+        if (!res.ok) { copyMsg.textContent = res.why; return; }
+        copyMsg.textContent = `Loaded: ${res.added} added, ${res.merged} merged.`;
+        setTimeout(() => location.reload(), 600);
+      };
+      r.onerror = () => { copyMsg.textContent = 'Could not read that file.'; };
+      r.readAsText(file);
+      loadInput.value = '';
+    });
+  }
+
   // ---- sign-up and switcher (diary page only) ----
   const people = $('people'), form = $('join');
   if (!people || !form) return;

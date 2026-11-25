@@ -92,5 +92,25 @@ def test_parent_page_gates_then_offers_google_sign_in(site):
     m = re.search(r'<pre id="out">(.*?)</pre>', out, re.S)
     assert m, out[-500:]
     res = json.loads(html.unescape(m.group(1)))
-    assert res["configured"] and res["gateFirst"] and res["wrongAnswerStaysLocked"]
-    assert res["signInButtonShown"] and res["signedInPanelHidden"], res
+    assert res["configured"] and res["gateFirst"] and res["hardQuestion"] and res["wrongAnswerStaysLocked"], res
+    assert res["locksAfterThreeMisses"], res  # three misses lock the check
+    assert res["signInButtonShown"] and res["emailFormShown"] and res["signedInPanelHidden"], res
+    assert res["badEmailRefused"] and res["passRemembered"], res
+
+
+@pytest.mark.skipif(find_chrome() is None, reason="Chrome or Chromium is not installed")
+def test_the_site_switches_to_spanish_remembers_it_and_switches_back(site):
+    with tempfile.TemporaryDirectory() as profile:
+        out = subprocess.run(
+            [find_chrome(), "--headless=new", "--disable-gpu", "--no-sandbox", f"--user-data-dir={profile}", "--window-size=1100,900",
+             "--virtual-time-budget=150000", "--dump-dom", f"{site}/__e2e/i18n.html"],
+            capture_output=True, text=True, timeout=240).stdout
+    m = re.search(r'<pre id="out">(.*?)</pre>', out, re.S)
+    assert m, out[-600:]
+    result = json.loads(html.unescape(m.group(1)))
+    assert result["errors"] == [], result["errors"]
+    names = [s["name"] for s in result["steps"]]
+    for must in ("the menu is in Spanish", "the choice is remembered on the next page", "the greeting is in Spanish", "the end card is in Spanish",
+                 "the grown-up question is numeric and in Spanish", "switching back gives English again", "the lesson explanation stays in English for now"):
+        assert must in names, must
+    assert sum(1 for n in names if n.startswith("every interface string on")) == 6

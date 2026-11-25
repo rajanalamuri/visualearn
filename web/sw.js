@@ -1,8 +1,8 @@
 /* VisuaLearn service worker: lets the site open without a connection.
    Network first, so people always get the newest version when online; the cache is only the fallback. */
-const V = 'vl-v7';
+const V = 'vl-v8';
 const CORE = ['/play/', '/math/', '/progress/', '/curriculum/', '/', '/assets/style.css', '/assets/home.css', '/assets/arith.css', '/assets/play.css',
-  '/assets/app.js', '/assets/profile.js', '/assets/finish.js', '/assets/catalog.js', '/assets/genz.css', '/assets/genz.css', '/assets/lab.js', '/privacy/', '/assets/speak.js', '/assets/fonts.css', '/assets/toc.js', '/assets/toc.css', '/assets/pipkit.js', '/assets/play.js', '/assets/progress.js', '/assets/limit.js', '/assets/arith.js', '/assets/catalog.js', '/assets/lite.css', '/assets/lite.js',
+  '/assets/app.js', '/assets/i18n.js', '/assets/profile.js', '/assets/finish.js', '/assets/catalog.js', '/assets/genz.css', '/assets/genz.css', '/assets/lab.js', '/privacy/', '/assets/speak.js', '/assets/fonts.css', '/assets/toc.js', '/assets/toc.css', '/assets/pipkit.js', '/assets/play.js', '/assets/progress.js', '/assets/limit.js', '/assets/arith.js', '/assets/catalog.js', '/assets/lite.css', '/assets/lite.js',
   '/favicon.svg', '/manifest.webmanifest', '/icons/icon-192.png'];
 
 self.addEventListener('install', (e) => {

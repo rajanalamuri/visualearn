@@ -1,0 +1,106 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>i18n</title>
+<iframe id="f" style="width:1000px;height:800px"></iframe>
+<pre id="out">running</pre>
+<script>
+/* Languages, in a real browser: (1) every interface string on the main pages has a Spanish entry,
+   (2) the site really switches to Spanish, remembers it, translates what scripts add later, and switches back. */
+const log = { steps: [], errors: [], uncovered: {} };
+const f = document.getElementById('f');
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const ok = (name, cond, extra) => { log.steps.push({ name, ok: !!cond, extra: extra === undefined ? '' : String(extra) }); if (!cond) log.errors.push(name + (extra === undefined ? '' : ' :: ' + extra)); };
+const doc = () => f.contentDocument, W = () => f.contentWindow;
+const q = (s) => doc().querySelector(s), qa = (s) => [...doc().querySelectorAll(s)];
+async function until(fn, what, ms = 10000) {
+  const end = Date.now() + ms;
+  for (;;) { try { const v = fn(); if (v) return v; } catch (e) { /* not ready */ } if (Date.now() > end) { log.errors.push('timeout: ' + what); throw new Error('timeout ' + what); } await sleep(50); }
+}
+async function open(url, ready) {
+  if (f.contentWindow) f.contentWindow.__old = 1;
+  f.src = url;
+  await until(() => f.contentDocument && f.contentDocument.readyState === 'complete' && !f.contentWindow.__old && f.contentWindow.VLI18n, 'load ' + url);
+  if (ready) await until(ready, 'ready ' + url);
+}
+const OPT = '[data-no-i18n], script, style, noscript, code, pre, textarea, svg, #view, #note, #quiz, #code, #algo-blurb, #algo-facts, #off-need, #off-steps, #off-think, #off-title, .pip-card';
+function collect(d) {
+  const out = new Set();
+  const add = (t) => { t = (t || '').replace(/\s+/g, ' ').trim(); if (t && /[A-Za-z]/.test(t)) out.add(t); };
+  const w = d.createTreeWalker(d.body, NodeFilter.SHOW_TEXT);
+  while (w.nextNode()) { const p = w.currentNode.parentElement; if (p && !p.closest(OPT)) add(w.currentNode.nodeValue); }
+  d.querySelectorAll('[title],[aria-label],[placeholder],[alt]').forEach((e) => { if (!e.closest(OPT)) ['title', 'aria-label', 'placeholder', 'alt'].forEach((a) => e.hasAttribute(a) && add(e.getAttribute(a))); });
+  add(d.title);
+  return [...out];
+}
+const ALLOWED = [/^(visua|learn|VisuaLearn|English|Español)$/, /@/, /^Type this number using digits:/, /^What is \(/];
+
+(async () => {
+  try {
+    const es = await (await fetch('/assets/i18n/es.json')).json();
+    // 1. nothing on the main pages is missing from the dictionary (so new copy cannot ship untranslated by accident)
+    for (const page of ['/', '/curriculum/', '/progress/', '/parents/', '/privacy/', '/teachers/']) {
+      await open(page + '?lang=en', () => q('.foot') && q('#lang'));
+      const T = W().VLI18n.compile(es.strings);
+      const missing = collect(doc()).filter((s) => W().VLI18n.translate(s, T) === null && !ALLOWED.some((re) => re.test(s)));
+      log.uncovered[page] = missing;
+      ok('every interface string on ' + page + ' has a Spanish entry', missing.length === 0, missing.slice(0, 5).join(' | '));
+    }
+
+    // 2. Spanish: home, menu, footer, picker
+    await open('/?lang=es', () => /Aprender/.test((q('.nav') || {}).textContent || ''));
+    ok('the page language is set', doc().documentElement.lang === 'es');
+    ok('the menu is in Spanish', /Aprender/.test(q('.nav').textContent) && /Jugar/.test(q('.nav').textContent) && /Mapa/.test(q('.nav').textContent), q('.nav').textContent);
+    ok('the sign-up chip is in Spanish', /Crear perfil/.test(q('.top-in .me').textContent), q('.top-in .me').textContent);
+    ok('the headline is in Spanish', /Las respuestas están en todas partes/.test(q('h1').textContent), q('h1').textContent);
+    ok('the footer links are in Spanish', /Mi página/.test(q('.foot-links').textContent) && /Privacidad/.test(q('.foot-links').textContent));
+    ok('the picker shows Spanish selected', q('#lang').value === 'es' && [...q('#lang').options].map((o) => o.value).join() === 'en,es');
+    ok('the timer (added by a script) is translated', /Quedan/.test(q('.timer').textContent) || q('.timer').hidden, q('.timer').textContent);
+    ok('the tab title is translated', /VisuaLearn/.test(doc().title));
+
+    // 3. it remembers the choice, and translates what the roadmap's script draws
+    await open('/curriculum/', () => q('.track') && q('#path li') && /Piensa|Pensar/.test(q('.track h2').textContent));
+    ok('the choice is remembered on the next page', doc().documentElement.lang === 'es');
+    ok('roadmap track names are in Spanish', /Piensa como una computadora/.test(q('.track h2').textContent), q('.track h2').textContent);
+    ok('the level buttons are in Spanish', /Inicial · 8\+/.test(q('#levels').textContent) && /Todos/.test(q('#levels').textContent), q('#levels').textContent);
+    ok('the Start here path is in Spanish', /Búsqueda binaria/.test(q('#path').textContent), q('#path').textContent);
+    ok('counts follow the Spanish pattern', /\d+ de \d+ listos/.test(q('#cur-count').textContent), q('#cur-count').textContent);
+    ok('the closing card is in Spanish', /El final del mapa/.test(q('.closing-card').textContent));
+
+    // 4. a profile and the diary, drawn by scripts after load
+    await open('/progress/', () => q('#join'));
+    W().VLProgress.signUp('Nova');
+    await open('/progress/', () => q('#greet') && /Nova/.test(q('#greet').textContent));
+    ok('the greeting is in Spanish', /Hola, Nova\. Esta es tu página\./.test(q('#greet').textContent), q('#greet').textContent);
+    ok('the sign-up chip shows the nickname', /Nova/.test(q('.top-in .me').textContent) && /Página de Nova/.test(q('.top-in .me').getAttribute('aria-label')), q('.top-in .me').getAttribute('aria-label'));
+    ok('the diary count is in Spanish', /\d+ de \d+/.test(q('#diary-count').textContent), q('#diary-count').textContent);
+    ok('the "keep a copy" buttons are in Spanish', /Guardar en un archivo/.test(q('#save-file').textContent) && /Cargar un archivo/.test(q('label[for="load-file"]').textContent));
+
+    // 5. a lesson: the controls are Spanish, the lesson itself is still English, the end card is Spanish
+    await open('/techniques/#twoptr', () => q('#algos button') && q('#b-fwd') && q('#predict'));
+    ok('the lesson controls are in Spanish', /Adivina primero/.test(q('.switch').parentElement.textContent) && /Velocidad/.test(q('.knobs').textContent) && /Mezclar/.test(q('#b-new').textContent), q('.knobs').textContent);
+    ok('the lesson names on the buttons are in Spanish', /Dos punteros/.test(q('#algos').textContent), q('#algos').textContent.slice(0, 80));
+    ok('the lesson explanation stays in English for now', /^On a sorted row/.test(q('#algo-blurb').textContent), q('#algo-blurb').textContent.slice(0, 40));
+    q('#predict').click();
+    let clicks = 0; while (q('#done').hidden && clicks < 300) { q('#b-fwd').click(); clicks++; await sleep(4); }
+    await until(() => !q('.finish').hidden && q('.finish-prog'), 'finish card');
+    ok('the end card is in Spanish', /La idea principal/.test(q('.finish').textContent) && /Nova, has explorado \d+ de \d+ ideas en este dispositivo\./.test(q('.finish-prog').textContent), q('.finish-prog').textContent);
+    ok('the Next button names the next lesson in Spanish', /Siguiente: Ventana deslizante →/.test(q('.finish .btn.primary').textContent), q('.finish .btn.primary').textContent);
+    ok('the clear/unclear question is in Spanish', /¿Se entendió\?/.test(q('.fb-row').textContent));
+
+    // 6. the parents page in Spanish: no English number words
+    await open('/parents/', () => q('#p-q') && q('#p-q').textContent);
+    ok('the grown-up question is numeric and in Spanish', /^¿Cuánto es \(\d+ × \d+\) \+ \d+\?$/.test(q('#p-q').textContent.trim()), q('#p-q').textContent);
+    ok('the parents page buttons are in Spanish', /Continuar/.test(q('#p-gate').textContent) && /Envíame un enlace/.test(q('#p-email-form').textContent));
+
+    // 7. back to English
+    await open('/privacy/', () => q('#lang'));
+    ok('privacy is in Spanish', /Privacidad/.test(q('h1').textContent), q('h1').textContent);
+    q('#lang').value = 'en';
+    W().__old = 1; q('#lang').dispatchEvent(new Event('change', { bubbles: true }));
+    await until(() => f.contentDocument.readyState === 'complete' && !f.contentWindow.__old && f.contentWindow.VLI18n && q('.nav'), 'reload in English');
+    ok('switching back gives English again', /Learn/.test(q('.nav').textContent) && /Privacy/.test(q('h1').textContent) && doc().documentElement.lang === 'en', q('.nav').textContent);
+  } catch (e) { log.errors.push('crash: ' + e.message); }
+  document.getElementById('out').textContent = JSON.stringify(log);
+  document.title = 'finished';
+})();
+</script>

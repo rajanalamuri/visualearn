@@ -69,6 +69,15 @@ docker compose run --rm test         # the whole test suite in a clean container
 `docker/default.conf` and `docker/security.conf` mirror the Cloudflare headers and folder behaviour in `web/_headers`.
 (The Docker files were written without Docker on hand, so run `docker compose up --build` once and open the site to confirm.)
 
+## Languages
+
+The page's own English text is the key. `web/assets/i18n.js` swaps exact English strings for a language file in `web/assets/i18n/<code>.json`,
+and templates such as `"{a} of {b} ready"` cover text with numbers or names. Spanish (`es`) ships with the interface, menus, home, roadmap,
+diary, parents and privacy pages, and every topic and lesson name. The lesson explanations are still English: a missing entry just stays English.
+
+To add a language: copy `es.json`, translate the values, add the code to `LANGS` in `i18n.js`. Tests fail if a name is missing, a placeholder
+changes, or any English interface text on the main pages has no entry. Ask a native speaker to review before releasing a language.
+
 ## Generated pages
 
 `web/learn/*`, `web/activities/`, `web/teachers/`, `web/assets/lessons.json` and the lesson entries in `web/sitemap.xml` are generated from the lessons.
@@ -103,6 +112,11 @@ computers (Chrome: Install; iPad: Share, then Add to Home Screen) and opens offl
 A Play Store APK can be wrapped around the live site with PWABuilder or Bubblewrap, which need a
 Google Play developer account and the Android SDK.
 
+## Keep a copy
+
+The diary page can save everyone's diary to a JSON file and load it back (`VLProgress.exportText` / `importText`). Loading merges, never
+double-counts, and rejects anything that is not a clean VisuaLearn file.
+
 ## Parent sign-in (optional)
 
 `/parents/` lets a grown-up sign in with Google to sync the on-device diary. It is client-only:
@@ -113,7 +127,8 @@ Firebase Auth and Firestore load from Google on that page alone, after a grown-u
 3. Paste the web app config into `web/assets/firebase-config.js`.
 4. Publish `firestore.rules` (Firestore > Rules).
 
-Until the config is filled in, the page says sign-in is not switched on.
+Until the config is filled in, the page says sign-in is not switched on. Sign in is by Google or an emailed link; for the emailed link, also enable
+Authentication > Sign-in method > Email/Password > Email link in the Firebase console.
 
 ## Test
 

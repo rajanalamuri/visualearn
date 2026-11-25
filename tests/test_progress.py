@@ -1,5 +1,6 @@
 """Checks the on-device diary (progress.js) and the grade catalogue (catalog.js)."""
 import json
+import re
 from pathlib import Path
 
 import quickjs
@@ -185,12 +186,57 @@ def test_diary_merge_never_double_counts_and_keeps_both_sides():
     assert call(ctx, "VLParents.merge(null, {'x': 5, '2026-01-01': {'ideas': {'a': 'junk'}}})") == {"2026-01-01": {"ideas": {"a": 0}}}
 
 
-def test_grown_up_gate_has_a_checkable_answer():
+def test_grown_up_gate_asks_something_a_child_cannot_just_guess():
     ctx = boot("parents.js")
-    for r in (0, 0.5, 0.99):
-        g = call(ctx, f"VLParents.gate(() => {r})")
-        a, b = (int(x) for x in g["text"].replace("What is ", "").replace("?", "").split(" × "))
-        assert g["answer"] == a * b and 6 <= a <= 12 and 6 <= b <= 12
+    seen = set()
+    for r in [0.0, 0.2, 0.49, 0.5, 0.7, 0.99]:
+        g = call(ctx, f"VLParents.gate((() => {{ let i = 0; const seq = [{r}, 0.3, 0.6, 0.9]; return () => seq[i++ % 4]; }})())")
+        seen.add(g["kind"])
+        if g["kind"] == "sum":
+            a, b, c = (int(x) for x in re.search(r"\((\d+) × (\d+)\) \+ (\d+)", g["text"]).groups())
+            assert g["answer"] == a * b + c and 13 <= a <= 19 and 12 <= b <= 19 and g["answer"] >= 167  # too big to guess, hard to do in a young head
+        else:
+            n = g["answer"]
+            assert 101 <= n <= 999 and call(ctx, f"VLParents.words({n})") in g["text"]
+    assert seen == {"sum", "words"}
+
+
+def test_numbers_are_spelled_correctly():
+    ctx = boot("parents.js")
+    want = {0: "zero", 7: "seven", 13: "thirteen", 20: "twenty", 42: "forty-two", 100: "one hundred", 101: "one hundred and one", 340: "three hundred and forty",
+            347: "three hundred and forty-seven", 815: "eight hundred and fifteen", 999: "nine hundred and ninety-nine"}
+    for n, w in want.items():
+        assert call(ctx, f"VLParents.words({n})") == w
+    all_words = [call(ctx, f"VLParents.words({n})") for n in range(0, 1000)]
+    assert len(set(all_words)) == 1000  # no two numbers share a spelling
+
+
+def test_wrong_guesses_lock_the_check_and_a_pass_is_remembered():
+    ctx = boot("parents.js")
+    step = lambda st, right, now: call(ctx, f"VLParents.afterAnswer({json.dumps(st)}, {str(right).lower()}, {now})")
+    status = lambda st, now: call(ctx, f"VLParents.gateStatus({json.dumps(st)}, {now})")
+    st = {}
+    st = step(st, False, 1000)
+    st = step(st, False, 2000)
+    assert not status(st, 2500)["locked"]  # two misses are forgiven
+    st = step(st, False, 3000)
+    s = status(st, 3500)
+    assert s["locked"] and s["wait"] == 60 and not s["passed"]  # the third locks for a minute
+    assert status(st, 3000 + 59_000)["locked"] and not status(st, 3000 + 61_000)["locked"]
+    ok = step({"fails": 2}, True, 10_000)
+    assert ok == {"fails": 0, "okAt": 10_000}
+    assert status(ok, 10_000 + 19 * 60_000)["passed"] and not status(ok, 10_000 + 21 * 60_000)["passed"]  # the pass lasts the visit
+    assert status({}, 5) == {"passed": False, "locked": False, "wait": 0} and status(None, 5)["passed"] is False
+
+
+def test_email_addresses_are_checked_before_asking_for_a_link():
+    ctx = boot("parents.js")
+    good = ["a@b.co", "parent.name+tag@example.com", "x_y@sub.domain.org"]
+    bad = ["", "nope", "a@b", "a b@c.com", "@x.com", "a@.com", "a@b.c", "a@@b.com", "x" * 250 + "@b.com", None]
+    for e in good:
+        assert call(ctx, f"VLParents.isEmail({json.dumps(e)})") is True, e
+    for e in bad:
+        assert call(ctx, f"VLParents.isEmail({json.dumps(e)})") is False, e
 
 
 def test_parent_sign_in_is_fully_configured_and_kids_pages_load_no_firebase():
@@ -313,3 +359,119 @@ def test_the_diary_page_has_the_sign_up_form():
     html = (WEB / "progress" / "index.html").read_text(encoding="utf-8")
     for i in ("people", "join", "nick", "swatches", "join-msg", "add-person", "greet"):
         assert f'id="{i}"' in html, i
+
+
+# ---------- keep a copy: export and import ----------
+
+def imp(ctx, text):
+    return call(ctx, f"VLProgress.importText({json.dumps(text)})")
+
+
+def make_file(people, **over):
+    d = {"app": "visualearn", "version": 1, "exported": "2026-11-26", "people": people}
+    d.update(over)
+    return json.dumps(d)
+
+
+def test_export_holds_everyone_and_round_trips_exactly():
+    ctx = boot("progress.js")
+    signup(ctx, "Ava", "'#ff9ec7'")
+    ctx.eval("VLProgress.mark('play:ten'); VLProgress.mark('play:ten');")
+    signup(ctx, "Ben")
+    ctx.eval("VLProgress.mark('graphs:topo');")
+    d = call(ctx, "VLProgress.exportData()")
+    assert d["app"] == "visualearn" and d["version"] == 1 and [p["name"] for p in d["people"]] == ["Ava", "Ben"]
+    assert d["people"][0]["color"] == "#ff9ec7"
+    text = ctx.eval("VLProgress.exportText()")
+    other = boot("progress.js")  # a brand new device
+    r = imp(other, text)
+    assert r == {"ok": True, "added": 2, "merged": 0}
+    assert call(other, "VLProgress.exportData()")["people"] == d["people"]  # nothing lost or changed
+    assert call(other, "VLProgress.active().name") == "Ava"
+
+
+def test_a_device_with_no_profiles_exports_its_diary_as_one_person():
+    ctx = boot("progress.js")
+    ctx.eval("VLProgress.mark('math:add');")
+    d = call(ctx, "VLProgress.exportData()")
+    assert len(d["people"]) == 1 and d["people"][0]["name"] == "Me" and list(d["people"][0]["log"].values())[0]["ideas"] == {"math:add": 1}
+
+
+def test_loading_a_file_twice_never_double_counts_and_keeps_both_sides():
+    ctx = boot("progress.js")
+    signup(ctx, "Ava")
+    ctx.eval("VLProgress.mark('play:ten'); VLProgress.mark('play:ten');")
+    mine = call(ctx, "VLProgress.everMet()")
+    f = make_file([{"name": "ava", "color": "#ffd93d", "log": {"2026-01-05": {"ideas": {"graphs:flow": 2}, "sec": 300}, "2026-01-06": {"ideas": {"play:ten": 1}}}}])
+    r = imp(ctx, f)
+    assert r["ok"] and r["merged"] == 1 and r["added"] == 0  # the same nickname merges, in any capitals
+    again = imp(ctx, f)
+    assert again["ok"]
+    log = call(ctx, "VLProgress.load()")
+    assert log["2026-01-05"] == {"ideas": {"graphs:flow": 2}, "sec": 300}  # not 4
+    assert sorted(call(ctx, "VLProgress.everMet()")) == sorted(set(mine) | {"graphs:flow"})
+    assert call(ctx, "VLProgress.profiles()").__len__() == 1
+
+
+def test_the_first_profile_made_by_a_file_keeps_the_old_shared_diary():
+    ctx = boot("progress.js")
+    ctx.eval("VLProgress.mark('math:pi');")  # a diary from before profiles
+    r = imp(ctx, make_file([{"name": "Nova", "log": {"2026-02-02": {"ideas": {"dp:grid": 1}}}}]))
+    assert r["ok"] and r["added"] == 1
+    assert sorted(call(ctx, "VLProgress.everMet()")) == ["dp:grid", "math:pi"]
+    assert "vl-log" not in call(ctx, "Object.keys(store)")
+
+
+def test_bad_hostile_or_oversized_files_are_refused_and_change_nothing():
+    ctx = boot("progress.js")
+    signup(ctx, "Ava")
+    before = call(ctx, "JSON.stringify(store)")
+    person = {"name": "Zed", "log": {}}
+    cases = {
+        "": "empty", "   ": "empty", "not json": "does not look", "[]": "does not look", "{}": "does not look",
+        make_file([person], app="other"): "does not look", make_file([person], version=2): "does not look", make_file([]): "does not look",
+        make_file([{"name": "a@b.com", "log": {}}]): "not allowed", make_file([{"name": "<img src=x>", "log": {}}]): "not allowed",
+        make_file([{"name": "", "log": {}}]): "not allowed", make_file([{"name": "Averyveryverylongname", "log": {}}]): "not allowed",
+        make_file([{"name": f"P{i}", "log": {}} for i in range(6)]): "at most 5",
+        "x" * 300_001: "too big",
+    }
+    for text, why in cases.items():
+        r = imp(ctx, text)
+        assert r["ok"] is False and why in r["why"], (text[:40], r)
+    assert call(ctx, "JSON.stringify(store)") == before
+
+
+def test_loading_cleans_the_diary_so_a_file_cannot_smuggle_junk_in():
+    ctx = boot("progress.js")
+    junk = {"2026-03-03": {"ideas": {"graphs:flow": 5, "../../etc:passwd": 2, "<script>": 1, "play:ten": -3, "math:add": "lots", "dp:grid": 99999999}, "sec": 10**9},
+            "yesterday": {"ideas": {"graphs:flow": 1}}, "2026-03-04": "nope", "2026-03-05": {"ideas": {}}}
+    r = imp(ctx, make_file([{"name": "Nova", "color": "javascript:alert(1)", "log": junk}]))
+    assert r["ok"]
+    assert call(ctx, "VLProgress.active().color") in call(ctx, "VLProgress.COLORS")  # an unknown colour is replaced, never kept
+    log = call(ctx, "VLProgress.load()")
+    assert log == {"2026-03-03": {"ideas": {"graphs:flow": 5, "dp:grid": 1000}}}  # one clean day; huge counts capped; no absurd minutes
+
+
+def test_the_limit_of_five_people_applies_to_loading_too():
+    ctx = boot("progress.js")
+    for n in ["Ava", "Ben", "Cy", "Di"]:
+        assert signup(ctx, n)["ok"]
+    r = imp(ctx, make_file([{"name": "Ed", "log": {}}, {"name": "Flo", "log": {}}]))
+    assert r["ok"] is False and "5 people" in r["why"] and r["added"] == 1  # Ed fits, Flo does not: the user is told
+    assert len(call(ctx, "VLProgress.profiles()")) == 5
+
+
+def test_diary_merging_is_identical_for_files_and_for_cloud_sync():
+    both = boot("progress.js", "parents.js")
+    a = {"2026-11-24": {"ideas": {"math:add": 2, "play:ten": 1}, "sec": 300}}
+    b = {"2026-11-24": {"ideas": {"math:add": 3}, "sec": 120}, "2026-11-25": {"ideas": {"dp:coins": 1}}}
+    args = f"{json.dumps(a)}, {json.dumps(b)}"
+    assert call(both, f"VLProgress.mergeLogs({args})") == call(both, f"VLParents.merge({args})")
+    assert call(both, f"VLProgress.mergeLogs({json.dumps(b)}, {json.dumps(a)})") == call(both, f"VLProgress.mergeLogs({args})")  # order does not matter
+
+
+def test_the_diary_page_has_save_and_load():
+    html = (WEB / "progress" / "index.html").read_text(encoding="utf-8")
+    for i in ("save-file", "load-file", "copy-msg"):
+        assert f'id="{i}"' in html, i
+    assert 'accept="application/json,.json"' in html

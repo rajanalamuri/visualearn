@@ -114,6 +114,17 @@ const chip = () => (q('.top-in .me') || {}).textContent || '';
     ok('removing a person leaves the other', qa('#people li').length === 1 && /Nova/.test(q('#people').textContent));
     ok('and deletes their diary key', Object.keys(f.contentWindow.localStorage).filter((k) => k.startsWith('vl-log:')).length === 1);
 
+    // 9b. save a copy, lose everything, load it back
+    const saved = f.contentWindow.VLProgress.exportText();
+    ok('the saved file names the app and holds Nova', /"app": "visualearn"/.test(saved) && /"name": "Nova"/.test(saved) && /techniques:twoptr/.test(saved));
+    ok('the diary page has Save and Load buttons', !!q('#save-file') && !!q('#load-file'));
+    const id = f.contentWindow.VLProgress.active().id;
+    f.contentWindow.VLProgress.remove(id);
+    ok('removing everyone empties the device', f.contentWindow.VLProgress.profiles().length === 0 && f.contentWindow.VLProgress.everMet().length === 0);
+    const back = f.contentWindow.VLProgress.importText(saved);
+    ok('loading the file brings Nova and her diary back', back.ok && f.contentWindow.VLProgress.active().name === 'Nova' && f.contentWindow.VLProgress.everMet().includes('techniques:twoptr'));
+    ok('a hostile file is refused', f.contentWindow.VLProgress.importText('{"app":"visualearn","version":1,"people":[{"name":"a@b.com","log":{}}]}').ok === false);
+
     // 10. the closing cards and the chip on other pages
     await open('/', () => q('.closing-card'));
     ok('home page ends with the closing card', /remember every algorithm/i.test(q('.closing-card h2').textContent));

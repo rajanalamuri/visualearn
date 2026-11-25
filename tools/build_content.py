@@ -117,6 +117,7 @@ def page(path, title, desc, body, *, nav_current=None, ld=None, extra_scripts=""
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <script src="/assets/app.js" defer></script>{extra_scripts}
+<script src="/assets/i18n.js" defer></script>
 <link rel="stylesheet" href="/assets/genz.css">{ldj}
 </head>
 <body class="home">

@@ -370,3 +370,13 @@ a.step:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--sh)}
 .ar.legal h1,.ar.legal h2{text-align:left}
 .ar.legal .lede{text-align:left}
 .ar.legal.lesson-doc,.ar.legal.teachers{max-width:760px}
+
+/* parents: email link */
+.p-or{margin:0;text-align:center;font-weight:800;color:var(--muted)}
+.p-email label{font-size:18px}
+.p-email .p-row input{width:100%;flex:1 1 200px}
+.p-row input:disabled,.btn:disabled{opacity:.5}
+
+/* language picker (footer) */
+.lang-pick{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.lang-pick select{padding:4px 10px;font:inherit;font-weight:700;border:2px solid var(--bd);border-radius:10px;background:var(--surface);color:var(--ink);box-shadow:0 2px 0 var(--sh)}

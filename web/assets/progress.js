@@ -100,5 +100,89 @@
   const everMet = () => [...new Set(Object.values(load()).flatMap((d) => Object.keys(d.ideas || {})))];
   const clear = () => store.set(logKey(), '{}');
 
-  globalThis.VLProgress = { mark, load, recent, everMet, clear, dayKey, profiles, active, logKey, checkName, signUp, switchTo, remove, COLORS, MAX_PROFILES };
+
+  // ---- keep a copy: save everyone's diary to a file, and load one back ----
+  const IDEA_ID = /^[a-z0-9-]{1,24}:[a-zA-Z0-9-]{1,24}$/, DATE = /^\d{4}-\d{2}-\d{2}$/, MAX_FILE = 300000;
+
+  // Joins two diaries. Counts take the larger side, so loading the same file twice never double-counts.
+  function mergeLogs(a, b) {
+    const out = {};
+    for (const log of [a || {}, b || {}]) {
+      for (const [date, day] of Object.entries(log)) {
+        if (!day || typeof day !== 'object') continue;
+        const o = out[date] || (out[date] = { ideas: {} });
+        for (const [id, n] of Object.entries(day.ideas || {})) o.ideas[id] = Math.max(o.ideas[id] || 0, Number(n) || 0);
+        if (day.sec) o.sec = Math.max(o.sec || 0, Number(day.sec) || 0);
+      }
+    }
+    return out;
+  }
+  // Keeps only what a diary can contain: real dates, idea ids that look like ids, sensible counts.
+  function cleanLog(raw) {
+    const out = {};
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return out;
+    for (const [date, day] of Object.entries(raw)) {
+      if (!DATE.test(date) || !day || typeof day !== 'object') continue;
+      const ideas = {};
+      for (const [id, n] of Object.entries(day.ideas || {})) {
+        const c = Math.floor(Number(n));
+        if (IDEA_ID.test(id) && c >= 1) ideas[id] = Math.min(c, 1000);
+      }
+      if (!Object.keys(ideas).length) continue;
+      out[date] = { ideas };
+      const sec = Number(day.sec);
+      if (sec > 0 && sec <= 86400) out[date].sec = Math.floor(sec);
+    }
+    return out;
+  }
+  const readLog = (key) => { try { const l = JSON.parse(store.get(key) || '{}'); return l && typeof l === 'object' && !Array.isArray(l) ? l : {}; } catch { return {}; } };
+
+  function exportData() {
+    const all = profiles();
+    const people = all.length
+      ? all.map((p) => ({ name: p.name, color: p.color, log: readLog(`${LEGACY}:${p.id}`) }))
+      : [{ name: 'Me', color: COLORS[0], log: readLog(LEGACY) }];
+    return { app: 'visualearn', version: 1, exported: dayKey(), people };
+  }
+  const exportText = () => JSON.stringify(exportData(), null, 1);
+
+  // Loads a saved file. A person who already exists (same nickname) gets the two diaries merged; anyone new is added.
+  function importText(text) {
+    if (typeof text !== 'string' || !text.trim()) return { ok: false, why: 'That file is empty.' };
+    if (text.length > MAX_FILE) return { ok: false, why: 'That file is too big to be a VisuaLearn file.' };
+    let d;
+    try { d = JSON.parse(text); } catch { return { ok: false, why: 'That does not look like a VisuaLearn file.' }; }
+    if (!d || d.app !== 'visualearn' || d.version !== 1 || !Array.isArray(d.people) || !d.people.length) return { ok: false, why: 'That does not look like a VisuaLearn file.' };
+    if (d.people.length > MAX_PROFILES) return { ok: false, why: `A file can hold at most ${MAX_PROFILES} people.` };
+    const incoming = [];
+    for (const p of d.people) {
+      const c = checkName(p && p.name);
+      if (!c.ok) return { ok: false, why: `One name in the file is not allowed: ${c.why}` };
+      incoming.push({ name: c.name, color: p && COLORS.includes(p.color) ? p.color : null, log: cleanLog(p && p.log) });
+    }
+    let all = profiles(), added = 0, merged = 0;
+    for (const person of incoming) {
+      const have = all.find((q) => q.name.toLowerCase() === person.name.toLowerCase());
+      if (have) {
+        store.set(`${LEGACY}:${have.id}`, JSON.stringify(mergeLogs(readLog(`${LEGACY}:${have.id}`), person.log)));
+        merged++;
+        continue;
+      }
+      if (all.length >= MAX_PROFILES) return { ok: false, why: `This device already holds ${MAX_PROFILES} people. Remove one, then load the file again.`, added, merged };
+      const p = { id: `p${Date.now().toString(36)}${Math.floor(Math.random() * 1296).toString(36)}`, name: person.name, color: person.color || COLORS[all.length % COLORS.length] };
+      let log = person.log;
+      if (!all.length) { // the first profile on a device also takes in any diary that was there before profiles
+        const old = readLog(LEGACY);
+        if (Object.keys(old).length) { log = mergeLogs(old, log); store.del(LEGACY); }
+      }
+      store.set(`${LEGACY}:${p.id}`, JSON.stringify(log));
+      all = [...all, p];
+      store.set(PKEY, JSON.stringify(all));
+      added++;
+    }
+    if (!active() && all.length) store.set(AKEY, all[0].id);
+    return { ok: true, added, merged };
+  }
+
+  globalThis.VLProgress = { mark, load, recent, everMet, clear, dayKey, profiles, active, logKey, checkName, signUp, switchTo, remove, COLORS, MAX_PROFILES, mergeLogs, cleanLog, exportData, exportText, importText };
 })();
