@@ -78,6 +78,14 @@ const chip = () => (q('.top-in .me') || {}).textContent || '';
     ok('the final card links to the roadmap', !!qa('.finish a').find((a) => a.getAttribute('href') === '/curriculum/'));
     ok('the lesson was written to the diary', f.contentWindow.VLProgress.everMet().includes('techniques:twoptr'), f.contentWindow.VLProgress.everMet());
 
+    ok('the lesson says who it is for', /(Starter|Builder|Advanced) · ages \d+\+/.test(q('.lvl').textContent), q('.lvl').textContent);
+    ok('the tab title names the lesson', /^Two pointers/.test(doc().title), doc().title);
+    ok('the card asks if it was clear', /Was this clear/.test(q('.fb-row').textContent));
+    qa('.fb-row .btn').find((b) => /Not really/.test(b.textContent)).click();
+    await until(() => q('.fb-row a'), 'feedback link');
+    ok('"Not really" offers a prefilled email', /mailto:.*Two%20pointers/.test(q('.fb-row a').getAttribute('href')) && /techniques%3Atwoptr/.test(q('.fb-row a').getAttribute('href')));
+    ok('the end card links to the shareable lesson page', !!qa('.finish a').find((a) => a.getAttribute('href') === '/learn/techniques-twoptr/'));
+
     // 5. Next moves on to the next lesson
     q('.finish .btn.primary').click();
     await until(() => q('#algos [aria-pressed="true"]').textContent === 'Sliding window', 'next lesson');
@@ -114,6 +122,22 @@ const chip = () => (q('.top-in .me') || {}).textContent || '';
     ok('roadmap ends with its closing card', /every idea/i.test(q('.closing-card h2').textContent));
     await open('/graphs/#kruskal', () => q('#algos button') && q('.top-in .me'));
     ok('a graph lesson loads with the chip', /Nova/.test(chip()));
+    // 11. levels on the roadmap, and the generated pages
+    await open('/curriculum/?level=1', () => q('.track') && q('#levels button') && q('#path li'));
+    const shown = () => qa('.topics li').filter((li) => !li.hidden);
+    ok('the Starter filter hides the harder topics', shown().length > 10 && shown().every((li) => li.dataset.level === '1') && qa('.topics li').some((li) => li.hidden));
+    ok('"Start here" lists ten steps', qa('#path li').length === 10);
+    ok('the count follows the filter', /^(\d+) of \1 ready/.test(q('#cur-count').textContent.trim()), q('#cur-count').textContent);
+    q('#levels button[data-level="3"]').click();
+    ok('the Advanced filter shows only advanced topics', shown().length > 20 && shown().every((li) => li.dataset.level === '3'));
+    await open('/learn/techniques-twoptr/', () => q('h1'));
+    ok('a lesson page has its own title and a Play link', /Two pointers/.test(doc().title) && !!qa('a.btn.primary').find((a) => a.getAttribute('href') === '/techniques/#twoptr'), doc().title);
+    await open('/activities/', () => q('.act'));
+    const total = qa('.act').length;
+    qa('#act-levels button[data-level="1"]')[0].click();
+    ok('the activity pack filters by level', total > 100 && qa('.act').filter((a) => !a.hidden).length < total && qa('.act').filter((a) => !a.hidden).length > 10, total);
+    await open('/teachers/', () => q('h1'));
+    ok('the teacher page explains a 45-minute session', /45 minutes/.test(q('.teachers').textContent));
   } catch (e) { log.errors.push('crash: ' + e.message); }
   document.getElementById('out').textContent = JSON.stringify(log);
   document.title = 'finished';

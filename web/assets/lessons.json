@@ -1,0 +1,4752 @@
+[
+ {
+  "id": "techniques:twoptr",
+  "page": "techniques",
+  "key": "twoptr",
+  "slug": "techniques-twoptr",
+  "pageTitle": "Arrays and techniques",
+  "name": "Two pointers",
+  "blurb": "On a sorted row, put one finger at each end. If the pair adds up to too little, move the left finger right. Too much, move the right finger left. You never check every pair.",
+  "facts": [
+   [
+    "Needs",
+    "A sorted row"
+   ],
+   [
+    "Time",
+    "O(n)"
+   ],
+   [
+    "Instead of",
+    "Trying every pair"
+   ]
+  ],
+  "code": [
+   "left ← first; right ← last",
+   "while left < right",
+   "  sum ← a[left] + a[right]",
+   "  if sum = target: found",
+   "  if sum is too small: left → right",
+   "  else: right → left",
+   "no pair adds up"
+  ],
+  "offline": {
+   "title": "Pair up",
+   "need": "Number cards in order, and a target number",
+   "time": "10 minutes",
+   "steps": [
+    "Lay 8 number cards face up in order, smallest on the left.",
+    "Pick a target. Put one finger on the first card and one on the last.",
+    "Add the two cards. Too small? Move the left finger right. Too big? Move the right finger left.",
+    "Stop when they add to the target, or when your fingers meet."
+   ],
+   "think": "Why can you safely ignore a card once its finger has moved past it?"
+  },
+  "level": 2,
+  "topic": "Two pointers"
+ },
+ {
+  "id": "techniques:window",
+  "page": "techniques",
+  "key": "window",
+  "slug": "techniques-window",
+  "pageTitle": "Arrays and techniques",
+  "name": "Sliding window",
+  "blurb": "To find the best run of 3 in a row, do not re-add every run. Slide the window one step: add the number that comes in, take away the one that leaves.",
+  "facts": [
+   [
+    "Time",
+    "O(n)"
+   ],
+   [
+    "Window",
+    "Fixed size k"
+   ],
+   [
+    "Instead of",
+    "Re-adding each run"
+   ]
+  ],
+  "code": [
+   "sum ← first k numbers; best ← sum",
+   "for each next number",
+   "  sum ← sum + new − the one leaving",
+   "  best ← the larger of best and sum",
+   "answer is best"
+  ],
+  "offline": {
+   "title": "Slide the frame",
+   "need": "A strip of squared paper with numbers, and a card with a 3-square window cut out",
+   "time": "10 minutes",
+   "steps": [
+    "Write 9 numbers in a row on the strip.",
+    "Put the window over the first 3 and add them.",
+    "Slide the window one place. Do not add again: add the new number, take away the one that left.",
+    "Keep the best total. Slide to the end."
+   ],
+   "think": "How many additions does each slide need, compared with adding all 3 from scratch? What if the window were 100 wide?"
+  },
+  "level": 2,
+  "topic": "Sliding window"
+ },
+ {
+  "id": "techniques:prefix",
+  "page": "techniques",
+  "key": "prefix",
+  "slug": "techniques-prefix",
+  "pageTitle": "Arrays and techniques",
+  "name": "Prefix sums",
+  "blurb": "Add up the row once, keeping a running total. After that, the sum of any stretch is just one subtraction: the total at the end minus the total just before the start.",
+  "facts": [
+   [
+    "Build",
+    "O(n) once"
+   ],
+   [
+    "Each question",
+    "O(1)"
+   ],
+   [
+    "Instead of",
+    "Re-adding every time"
+   ]
+  ],
+  "code": [
+   "P[0] ← 0",
+   "for each i: P[i+1] ← P[i] + a[i]",
+   "sum of a[l..r] ← P[r+1] − P[l]"
+  ],
+  "offline": {
+   "title": "Running total",
+   "need": "Paper and a pencil",
+   "time": "10 minutes",
+   "steps": [
+    "Write 8 numbers in a row. Under them, write a running total: each box is the box before plus the number above.",
+    "Pick two positions. The sum between them is the running total at the end minus the running total just before the start.",
+    "Check by adding the numbers one by one. They agree."
+   ],
+   "think": "If you had to answer 1000 questions about the same row, why is the running total worth building first?"
+  },
+  "level": 2,
+  "topic": "Prefix sums"
+ },
+ {
+  "id": "techniques:bsans",
+  "page": "techniques",
+  "key": "bsans",
+  "slug": "techniques-bsans",
+  "pageTitle": "Arrays and techniques",
+  "name": "Binary search on the answer",
+  "blurb": "You can binary-search more than a sorted list. If you can test a guess (is this speed fast enough?) and bigger guesses never do worse, halve the range of possible answers.",
+  "facts": [
+   [
+    "Needs",
+    "A yes/no test"
+   ],
+   [
+    "Time",
+    "O(log range)"
+   ],
+   [
+    "Instead of",
+    "Trying every guess"
+   ]
+  ],
+  "code": [
+   "low ← 1; high ← biggest possible",
+   "while low < high",
+   "  mid ← the middle guess",
+   "  if mid works: high ← mid",
+   "  else: low ← mid + 1",
+   "answer is low"
+  ],
+  "offline": {
+   "title": "Slowest speed that works",
+   "need": "Paper, a pencil and 4 piles of coins",
+   "time": "15 minutes",
+   "steps": [
+    "Make 4 piles of coins. You may eat from one pile per hour, up to your speed. You have H hours.",
+    "Guess a speed in the middle. Work out how many hours it takes (each pile needs its size divided by speed, rounded up).",
+    "Fast enough? Try a slower speed. Too slow? Try faster. Always guess the middle of what is left.",
+    "Stop when only one speed is left."
+   ],
+   "think": "Why can you throw away half the speeds after each test?"
+  },
+  "level": 3,
+  "topic": "Binary search on the answer"
+ },
+ {
+  "id": "techniques:counting",
+  "page": "techniques",
+  "key": "counting",
+  "slug": "techniques-counting",
+  "pageTitle": "Arrays and techniques",
+  "name": "Counting sort",
+  "blurb": "When the numbers are small, you do not need to compare at all. Count how many times each number appears, then write each number out as many times as you counted.",
+  "facts": [
+   [
+    "Time",
+    "O(n + range)"
+   ],
+   [
+    "Compares?",
+    "Never"
+   ],
+   [
+    "Needs",
+    "Small numbers"
+   ]
+  ],
+  "code": [
+   "counts ← zeros for 0 … max",
+   "for each number: counts[number] += 1",
+   "for each value 0 … max",
+   "  write it counts[value] times"
+  ],
+  "offline": {
+   "title": "Sort by counting",
+   "need": "20 playing cards, or numbers 0 to 5 on paper slips",
+   "time": "10 minutes",
+   "steps": [
+    "Draw 6 boxes labelled 0 to 5.",
+    "Take each number in turn and put a tally mark in its box.",
+    "Read the boxes from 0 to 5. Write each number as many times as it has tally marks.",
+    "The list is sorted, and you never compared two numbers."
+   ],
+   "think": "Why would this stop working for numbers up to a billion?"
+  },
+  "level": 1,
+  "topic": "Counting sort"
+ },
+ {
+  "id": "techniques:radix",
+  "page": "techniques",
+  "key": "radix",
+  "slug": "techniques-radix",
+  "pageTitle": "Arrays and techniques",
+  "name": "Radix sort",
+  "blurb": "Sort by the last digit first, using ten buckets and keeping the order. Then sort by the tens digit the same way. After the last digit, the whole row is sorted.",
+  "facts": [
+   [
+    "Time",
+    "O(n × digits)"
+   ],
+   [
+    "Compares?",
+    "Never"
+   ],
+   [
+    "Key",
+    "Keep the order inside buckets"
+   ]
+  ],
+  "code": [
+   "for each digit place, last digit first:",
+   "  put each number in the bucket for its digit",
+   "  collect the buckets in order, 0 to 9",
+   "sorted after the last place"
+  ],
+  "offline": {
+   "title": "Bucket shuffle",
+   "need": "Ten cups labelled 0 to 9 and 8 two-digit number cards",
+   "time": "15 minutes",
+   "steps": [
+    "Put each card in the cup that matches its last digit. Add cards on top, so the order inside a cup is kept.",
+    "Collect the cards cup by cup, from 0 to 9, keeping each cup in order.",
+    "Now put each card in the cup for its first digit, and collect again.",
+    "The cards are in order."
+   ],
+   "think": "Why must the second round keep the order from the first round inside each cup?"
+  },
+  "level": 3,
+  "topic": "Radix sort"
+ },
+ {
+  "id": "techniques:monostack",
+  "page": "techniques",
+  "key": "monostack",
+  "slug": "techniques-monostack",
+  "pageTitle": "Arrays and techniques",
+  "name": "Monotonic stacks",
+  "blurb": "For each number, find the next bigger number to its right. Keep a stack of numbers still waiting. A new number that is bigger than the top answers it, and lets it leave.",
+  "facts": [
+   [
+    "Time",
+    "O(n)"
+   ],
+   [
+    "Stack holds",
+    "Numbers still waiting"
+   ],
+   [
+    "Instead of",
+    "Looking right every time"
+   ]
+  ],
+  "code": [
+   "stack ← empty",
+   "for each number n, left to right",
+   "  while the top is smaller than n:",
+   "    answer for the top ← n; pop it",
+   "  push n",
+   "whatever is left has no bigger number"
+  ],
+  "offline": {
+   "title": "Waiting in line",
+   "need": "A row of 7 number cards and a small pile area",
+   "time": "10 minutes",
+   "steps": [
+    "Turn over the cards one at a time from the left. Keep a pile of cards still waiting for something bigger.",
+    "When the new card is bigger than the top of the pile, the top has found its answer. Take it off, write the new card next to it.",
+    "Keep taking cards off while the new card is bigger. Then put the new card on the pile.",
+    "Cards left on the pile never found a bigger one."
+   ],
+   "think": "Each card goes on the pile once and off once. What does that tell you about how much work it is?"
+  },
+  "level": 3,
+  "topic": "Monotonic stacks"
+ },
+ {
+  "id": "techniques:deque",
+  "page": "techniques",
+  "key": "deque",
+  "slug": "techniques-deque",
+  "pageTitle": "Arrays and techniques",
+  "name": "Deques",
+  "blurb": "A deque is a line you can add to or remove from at both ends. To find the biggest number in every window, keep only the numbers that might still win and drop the smaller ones behind a bigger newcomer.",
+  "facts": [
+   [
+    "Ends",
+    "Both open"
+   ],
+   [
+    "Time",
+    "O(n)"
+   ],
+   [
+    "Used for",
+    "Window maximum"
+   ]
+  ],
+  "code": [
+   "deque ← empty (holds positions)",
+   "for each number n",
+   "  drop from the BACK while the back is ≤ n",
+   "  add n at the back",
+   "  drop from the FRONT if it left the window",
+   "  the front is the window maximum"
+  ],
+  "offline": {
+   "title": "Candidates in a queue",
+   "need": "9 number cards and a strip of paper",
+   "time": "15 minutes",
+   "steps": [
+    "Lay 9 cards in a row. We want the biggest in every 3 in a row.",
+    "Keep a short queue of candidates. A new card removes any smaller cards from the back, then joins the back.",
+    "If the front card has slid out of the window, remove it.",
+    "The front card is the biggest in the window. Write it down."
+   ],
+   "think": "Why can a smaller card behind a bigger one never be the biggest again?"
+  },
+  "level": 2,
+  "topic": "Deques"
+ },
+ {
+  "id": "techniques:strings",
+  "page": "techniques",
+  "key": "strings",
+  "slug": "techniques-strings",
+  "pageTitle": "Arrays and techniques",
+  "name": "Strings: palindromes",
+  "blurb": "A palindrome reads the same backwards. Check it with two pointers: compare the first and last letters, then move inward. One mismatch ends it.",
+  "facts": [
+   [
+    "Time",
+    "O(n)"
+   ],
+   [
+    "Pointers",
+    "Both ends inward"
+   ],
+   [
+    "Stops at",
+    "First mismatch"
+   ]
+  ],
+  "code": [
+   "left ← first; right ← last",
+   "while left < right",
+   "  if letters differ: not a palindrome",
+   "  left ← left + 1; right ← right − 1",
+   "every pair matched: palindrome"
+  ],
+  "offline": {
+   "title": "Mirror words",
+   "need": "Letter tiles or paper slips",
+   "time": "10 minutes",
+   "steps": [
+    "Spell RACECAR with tiles in a row.",
+    "Point at the first and last tile. Do they match? Move both fingers inward.",
+    "Try PENCIL and LEVEL. Stop at the first mismatch."
+   ],
+   "think": "How many comparisons does a word of 100 letters need at most?"
+  },
+  "level": 1,
+  "topic": "Strings"
+ },
+ {
+  "id": "techniques:cycle",
+  "page": "techniques",
+  "key": "cycle",
+  "slug": "techniques-cycle",
+  "pageTitle": "Arrays and techniques",
+  "name": "Cycle detection",
+  "blurb": "Is a chain of links a loop? Send a slow walker (1 step) and a fast walker (2 steps). On a loop the fast one catches the slow one. On a straight chain the fast one runs off the end.",
+  "facts": [
+   [
+    "Memory",
+    "O(1)"
+   ],
+   [
+    "Time",
+    "O(n)"
+   ],
+   [
+    "Also called",
+    "Floyd's tortoise and hare"
+   ]
+  ],
+  "code": [
+   "slow ← head; fast ← head",
+   "while fast and fast.next exist",
+   "  slow ← slow.next",
+   "  fast ← fast.next.next",
+   "  if slow = fast: a cycle!",
+   "fast ran off the end: no cycle"
+  ],
+  "offline": {
+   "title": "Tortoise and hare",
+   "need": "A drawing of 7 dots joined by arrows, and two coins",
+   "time": "10 minutes",
+   "steps": [
+    "Draw 7 dots with arrows between them. Make the last arrow go back to an earlier dot, or leave it out.",
+    "Put two coins on the first dot. Each turn, move one coin one arrow and the other coin two arrows.",
+    "If the coins meet, there is a loop. If one coin runs off the end, there is not."
+   ],
+   "think": "Why must the fast coin catch the slow one if there is a loop?"
+  },
+  "level": 2,
+  "topic": "Cycle detection"
+ },
+ {
+  "id": "techniques:reverse",
+  "page": "techniques",
+  "key": "reverse",
+  "slug": "techniques-reverse",
+  "pageTitle": "Arrays and techniques",
+  "name": "Linked lists: reverse",
+  "blurb": "A linked list is a chain of boxes, each knowing only the next one. To reverse it, walk along and turn each arrow around to point at the box behind it.",
+  "facts": [
+   [
+    "Time",
+    "O(n)"
+   ],
+   [
+    "Extra memory",
+    "O(1)"
+   ],
+   [
+    "Each box",
+    "Knows only its next"
+   ]
+  ],
+  "code": [
+   "previous ← nothing; current ← head",
+   "while current exists",
+   "  next ← current.next (remember it!)",
+   "  current.next ← previous",
+   "  previous ← current; current ← next",
+   "previous is the new head"
+  ],
+  "offline": {
+   "title": "Turn the arrows",
+   "need": "5 cards in a row and string or pencil arrows",
+   "time": "10 minutes",
+   "steps": [
+    "Lay 5 cards in a row with an arrow from each card to the next.",
+    "Start at the first card. Remember where its arrow pointed, then turn its arrow to point backward.",
+    "Move to the card you remembered and repeat.",
+    "When you finish, the chain runs the other way."
+   ],
+   "think": "What goes wrong if you turn an arrow before remembering where it pointed?"
+  },
+  "level": 2,
+  "topic": "Linked lists"
+ },
+ {
+  "id": "techniques:spiral",
+  "page": "techniques",
+  "key": "spiral",
+  "slug": "techniques-spiral",
+  "pageTitle": "Arrays and techniques",
+  "name": "Matrices and grids",
+  "blurb": "A grid is a list of rows. To visit it in a spiral, go right until the edge, then down, left and up. Turn whenever the next square is off the grid or already visited.",
+  "facts": [
+   [
+    "Squares",
+    "rows × columns"
+   ],
+   [
+    "Time",
+    "O(rows × columns)"
+   ],
+   [
+    "Turns at",
+    "Edges and visited squares"
+   ]
+  ],
+  "code": [
+   "direction ← right",
+   "repeat rows × columns times",
+   "  visit this square",
+   "  if the next square is off the grid or visited: turn clockwise",
+   "  step forward"
+  ],
+  "offline": {
+   "title": "Spiral walk",
+   "need": "Squared paper (3 rows by 4 columns) and a pencil",
+   "time": "10 minutes",
+   "steps": [
+    "Draw a grid 4 across and 3 down and write 1 to 12 in order.",
+    "Start in the top-left. Go right until you cannot, then down, then left, then up.",
+    "Cross out squares as you visit them. Turn whenever the next square is crossed out or is off the grid.",
+    "Write the numbers in the order you visited them."
+   ],
+   "think": "How does the spiral know when it has finished?"
+  },
+  "level": 2,
+  "topic": "Matrices and grids"
+ },
+ {
+  "id": "techniques:amortised",
+  "page": "techniques",
+  "key": "amortised",
+  "slug": "techniques-amortised",
+  "pageTitle": "Arrays and techniques",
+  "name": "Amortised cost",
+  "blurb": "A growing list lives in a box with spare room. Adding is cheap until the box is full. Then everything is copied into a box twice as big. That copy is rare, so adding stays cheap on average.",
+  "facts": [
+   [
+    "One add",
+    "Usually 1 step"
+   ],
+   [
+    "Average add",
+    "Under 3 steps"
+   ],
+   [
+    "Trick",
+    "Double when full"
+   ]
+  ],
+  "code": [
+   "if the box is full:",
+   "  make a box twice as big",
+   "  copy everything across",
+   "put the new item in",
+   "average cost = total work ÷ adds"
+  ],
+  "offline": {
+   "title": "The doubling shelf",
+   "need": "Paper cups and small objects",
+   "time": "10 minutes",
+   "steps": [
+    "Start with a row of 1 cup. Put an object in.",
+    "When the row is full and you want to add another, lay out a row twice as long and carry every object across. Count each carry.",
+    "Add 9 objects in all. Count every placement and every carry.",
+    "Divide the total by 9."
+   ],
+   "think": "Why is it better to double the space than to add just one more cup each time?"
+  },
+  "level": 2,
+  "topic": "Amortised cost"
+ },
+ {
+  "id": "techniques:invariants",
+  "page": "techniques",
+  "key": "invariants",
+  "slug": "techniques-invariants",
+  "pageTitle": "Arrays and techniques",
+  "name": "Invariants",
+  "blurb": "An invariant is a promise that stays true every time round a loop. In insertion sort the promise is that everything left of the arrow is in order. If every step keeps the promise, the end is sorted.",
+  "facts": [
+   [
+    "Promise",
+    "Left part is sorted"
+   ],
+   [
+    "Start",
+    "True for 1 number"
+   ],
+   [
+    "End",
+    "Whole row sorted"
+   ]
+  ],
+  "code": [
+   "invariant: a[0 … i−1] is sorted",
+   "for i = 1 … n−1",
+   "  take a[i] out",
+   "  slide bigger numbers right",
+   "  drop it in the gap",
+   "  (invariant: a[0 … i] is sorted)"
+  ],
+  "offline": {
+   "title": "Keep the promise",
+   "need": "A hand of 6 playing cards",
+   "time": "10 minutes",
+   "steps": [
+    "Hold the cards in a row. The first card on its own is already \"sorted\".",
+    "Take the next card and slide it left into place among the cards already sorted.",
+    "After each card, check: is everything to the left of my finger in order?",
+    "When your finger reaches the end, all cards are in order."
+   ],
+   "think": "What would break if you inserted a card into the wrong place once?"
+  },
+  "level": 2,
+  "topic": "Invariants"
+ },
+ {
+  "id": "techniques:loops",
+  "page": "techniques",
+  "key": "loops",
+  "slug": "techniques-loops",
+  "pageTitle": "Arrays and techniques",
+  "name": "Steps and loops",
+  "blurb": "A computer does one small step at a time. A loop repeats the same steps. Adding 1 to 6 is a loop: take the next number, add it to a running total, repeat.",
+  "facts": [
+   [
+    "Loop",
+    "Repeat steps"
+   ],
+   [
+    "Total",
+    "Remembered between steps"
+   ],
+   [
+    "Stops when",
+    "Numbers run out"
+   ]
+  ],
+  "code": [
+   "total ← 0",
+   "for each number from 1 to n",
+   "  total ← total + number",
+   "the answer is total"
+  ],
+  "offline": {
+   "title": "Be the loop",
+   "need": "Paper and a pencil",
+   "time": "5 minutes",
+   "steps": [
+    "Write total = 0 on paper.",
+    "Add 1, cross out the old total, write the new one. Then add 2, then 3, up to 6.",
+    "You are the loop: same step, repeated, with a memory."
+   ],
+   "think": "How many steps would adding 1 to 1,000 take?"
+  },
+  "level": 1,
+  "topic": "Steps and loops"
+ },
+ {
+  "id": "techniques:cases",
+  "page": "techniques",
+  "key": "cases",
+  "slug": "techniques-cases",
+  "pageTitle": "Arrays and techniques",
+  "name": "Best, worst and average case",
+  "blurb": "The same method can be lucky or unlucky. Opening boxes one by one is fastest when the target is in the first box. It is slowest when the target is last or missing. On average it takes about half the boxes.",
+  "facts": [
+   [
+    "Best",
+    "Found first"
+   ],
+   [
+    "Worst",
+    "Last, or missing"
+   ],
+   [
+    "Average",
+    "About half"
+   ]
+  ],
+  "code": [
+   "for each box from the left",
+   "  open it",
+   "  if it holds the target: stop",
+   "not found: every box was opened"
+  ],
+  "offline": {
+   "title": "Luck of the draw",
+   "need": "8 cards face down in a row, and a friend",
+   "time": "10 minutes",
+   "steps": [
+    "Lay 8 cards in a row, face down. Pick a target card.",
+    "Open from the left until you find it. Count the cards opened.",
+    "Repeat 8 times with the target in a different place each time (first, second, … last).",
+    "Add up the counts and divide by 8. That is the average case."
+   ],
+   "think": "Why do we usually plan for the worst case, even though it is the least likely?"
+  },
+  "level": 2,
+  "topic": "Best, worst and average case"
+ },
+ {
+  "id": "techniques:spacetime",
+  "page": "techniques",
+  "key": "spacetime",
+  "slug": "techniques-spacetime",
+  "pageTitle": "Arrays and techniques",
+  "name": "Space and time",
+  "blurb": "You can often swap memory for speed. Checking if a number is prime by dividing takes many steps each time. Write all the answers in a table once, and every question after that takes one look.",
+  "facts": [
+   [
+    "Table",
+    "Costs space once"
+   ],
+   [
+    "Each question",
+    "One look"
+   ],
+   [
+    "Without",
+    "Many steps every time"
+   ]
+  ],
+  "code": [
+   "slow way: test by dividing, every question",
+   "fast way: build a table of answers first",
+   "each question: look it up in the table",
+   "more memory, less time"
+  ],
+  "offline": {
+   "title": "The answer sheet",
+   "need": "Paper and a pencil",
+   "time": "15 minutes",
+   "steps": [
+    "Pick 5 numbers up to 30. For each, test whether it is prime by dividing by 2, 3, 4, 5 and counting your divisions.",
+    "Now write a list of all the primes up to 30 once (your table).",
+    "Check the same 5 numbers by looking in the table. Count your looks.",
+    "Which was faster for 5 questions? For 5,000?"
+   ],
+   "think": "When is it not worth building the table?"
+  },
+  "level": 2,
+  "topic": "Space and time"
+ },
+ {
+  "id": "techniques:sqrt",
+  "page": "techniques",
+  "key": "sqrt",
+  "slug": "techniques-sqrt",
+  "pageTitle": "Arrays and techniques",
+  "name": "Sqrt decomposition",
+  "blurb": "Cut a long row into blocks and write down each block's total. To add up a stretch, use the written totals for whole blocks and add the few loose numbers at the ends.",
+  "facts": [
+   [
+    "Blocks",
+    "About √n numbers each"
+   ],
+   [
+    "Query",
+    "About √n steps"
+   ],
+   [
+    "Update",
+    "Fix one block total"
+   ]
+  ],
+  "code": [
+   "split the row into blocks of 3; write each block's total",
+   "query(l, r):",
+   "  add single numbers until the start of a block",
+   "  add whole block totals while a block fits",
+   "  add single numbers for the ragged end"
+  ],
+  "offline": {
+   "title": "Chunked sums",
+   "need": "Paper with 9 numbers in three boxes of three",
+   "time": "10 minutes",
+   "steps": [
+    "Write 9 numbers. Draw a box round each group of 3 and write the group total beneath it.",
+    "Pick a stretch such as the 2nd to the 8th number.",
+    "Add the loose numbers at each end one by one, and use the written total for any full box in between.",
+    "Check with a slow sum."
+   ],
+   "think": "How many additions does this use compared with adding the whole stretch?"
+  },
+  "level": 3,
+  "topic": "Sqrt decomposition"
+ },
+ {
+  "id": "techniques:mo",
+  "page": "techniques",
+  "key": "mo",
+  "slug": "techniques-mo",
+  "pageTitle": "Arrays and techniques",
+  "name": "Mo's algorithm",
+  "blurb": "You have lots of questions about stretches of a row. Keep one window and slide its ends instead of starting over each time. Answer the questions in a smart order so the window barely moves.",
+  "facts": [
+   [
+    "Window",
+    "Slides, never restarts"
+   ],
+   [
+    "Order",
+    "By block, then right end"
+   ],
+   [
+    "Total moves",
+    "About n√q"
+   ]
+  ],
+  "code": [
+   "sort the questions by (block of the left end, right end)",
+   "for each question in that order",
+   "  move the left end to the question's left, adding or removing one number at a time",
+   "  move the right end the same way",
+   "  the window now holds exactly the question's stretch: read the answer"
+  ],
+  "offline": {
+   "title": "Sliding frame",
+   "need": "A strip of 9 numbers from 1 to 4, and a card with a window",
+   "time": "20 minutes",
+   "steps": [
+    "Write 9 numbers from 1 to 4. Make a tally of which numbers are in the window.",
+    "Take 4 questions of the form \"how many different numbers are between place l and place r?\".",
+    "Instead of re-counting each from scratch, slide the window ends from the last question to the next, adding or removing one number each step and updating the tally.",
+    "Count your steps and compare with counting every stretch from scratch."
+   ],
+   "think": "Why does sorting the questions make the window move less overall?"
+  },
+  "level": 3,
+  "topic": "Mo’s algorithm"
+ },
+ {
+  "id": "techniques:recursion",
+  "page": "techniques",
+  "key": "recursion",
+  "slug": "techniques-recursion",
+  "pageTitle": "Arrays and techniques",
+  "name": "Recursion",
+  "blurb": "A function can solve a problem by calling itself on a smaller version. 5! is 5 times 4!, and so on down to 1!, which is just 1. That smallest case is the base case. Then each waiting call finishes on the way back up.",
+  "facts": [
+   [
+    "Needs",
+    "A base case"
+   ],
+   [
+    "Each call",
+    "A smaller problem"
+   ],
+   [
+    "Remembers",
+    "A stack of waiting calls"
+   ]
+  ],
+  "code": [
+   "factorial(n):",
+   "  if n is 1: answer 1 (the base case)",
+   "  otherwise: ask factorial(n − 1)",
+   "  when it answers: multiply by n",
+   "  give that answer back"
+  ],
+  "offline": {
+   "title": "Russian dolls",
+   "need": "A set of nesting dolls (or 5 cups that stack), paper and a pencil",
+   "time": "10 minutes",
+   "steps": [
+    "Open the biggest doll. Inside is a smaller one: open that. Keep going until the smallest, which holds nothing. That is the base case.",
+    "Now close them back up from the smallest. Each time, you finish the job for that doll.",
+    "Write 5! as 5 × 4!, 4! as 4 × 3!, and so on down to 1. Then work back up multiplying.",
+    "Notice you needed to remember every unfinished doll on the way down."
+   ],
+   "think": "What would happen if the dolls never ended, with no smallest one?"
+  },
+  "level": 1,
+  "topic": "Recursion"
+ },
+ {
+  "id": "techniques:fibtree",
+  "page": "techniques",
+  "key": "fibtree",
+  "slug": "techniques-fibtree",
+  "pageTitle": "Arrays and techniques",
+  "name": "Recursion: the call tree",
+  "blurb": "Each Fibonacci number is the two before it added together. Written as recursion, every call makes two more calls, and the same small questions get asked again and again. The tree of calls shows the waste.",
+  "facts": [
+   [
+    "Calls",
+    "Grow very fast"
+   ],
+   [
+    "Repeats",
+    "The same fib asked many times"
+   ],
+   [
+    "Fix",
+    "Remember answers (DP)"
+   ]
+  ],
+  "code": [
+   "fib(n):",
+   "  if n is 0 or 1: answer n (the base case)",
+   "  otherwise: ask fib(n − 1) and fib(n − 2)",
+   "  add the two answers",
+   "  give the sum back"
+  ],
+  "offline": {
+   "title": "Draw the calls",
+   "need": "Paper and a pencil",
+   "time": "15 minutes",
+   "steps": [
+    "Draw fib(5) at the top. Under it draw its two calls, fib(4) and fib(3). Keep drawing each call's two calls until you reach fib(1) or fib(0).",
+    "Count the circles. How many say fib(2)? How many say fib(3)?",
+    "Write the answer in each circle from the bottom up.",
+    "Now think: how could you avoid answering fib(2) more than once?"
+   ],
+   "think": "If fib(5) needs 15 calls, roughly how many would fib(10) need? What would writing answers down save?"
+  },
+  "level": 2,
+  "topic": null
+ },
+ {
+  "id": "trees:pre",
+  "page": "trees",
+  "key": "pre",
+  "slug": "trees-pre",
+  "pageTitle": "Trees",
+  "name": "Preorder traversal",
+  "blurb": "Visit a node first, then everything on its left, then everything on its right. Good for copying a tree.",
+  "facts": [
+   [
+    "Order",
+    "Node, left, right"
+   ],
+   [
+    "Time",
+    "O(n)"
+   ],
+   [
+    "Each node",
+    "Visited once"
+   ]
+  ],
+  "code": [
+   "visit the node",
+   "preorder(left)",
+   "preorder(right)"
+  ],
+  "offline": {
+   "title": "Walk the tree",
+   "need": "A tree drawn on paper with 7 numbers, and a finger",
+   "time": "10 minutes",
+   "steps": [
+    "Draw a tree with 7 numbers: one at the top, and up to two below each.",
+    "Follow the rule: node, left, right. Say each number out loud as you \"visit\" it.",
+    "Write the numbers in the order you said them.",
+    "Try the other three orders on the same tree. Are the lists the same?"
+   ],
+   "think": "Which order gives a sorted list on a search tree?"
+  },
+  "level": 2,
+  "topic": null
+ },
+ {
+  "id": "trees:in",
+  "page": "trees",
+  "key": "in",
+  "slug": "trees-in",
+  "pageTitle": "Trees",
+  "name": "Inorder traversal",
+  "blurb": "Everything on the left, then the node, then everything on the right. On a search tree this reads the numbers from smallest to biggest.",
+  "facts": [
+   [
+    "Order",
+    "Left, node, right"
+   ],
+   [
+    "Time",
+    "O(n)"
+   ],
+   [
+    "Each node",
+    "Visited once"
+   ]
+  ],
+  "code": [
+   "inorder(left)",
+   "visit the node",
+   "inorder(right)"
+  ],
+  "offline": {
+   "title": "Walk the tree",
+   "need": "A tree drawn on paper with 7 numbers, and a finger",
+   "time": "10 minutes",
+   "steps": [
+    "Draw a tree with 7 numbers: one at the top, and up to two below each.",
+    "Follow the rule: left, node, right. Say each number out loud as you \"visit\" it.",
+    "Write the numbers in the order you said them.",
+    "Try the other three orders on the same tree. Are the lists the same?"
+   ],
+   "think": "Which order gives a sorted list on a search tree?"
+  },
+  "level": 2,
+  "topic": "Tree traversals"
+ },
+ {
+  "id": "trees:post",
+  "page": "trees",
+  "key": "post",
+  "slug": "trees-post",
+  "pageTitle": "Trees",
+  "name": "Postorder traversal",
+  "blurb": "Left, then right, then the node last. A node is visited only after all of its children. Good for deleting a tree.",
+  "facts": [
+   [
+    "Order",
+    "Left, right, node"
+   ],
+   [
+    "Time",
+    "O(n)"
+   ],
+   [
+    "Each node",
+    "Visited once"
+   ]
+  ],
+  "code": [
+   "postorder(left)",
+   "postorder(right)",
+   "visit the node"
+  ],
+  "offline": {
+   "title": "Walk the tree",
+   "need": "A tree drawn on paper with 7 numbers, and a finger",
+   "time": "10 minutes",
+   "steps": [
+    "Draw a tree with 7 numbers: one at the top, and up to two below each.",
+    "Follow the rule: left, right, node. Say each number out loud as you \"visit\" it.",
+    "Write the numbers in the order you said them.",
+    "Try the other three orders on the same tree. Are the lists the same?"
+   ],
+   "think": "Which order gives a sorted list on a search tree?"
+  },
+  "level": 2,
+  "topic": null
+ },
+ {
+  "id": "trees:level",
+  "page": "trees",
+  "key": "level",
+  "slug": "trees-level",
+  "pageTitle": "Trees",
+  "name": "Level order traversal",
+  "blurb": "Visit the tree row by row, top to bottom, left to right, using a queue. Good for finding the nearest node.",
+  "facts": [
+   [
+    "Order",
+    "Row by row"
+   ],
+   [
+    "Time",
+    "O(n)"
+   ],
+   [
+    "Each node",
+    "Visited once"
+   ]
+  ],
+  "code": [
+   "queue ← [root]",
+   "take the front node and visit it",
+   "add its children at the back"
+  ],
+  "offline": {
+   "title": "Walk the tree",
+   "need": "A tree drawn on paper with 7 numbers, and a finger",
+   "time": "10 minutes",
+   "steps": [
+    "Draw a tree with 7 numbers: one at the top, and up to two below each.",
+    "Follow the rule: row by row. Say each number out loud as you \"visit\" it.",
+    "Write the numbers in the order you said them.",
+    "Try the other three orders on the same tree. Are the lists the same?"
+   ],
+   "think": "Which order gives a sorted list on a search tree?"
+  },
+  "level": 2,
+  "topic": null
+ },
+ {
+  "id": "trees:lca",
+  "page": "trees",
+  "key": "lca",
+  "slug": "trees-lca",
+  "pageTitle": "Trees",
+  "name": "Lowest common ancestor",
+  "blurb": "The lowest common ancestor of two nodes is the first node they both have above them. Lift the deeper node up until both are level, then lift both together until they meet.",
+  "facts": [
+   [
+    "Time",
+    "O(height)"
+   ],
+   [
+    "Idea",
+    "Level up, then climb together"
+   ],
+   [
+    "Needs",
+    "Parent links"
+   ]
+  ],
+  "code": [
+   "while the two nodes are at different depths",
+   "  lift the deeper one to its parent",
+   "while the two nodes differ",
+   "  lift both to their parents",
+   "where they meet is the answer"
+  ],
+  "offline": {
+   "title": "Family tree meeting",
+   "need": "A family tree drawn on paper",
+   "time": "10 minutes",
+   "steps": [
+    "Draw a tree of 9 people, parents above children.",
+    "Pick two people. Put a finger on each.",
+    "Move the finger on the lower person up until both fingers are on the same generation.",
+    "Move both fingers up one parent at a time until they land on the same person. That is the lowest common ancestor."
+   ],
+   "think": "Why does lifting the deeper node first make the climb together work?"
+  },
+  "level": 3,
+  "topic": "Lowest common ancestor"
+ },
+ {
+  "id": "trees:heap",
+  "page": "trees",
+  "key": "heap",
+  "slug": "trees-heap",
+  "pageTitle": "Trees",
+  "name": "Heaps and priority queues",
+  "blurb": "A heap keeps the smallest number on top. A new number goes in at the bottom and swaps up while it is smaller than its parent. To take the smallest, remove the top and sink the last number down.",
+  "facts": [
+   [
+    "Smallest",
+    "Always on top"
+   ],
+   [
+    "Add or remove",
+    "O(log n)"
+   ],
+   [
+    "Stored as",
+    "A plain array"
+   ]
+  ],
+  "code": [
+   "add: put the new number at the end",
+   "  while it is smaller than its parent: swap up",
+   "remove: take the top",
+   "  move the last number to the top",
+   "  while it is bigger than a child: swap with the smaller child"
+  ],
+  "offline": {
+   "title": "The family pyramid",
+   "need": "Number cards and a pyramid drawn on paper",
+   "time": "15 minutes",
+   "steps": [
+    "Draw a pyramid: 1 box on top, 2 below, 4 below those. Boxes are filled left to right.",
+    "Place each new card in the next empty box. If it is smaller than the card above it, swap them, and repeat.",
+    "After 7 cards, the smallest is on top. Take it. Put the last card on top and sink it by swapping with its smaller child.",
+    "The new top is the second smallest."
+   ],
+   "think": "Where in the pyramid can the third smallest number be?"
+  },
+  "level": 2,
+  "topic": "Heaps and priority queues"
+ },
+ {
+  "id": "trees:heapsort",
+  "page": "trees",
+  "key": "heapsort",
+  "slug": "trees-heapsort",
+  "pageTitle": "Trees",
+  "name": "Heap sort",
+  "blurb": "Turn the row into a heap with the biggest on top. Swap the top with the last place: that number is finished. Fix the heap and repeat until every number is finished.",
+  "facts": [
+   [
+    "Time",
+    "O(n log n)"
+   ],
+   [
+    "Extra memory",
+    "None"
+   ],
+   [
+    "Compares",
+    "Parent against children"
+   ]
+  ],
+  "code": [
+   "build a max-heap (biggest on top)",
+   "repeat:",
+   "  swap the top with the last unfinished place",
+   "  that place is now finished",
+   "  sift the new top down to rebuild the heap"
+  ],
+  "offline": {
+   "title": "Pyramid sort",
+   "need": "Number cards (7) and a pyramid drawn on paper",
+   "time": "15 minutes",
+   "steps": [
+    "Fill the pyramid with the cards, then fix it so every card is bigger than the cards below it.",
+    "Swap the top card with the last card in the pyramid. Set that card aside: it is the biggest.",
+    "Sink the new top card down until the pyramid is in order again.",
+    "Keep going. The cards you set aside, read backward, are sorted."
+   ],
+   "think": "Why is the biggest card always on top of a max-heap?"
+  },
+  "level": 2,
+  "topic": "Heap sort"
+ },
+ {
+  "id": "trees:trie",
+  "page": "trees",
+  "key": "trie",
+  "slug": "trees-trie",
+  "pageTitle": "Trees",
+  "name": "Tries",
+  "blurb": "A trie stores words letter by letter along a path. Words that start the same share the same first steps. To find every word with a given start, walk down the prefix and collect everything below.",
+  "facts": [
+   [
+    "Find a prefix",
+    "O(length of prefix)"
+   ],
+   [
+    "Shared starts",
+    "Stored once"
+   ],
+   [
+    "Used for",
+    "Autocomplete"
+   ]
+  ],
+  "code": [
+   "start at the root",
+   "for each letter of the word",
+   "  follow that letter, or make a new branch",
+   "mark the last node as a word end",
+   "to search a prefix: follow its letters, then collect words below"
+  ],
+  "offline": {
+   "title": "Autocomplete tree",
+   "need": "Paper and a pencil, and 4 short words",
+   "time": "15 minutes",
+   "steps": [
+    "Pick 4 words that share some starting letters, like CAT, CAR, COW, DOG.",
+    "Draw a dot at the top. For each word, follow or draw one branch per letter. Reuse a branch if it already exists.",
+    "Mark the end of each word with a circle.",
+    "Pick a prefix like CA. Walk down it and list every word you can reach below."
+   ],
+   "think": "How much work does it take to find all the words starting with CA when there are a million words?"
+  },
+  "level": 2,
+  "topic": "Tries"
+ },
+ {
+  "id": "trees:avl",
+  "page": "trees",
+  "key": "avl",
+  "slug": "trees-avl",
+  "pageTitle": "Trees",
+  "name": "Balanced trees (AVL)",
+  "blurb": "A search tree is fast only if it stays bushy. Adding numbers in order makes a lopsided stick. An AVL tree checks each node, and when one side gets two levels taller than the other, it rotates to fix it.",
+  "facts": [
+   [
+    "Height",
+    "About log₂ n"
+   ],
+   [
+    "Find or add",
+    "O(log n)"
+   ],
+   [
+    "Fix",
+    "Rotate"
+   ]
+  ],
+  "code": [
+   "add the number like a normal search tree",
+   "going back up, check each node: left height − right height",
+   "if it is 2 or −2, this node is lopsided",
+   "rotate it to even the sides out",
+   "the tree is balanced again"
+  ],
+  "offline": {
+   "title": "Tip the tree",
+   "need": "Paper, a pencil and 6 numbers in increasing order",
+   "time": "15 minutes",
+   "steps": [
+    "Draw a search tree by adding 10, 20, 30 in that order. It is a stick leaning right.",
+    "The top node has nothing on its left but two levels on its right. Rotate: make 20 the top, with 10 on its left and 30 on its right.",
+    "Keep adding 40, 50, 60. Every time one side gets two levels taller than the other, rotate.",
+    "Count the height of your tree and compare with a plain stick of 6."
+   ],
+   "think": "Why is a stick of 1000 numbers so much slower to search than a balanced tree of 1000?"
+  },
+  "level": 3,
+  "topic": "Balanced trees (AVL)"
+ },
+ {
+  "id": "trees:segment",
+  "page": "trees",
+  "key": "segment",
+  "slug": "trees-segment",
+  "pageTitle": "Trees",
+  "name": "Segment trees",
+  "blurb": "A segment tree keeps the sum of every chunk of a row: the whole row on top, halves below, single numbers at the bottom. Any stretch can be added up by combining just a few chunks.",
+  "facts": [
+   [
+    "Build",
+    "O(n)"
+   ],
+   [
+    "Range query",
+    "O(log n)"
+   ],
+   [
+    "Update one number",
+    "O(log n)"
+   ]
+  ],
+  "code": [
+   "leaves hold the numbers",
+   "each parent holds the sum of its two children",
+   "query(range): if a chunk is fully inside, use it",
+   "if it only partly overlaps, ask both children",
+   "if it is outside, skip it"
+  ],
+  "offline": {
+   "title": "Sum pyramid",
+   "need": "Paper and 8 numbers",
+   "time": "15 minutes",
+   "steps": [
+    "Write 8 numbers in a row. Above each pair, write their sum. Above each pair of sums, write their sum. The top is the total.",
+    "Pick a stretch, like numbers 3 to 7. Find the biggest boxes that fit entirely inside it.",
+    "Add just those boxes. Check with a slow sum."
+   ],
+   "think": "How many boxes do you add for the stretch 1 to 7 of 8 numbers?"
+  },
+  "level": 3,
+  "topic": "Segment trees"
+ },
+ {
+  "id": "trees:fenwick",
+  "page": "trees",
+  "key": "fenwick",
+  "slug": "trees-fenwick",
+  "pageTitle": "Trees",
+  "name": "Fenwick trees",
+  "blurb": "A Fenwick tree stores running totals in a clever way. Each cell adds up a block of numbers that ends there. A total of the first few numbers needs only a few cells.",
+  "facts": [
+   [
+    "Prefix sum",
+    "O(log n)"
+   ],
+   [
+    "Memory",
+    "Same as the row"
+   ],
+   [
+    "Trick",
+    "i − (i & −i)"
+   ]
+  ],
+  "code": [
+   "T[i] = sum of the last (lowest set bit of i) numbers",
+   "prefix(k): total ← 0, i ← k",
+   "while i > 0:",
+   "  total ← total + T[i]",
+   "  i ← i − (lowest set bit of i)"
+  ],
+  "offline": {
+   "title": "Binary jumps",
+   "need": "Paper and 8 numbers",
+   "time": "15 minutes",
+   "steps": [
+    "Write numbers at positions 1 to 8. Under position 4 write the sum of positions 1 to 4. Under position 6 write the sum of positions 5 and 6.",
+    "For position 7 you only need positions 5 to 7... find the pattern: the box under position i covers a block that ends at i, whose length is the biggest power of 2 dividing i.",
+    "To add up the first 7 numbers, add the boxes under 7, then 6, then 4.",
+    "Check with a slow sum."
+   ],
+   "think": "Why do you jump from 7 to 6 to 4?"
+  },
+  "level": 3,
+  "topic": "Fenwick trees"
+ },
+ {
+  "id": "trees:sparse",
+  "page": "trees",
+  "key": "sparse",
+  "slug": "trees-sparse",
+  "pageTitle": "Trees",
+  "name": "Sparse tables",
+  "blurb": "A sparse table writes down the smallest number in every block that is 1, 2, 4 or 8 long. Any stretch is covered by two blocks that overlap, so each question takes one look.",
+  "facts": [
+   [
+    "Build",
+    "O(n log n)"
+   ],
+   [
+    "Query",
+    "O(1)"
+   ],
+   [
+    "Works for",
+    "Min, max, gcd"
+   ]
+  ],
+  "code": [
+   "level 0: the numbers themselves",
+   "level k: min of two blocks of level k−1",
+   "query(l, r): k ← biggest power of 2 that fits",
+   "answer ← min(block at l, block ending at r)"
+  ],
+  "offline": {
+   "title": "Overlapping blocks",
+   "need": "Paper and 8 numbers",
+   "time": "15 minutes",
+   "steps": [
+    "Write 8 numbers. Underneath, write the smaller of each neighbouring pair. Underneath that, the smallest of each 4 in a row.",
+    "To find the smallest in a stretch of 6, pick the biggest block that fits (4). Use one block at the start and one ending at the end. They overlap.",
+    "The smaller of those two block values is the answer."
+   ],
+   "think": "Why does the overlap not matter for \"smallest\"? Would it matter for \"sum\"?"
+  },
+  "level": 3,
+  "topic": "Sparse tables"
+ },
+ {
+  "id": "trees:btree",
+  "page": "trees",
+  "key": "btree",
+  "slug": "trees-btree",
+  "pageTitle": "Trees",
+  "name": "B-trees",
+  "blurb": "A B-tree keeps several numbers in each node, so the tree is short and wide. Databases love that. When a node gets too full it splits, and the middle number moves up.",
+  "facts": [
+   [
+    "Keys per node",
+    "Up to 2 here"
+   ],
+   [
+    "All leaves",
+    "Same depth"
+   ],
+   [
+    "Used for",
+    "Databases, file systems"
+   ]
+  ],
+  "code": [
+   "walk down to the leaf where the number belongs",
+   "put the number in that leaf, in order",
+   "if the node now holds 3 numbers: split it",
+   "  the middle number moves up to the parent",
+   "if the root splits, the tree grows taller"
+  ],
+  "offline": {
+   "title": "Boxes of numbers",
+   "need": "Paper, a pencil and 7 numbers",
+   "time": "15 minutes",
+   "steps": [
+    "Draw a box that can hold at most 2 numbers. Add numbers in order into the right place.",
+    "When a box would hold 3, split it: the middle number goes up into a new box above, and the other two become its children.",
+    "Keep adding. Every time a box fills to 3, split it.",
+    "Check: are all the bottom boxes on the same level?"
+   ],
+   "think": "Why does a B-tree never get lopsided the way a plain search tree can?"
+  },
+  "level": 3,
+  "topic": "B-trees"
+ },
+ {
+  "id": "trees:skiplist",
+  "page": "trees",
+  "key": "skiplist",
+  "slug": "trees-skiplist",
+  "pageTitle": "Trees",
+  "name": "Skip lists",
+  "blurb": "A skip list is a sorted list with express lanes. The top lane leaps far. Go right while the next number is not too big, then drop down a lane. It searches fast, like a tree, but it is only lists.",
+  "facts": [
+   [
+    "Search",
+    "About log n steps"
+   ],
+   [
+    "Built from",
+    "Sorted lanes"
+   ],
+   [
+    "Uses",
+    "Chance to choose lanes"
+   ]
+  ],
+  "code": [
+   "start at the top lane, left end",
+   "if the next number on this lane is not past the target: move right",
+   "otherwise: drop down one lane",
+   "on the bottom lane: stop at the target, or it is missing"
+  ],
+  "offline": {
+   "title": "Express lanes",
+   "need": "Paper: a bottom row of 8 sorted numbers, and shorter rows above",
+   "time": "15 minutes",
+   "steps": [
+    "Write 8 sorted numbers on the bottom row. Copy about half of them to a row above, and about half of those to a row above that.",
+    "Pick a target. Start at the left of the top row and move right while the next number is not bigger than the target.",
+    "Drop down a row and keep moving right. Stop at the bottom row.",
+    "Count your moves, and compare with moving along the bottom row only."
+   ],
+   "think": "Why does the top lane help most when the target is far to the right?"
+  },
+  "level": 3,
+  "topic": "Skip lists"
+ },
+ {
+  "id": "trees:treedp",
+  "page": "trees",
+  "key": "treedp",
+  "slug": "trees-treedp",
+  "pageTitle": "Trees",
+  "name": "Tree DP",
+  "blurb": "Pick nodes in a tree to get the most total value, but never two nodes that are joined. For each node work out the best total if you take it and if you skip it, using what its children already found.",
+  "facts": [
+   [
+    "Order",
+    "Children first"
+   ],
+   [
+    "Per node",
+    "Take or skip"
+   ],
+   [
+    "Time",
+    "O(nodes)"
+   ]
+  ],
+  "code": [
+   "for each node, children first",
+   "  take it: its value + each child's skip total",
+   "  skip it: each child's better of take and skip",
+   "the answer is the bigger of the root's two totals"
+  ],
+  "offline": {
+   "title": "Pick without neighbours",
+   "need": "A tree of 7 circles on paper, each with a value",
+   "time": "15 minutes",
+   "steps": [
+    "Draw a tree and write a value in each circle.",
+    "Work from the bottom up. Beside each circle write two numbers: best if I take it, best if I skip it.",
+    "Take = its value + the skip numbers of its children. Skip = the bigger of each child's two numbers, added up.",
+    "The bigger of the top circle's two numbers is your answer."
+   ],
+   "think": "Why can a child's answer be reused, instead of being worked out again?"
+  },
+  "level": 3,
+  "topic": "Tree DP"
+ },
+ {
+  "id": "trees:treap",
+  "page": "trees",
+  "key": "treap",
+  "slug": "trees-treap",
+  "pageTitle": "Trees",
+  "name": "Treaps",
+  "blurb": "A treap is a search tree with a random priority on every node. Keys keep the order left to right. Priorities keep the biggest at the top. The randomness keeps the tree bushy, even when the keys arrive in order.",
+  "facts": [
+   [
+    "Order by",
+    "Key (left < right)"
+   ],
+   [
+    "Heap by",
+    "Random priority"
+   ],
+   [
+    "Height",
+    "About log n, by luck"
+   ]
+  ],
+  "code": [
+   "add the node like a normal search tree, by key",
+   "give it a random priority (p)",
+   "while its priority is higher than its parent's:",
+   "  rotate it above its parent",
+   "search order and priority order both hold"
+  ],
+  "offline": {
+   "title": "Keys and dice",
+   "need": "Paper, a pencil, a dice or number cards for priorities, and 7 numbers in order",
+   "time": "20 minutes",
+   "steps": [
+    "Write 7 numbers in increasing order. Give each a random priority (draw numbers from a hat).",
+    "Add them to a search tree one at a time by key. A plain tree would be a stick.",
+    "After adding a node, if its priority is bigger than its parent's, swap their places by rotating, and repeat.",
+    "Compare the height of your tree with a stick of 7."
+   ],
+   "think": "Why does random priority make the tree behave as if the keys had arrived in random order?"
+  },
+  "level": 3,
+  "topic": "Treaps"
+ },
+ {
+  "id": "trees:hld",
+  "page": "trees",
+  "key": "hld",
+  "slug": "trees-hld",
+  "pageTitle": "Trees",
+  "name": "Heavy-light decomposition",
+  "blurb": "Split a tree into long chains by always going down to the child with the biggest subtree. Any path then crosses only a few chains, because each time you leave a chain the tree at least doubles.",
+  "facts": [
+   [
+    "Heavy child",
+    "Biggest subtree"
+   ],
+   [
+    "Chains crossed",
+    "At most about log n"
+   ],
+   [
+    "Used for",
+    "Fast path queries"
+   ]
+  ],
+  "code": [
+   "size[node] ← 1 + the sizes of its children",
+   "heavy child ← the child with the biggest size",
+   "a heavy child continues its parent's chain",
+   "every other child starts a new chain",
+   "path query: while the chains differ, jump the deeper chain's head to its parent"
+  ],
+  "offline": {
+   "title": "Chains in a tree",
+   "need": "A tree of 9 circles on paper and coloured pencils",
+   "time": "20 minutes",
+   "steps": [
+    "Draw a tree of 9 circles. Write beside each circle the size of the tree hanging below it (itself included).",
+    "From each circle, draw a thick line to the child with the larger size. Thin lines go to the others.",
+    "Colour each chain of thick lines in one colour. Every circle belongs to exactly one chain.",
+    "Pick two circles. Count how many times a path between them switches colour."
+   ],
+   "think": "Why does the subtree at least double each time you take a thin line upward?"
+  },
+  "level": 3,
+  "topic": "Heavy-light decomposition"
+ },
+ {
+  "id": "graphs:picture",
+  "page": "graphs",
+  "key": "picture",
+  "slug": "graphs-picture",
+  "pageTitle": "Graphs",
+  "name": "Graphs as pictures",
+  "blurb": "A graph is dots (nodes) joined by lines (edges). To store one, write for every dot the list of its neighbours. Roads, friends and web links are all graphs.",
+  "facts": [
+   [
+    "Dots",
+    "Nodes"
+   ],
+   [
+    "Lines",
+    "Edges"
+   ],
+   [
+    "Stored as",
+    "A list of neighbours"
+   ]
+  ],
+  "code": [
+   "for each dot, keep a list of neighbours",
+   "adding a line A–B: add B to A's list",
+   "and A to B's list",
+   "neighbours of a dot = its list"
+  ],
+  "offline": {
+   "title": "Draw the web",
+   "need": "Paper and a pencil",
+   "time": "10 minutes",
+   "steps": [
+    "Draw 6 dots and name them A to F. Join some with lines.",
+    "Next to each dot, write the names of the dots it touches. That is its neighbour list.",
+    "Pick a dot and check: does each neighbour list it back?",
+    "Count the lines. Add up all the neighbour list lengths. What do you notice?"
+   ],
+   "think": "Why is the total of all the list lengths exactly twice the number of lines?"
+  },
+  "level": 1,
+  "topic": "Graphs as pictures"
+ },
+ {
+  "id": "graphs:components",
+  "page": "graphs",
+  "key": "components",
+  "slug": "graphs-components",
+  "pageTitle": "Graphs",
+  "name": "Connected components",
+  "blurb": "A graph can be split into separate islands. Start anywhere and colour everything you can reach. Then start again at a dot you have not reached. The number of fresh starts is the number of islands.",
+  "facts": [
+   [
+    "Islands",
+    "Components"
+   ],
+   [
+    "Time",
+    "O(dots + lines)"
+   ],
+   [
+    "Uses",
+    "DFS or BFS"
+   ]
+  ],
+  "code": [
+   "for each dot",
+   "  if it is not reached yet:",
+   "    a new island! explore it all",
+   "    mark everything reached with this colour",
+   "count the fresh starts"
+  ],
+  "offline": {
+   "title": "Count the islands",
+   "need": "A drawing of 9 dots and some lines, and 3 coloured pencils",
+   "time": "10 minutes",
+   "steps": [
+    "Draw 9 dots and join some. Leave some dots cut off from others.",
+    "Pick a dot and colour it. Then colour every dot you can reach by following lines.",
+    "Pick an uncoloured dot with a new colour and repeat.",
+    "The number of colours you used is the number of islands."
+   ],
+   "think": "Can two dots of different colours ever share a line?"
+  },
+  "level": 2,
+  "topic": "Connected components"
+ },
+ {
+  "id": "graphs:cycle",
+  "page": "graphs",
+  "key": "cycle",
+  "slug": "graphs-cycle",
+  "pageTitle": "Graphs",
+  "name": "Cycle detection in graphs",
+  "blurb": "Walk the graph depth-first. If you meet a dot you have already visited, and it is not the one you just came from, you have found a way round: a cycle.",
+  "facts": [
+   [
+    "Time",
+    "O(dots + lines)"
+   ],
+   [
+    "Cycle means",
+    "A way back to the start"
+   ],
+   [
+    "Tree",
+    "Has no cycle"
+   ]
+  ],
+  "code": [
+   "visit a dot, remember where we came from",
+   "for each neighbour",
+   "  if it is the dot we came from: ignore",
+   "  if it was already visited: a cycle!",
+   "  else visit it",
+   "no repeat found: no cycle"
+  ],
+  "offline": {
+   "title": "Find the loop",
+   "need": "A drawing of 6 dots and 5 or 6 lines, and a pencil",
+   "time": "10 minutes",
+   "steps": [
+    "Draw 6 dots joined by 5 lines so every dot is reachable. Walk from dot A, marking each dot you reach.",
+    "Add one more line between two dots that are already joined by a path.",
+    "Walk again. When a line leads to a marked dot (that you did not just come from), you have found the loop."
+   ],
+   "think": "Why does a connected graph with n dots and n − 1 lines never have a cycle?"
+  },
+  "level": 2,
+  "topic": "Cycle detection in graphs"
+ },
+ {
+  "id": "graphs:bipartite",
+  "page": "graphs",
+  "key": "bipartite",
+  "slug": "graphs-bipartite",
+  "pageTitle": "Graphs",
+  "name": "Two-colouring (bipartite)",
+  "blurb": "Can you colour the dots with two colours so every line joins different colours? Colour one dot, then give its neighbours the other colour, and keep going. If a line joins two of the same colour, it cannot be done.",
+  "facts": [
+   [
+    "Possible when",
+    "No odd-length loop"
+   ],
+   [
+    "Time",
+    "O(dots + lines)"
+   ],
+   [
+    "Uses",
+    "BFS"
+   ]
+  ],
+  "code": [
+   "colour the first dot green",
+   "take a dot from the queue",
+   "  each neighbour gets the opposite colour",
+   "  if a neighbour already has the same colour: impossible",
+   "every dot coloured: it works"
+  ],
+  "offline": {
+   "title": "Two crayons",
+   "need": "A drawing of a loop of dots, and 2 crayons",
+   "time": "10 minutes",
+   "steps": [
+    "Draw a loop of 4 dots and join them in a ring. Colour one dot red.",
+    "Colour its neighbours blue, then their neighbours red, going round the ring.",
+    "Does it work? Now try a loop of 5."
+   ],
+   "think": "Why does an odd-length loop always fail?"
+  },
+  "level": 2,
+  "topic": "Two-colouring (bipartite)"
+ },
+ {
+  "id": "graphs:topo",
+  "page": "graphs",
+  "key": "topo",
+  "slug": "graphs-topo",
+  "pageTitle": "Graphs",
+  "name": "Topological sort",
+  "blurb": "Some jobs must wait for others. Count how many things each job is waiting for. Do any job that is waiting for nothing, then tell the jobs after it that one wait is over. Repeat.",
+  "facts": [
+   [
+    "Needs",
+    "No loops"
+   ],
+   [
+    "Time",
+    "O(jobs + links)"
+   ],
+   [
+    "Result",
+    "A valid order"
+   ]
+  ],
+  "code": [
+   "count what each job is waiting for",
+   "queue every job waiting for nothing",
+   "take a job from the queue and do it",
+   "  for each job after it: its count goes down by one",
+   "  if a count reaches 0: add it to the queue",
+   "order done = a valid order"
+  ],
+  "offline": {
+   "title": "Getting ready",
+   "need": "Cards for 6 jobs, and arrows drawn between them",
+   "time": "15 minutes",
+   "steps": [
+    "Write jobs on cards: Wake, Wash, Dress, Eat, Pack, Go. Draw an arrow from each job to one that must come after it.",
+    "Next to each card write how many arrows point into it.",
+    "Do a card with 0, write the order down, and cross out the arrows leaving it.",
+    "Repeat until all cards are done."
+   ],
+   "think": "Can there be more than one valid order? What if two jobs wait for each other?"
+  },
+  "level": 2,
+  "topic": "Topological sort"
+ },
+ {
+  "id": "graphs:unionfind",
+  "page": "graphs",
+  "key": "unionfind",
+  "slug": "graphs-unionfind",
+  "pageTitle": "Graphs",
+  "name": "Union-find",
+  "blurb": "Keep groups as small trees. Each item points to a parent, and the top of a tree is the group's name. To join two groups, hang one top under the other.",
+  "facts": [
+   [
+    "Find",
+    "Follow parents to the top"
+   ],
+   [
+    "Union",
+    "Join two tops"
+   ],
+   [
+    "Speed-up",
+    "Path compression"
+   ]
+  ],
+  "code": [
+   "find(x): follow parents until an item is its own parent",
+   "  point everything on the way straight at the top",
+   "union(a, b): find both tops",
+   "  if they differ, hang one under the other",
+   "same top = same group"
+  ],
+  "offline": {
+   "title": "Friend circles",
+   "need": "8 name cards and some string",
+   "time": "15 minutes",
+   "steps": [
+    "Give each person a card and make each their own group (a card pointing at itself).",
+    "To join two people: follow arrows from each up to their leader, then make one leader point at the other.",
+    "After several joins, ask: are these two in the same group? Follow arrows to the leaders and compare."
+   ],
+   "think": "Why is it worth pointing everyone straight at the leader after looking them up?"
+  },
+  "level": 3,
+  "topic": "Union-find"
+ },
+ {
+  "id": "graphs:bellman",
+  "page": "graphs",
+  "key": "bellman",
+  "slug": "graphs-bellman",
+  "pageTitle": "Graphs",
+  "name": "Bellman-Ford",
+  "blurb": "Dijkstra needs every road to cost something. Bellman-Ford can handle a road that gives you a refund. It tries every road again and again, and keeps any shorter way it finds, until nothing changes.",
+  "facts": [
+   [
+    "Handles",
+    "Negative roads"
+   ],
+   [
+    "Time",
+    "O(towns × roads)"
+   ],
+   [
+    "Rounds",
+    "Up to towns − 1"
+   ]
+  ],
+  "code": [
+   "start: 0 for Home, ∞ for every other town",
+   "repeat up to (towns − 1) times:",
+   "  for every road u → v of length w:",
+   "    if dist[u] + w < dist[v]: update dist[v]",
+   "if a whole round changes nothing: stop"
+  ],
+  "offline": {
+   "title": "Try every road",
+   "need": "Paper, a pencil and a small map with one negative road",
+   "time": "15 minutes",
+   "steps": [
+    "Draw 5 towns and some one-way roads with lengths. Make one road a refund, like −2.",
+    "Write 0 by Home and ∞ by the others.",
+    "Go through every road in any order. If dist[start] + length beats dist[end], cross out and write the better number.",
+    "Go through all roads again. Stop when a whole pass changes nothing."
+   ],
+   "think": "Why can the answer never need more than (towns − 1) rounds?"
+  },
+  "level": 3,
+  "topic": "Bellman-Ford"
+ },
+ {
+  "id": "graphs:floyd",
+  "page": "graphs",
+  "key": "floyd",
+  "slug": "graphs-floyd",
+  "pageTitle": "Graphs",
+  "name": "All-pairs shortest paths (Floyd-Warshall)",
+  "blurb": "Make a table of the shortest way between every pair of towns. Try each town as a stop-over, one at a time. If going through it is shorter, update the table.",
+  "facts": [
+   [
+    "Answers",
+    "Every pair at once"
+   ],
+   [
+    "Time",
+    "O(towns³)"
+   ],
+   [
+    "Idea",
+    "Allow one more stop-over"
+   ]
+  ],
+  "code": [
+   "table[i][j] ← direct road, or ∞",
+   "for each stop-over town k",
+   "  for each pair i, j:",
+   "    if table[i][k] + table[k][j] < table[i][j]:",
+   "      table[i][j] ← that sum",
+   "table holds every shortest distance"
+  ],
+  "offline": {
+   "title": "The distance table",
+   "need": "Paper (a 4 by 4 grid) and a small map",
+   "time": "20 minutes",
+   "steps": [
+    "Draw 4 towns with one-way roads. Fill a 4 by 4 table with the direct road lengths, ∞ where there is none, 0 on the diagonal.",
+    "Pick town A as the stop-over. For every cell, check: is (row to A) + (A to column) smaller? If so, write it in.",
+    "Repeat with B, then C, then D as the stop-over.",
+    "The table now holds the shortest distance between every pair."
+   ],
+   "think": "Why does the order of the stop-over towns not matter, as long as you use each once?"
+  },
+  "level": 3,
+  "topic": "All-pairs shortest paths (Floyd-Warshall)"
+ },
+ {
+  "id": "graphs:kruskal",
+  "page": "graphs",
+  "key": "kruskal",
+  "slug": "graphs-kruskal",
+  "pageTitle": "Graphs",
+  "name": "Minimum spanning trees",
+  "blurb": "Join every town with the cheapest total road. Sort the roads from cheapest to dearest. Take a road only if it joins two towns that are not already connected, so it never makes a loop.",
+  "facts": [
+   [
+    "Result",
+    "Cheapest way to join all"
+   ],
+   [
+    "Time",
+    "O(roads log roads)"
+   ],
+   [
+    "Uses",
+    "Union-find"
+   ]
+  ],
+  "code": [
+   "sort the roads, cheapest first",
+   "for each road",
+   "  if its ends are in different groups:",
+   "    take the road, join the groups",
+   "  else skip it (it would make a loop)",
+   "total of the taken roads"
+  ],
+  "offline": {
+   "title": "Cheapest network",
+   "need": "Paper, a pencil and a small map with road costs",
+   "time": "15 minutes",
+   "steps": [
+    "Draw 6 towns and 8 roads with different costs.",
+    "List the roads from cheapest to dearest.",
+    "Go down the list. Draw a road in colour only if it does not close a loop with roads already coloured.",
+    "Stop when all 6 towns are joined (5 roads). Add up the costs."
+   ],
+   "think": "Why is it safe to always take the cheapest road that does not close a loop?"
+  },
+  "level": 3,
+  "topic": "Minimum spanning trees"
+ },
+ {
+  "id": "graphs:astar",
+  "page": "graphs",
+  "key": "astar",
+  "slug": "graphs-astar",
+  "pageTitle": "Graphs",
+  "name": "A* search",
+  "blurb": "Like breadth-first search, but it has a nose for the goal. Score each square by the steps so far plus a guess of the steps left. Always explore the square with the lowest score.",
+  "facts": [
+   [
+    "Finds",
+    "Shortest path"
+   ],
+   [
+    "Needs",
+    "A guess that never over-estimates"
+   ],
+   [
+    "Faster than",
+    "Blind searching"
+   ]
+  ],
+  "code": [
+   "open ← [start]",
+   "take the open square with the smallest f = g + h",
+   "if it is the goal: stop",
+   "for each neighbour: g ← g + 1, f ← g + h",
+   "add it to the open list",
+   "follow the way back to draw the path"
+  ],
+  "offline": {
+   "title": "Guided walk",
+   "need": "Squared paper, a pencil and a pair of coloured pencils",
+   "time": "15 minutes",
+   "steps": [
+    "Draw a 5 by 7 grid. Shade a few walls. Mark start (top left) and goal (bottom right).",
+    "For a square, g is the steps you have walked to reach it. h is the number of squares across plus down to the goal, ignoring walls.",
+    "Write f = g + h in each square you reach. Always continue from the open square with the smallest f.",
+    "When you reach the goal, trace the way back."
+   ],
+   "think": "Why does the guess h help, and what would happen if h were always 0?"
+  },
+  "level": 3,
+  "topic": "A* search"
+ },
+ {
+  "id": "graphs:flow",
+  "page": "graphs",
+  "key": "flow",
+  "slug": "graphs-flow",
+  "pageTitle": "Graphs",
+  "name": "Network flow",
+  "blurb": "Pipes have limits. How much can flow from the start S to the end T? Find a route with room, push as much as fits, and repeat. When no route is left, you have found the most.",
+  "facts": [
+   [
+    "Finds",
+    "The biggest flow"
+   ],
+   [
+    "Method",
+    "Keep finding routes with room"
+   ],
+   [
+    "Time",
+    "O(V·E²)"
+   ]
+  ],
+  "code": [
+   "flow ← 0",
+   "find a route S → T where every pipe has spare room",
+   "push as much as the tightest pipe allows",
+   "add it to the flow; use up that room",
+   "no route left: the flow is the most possible"
+  ],
+  "offline": {
+   "title": "Pipes and buckets",
+   "need": "Paper, a pencil and a drawing of 6 dots joined by arrows with limits",
+   "time": "20 minutes",
+   "steps": [
+    "Draw S, A, B, C, T with arrows and write a limit on each arrow.",
+    "Find a route from S to T. The most you can send is the smallest limit along it. Write that flow on each arrow and subtract it from the limits.",
+    "Find another route using the room that is left. Repeat until none exists.",
+    "Add up everything you sent."
+   ],
+   "think": "Why can the flow never be more than the total limit of the pipes leaving S?"
+  },
+  "level": 3,
+  "topic": "Network flow"
+ },
+ {
+  "id": "graphs:matching",
+  "page": "graphs",
+  "key": "matching",
+  "slug": "graphs-matching",
+  "pageTitle": "Graphs",
+  "name": "Bipartite matching",
+  "blurb": "Pair each person on the left with a different friend on the right, using only the allowed links. If their favourite is taken, ask the one holding it to switch. A chain of switches can make room.",
+  "facts": [
+   [
+    "Finds",
+    "The most pairs"
+   ],
+   [
+    "Method",
+    "Try, and ask to switch"
+   ],
+   [
+    "Time",
+    "O(V·E)"
+   ]
+  ],
+  "code": [
+   "for each person on the left",
+   "  for each allowed partner on the right",
+   "    if the partner is free: pair them",
+   "    else ask their current partner to try someone else",
+   "    if that works: pair them",
+   "count the pairs"
+  ],
+  "offline": {
+   "title": "Dance partners",
+   "need": "4 names on the left, 4 on the right, and lines for who may pair",
+   "time": "15 minutes",
+   "steps": [
+    "Draw 4 people on the left and 4 on the right. Draw lines for allowed pairs.",
+    "Take the left people in order. Pair each with the first allowed partner who is free.",
+    "If a left person has only taken partners, ask one of those partners' current pairs to switch to another allowed partner.",
+    "Count the pairs. Can you find a way to get more?"
+   ],
+   "think": "Why does a chain of switches never leave anyone worse off?"
+  },
+  "level": 3,
+  "topic": "Bipartite matching"
+ },
+ {
+  "id": "graphs:scc",
+  "page": "graphs",
+  "key": "scc",
+  "slug": "graphs-scc",
+  "pageTitle": "Graphs",
+  "name": "Strongly connected components",
+  "blurb": "On one-way roads, a strongly connected group is a set of towns where you can get from any town to any other. Search once to see which towns finish first. Then search the roads backwards, starting from the last one.",
+  "facts": [
+   [
+    "Group",
+    "Everyone reaches everyone"
+   ],
+   [
+    "Searches",
+    "Two depth-first passes"
+   ],
+   [
+    "Time",
+    "O(towns + roads)"
+   ]
+  ],
+  "code": [
+   "pass 1: depth-first search, note the order towns finish",
+   "reverse every road",
+   "pass 2: take towns in reverse finish order",
+   "  search the reversed roads from it",
+   "  everything reached is one group"
+  ],
+  "offline": {
+   "title": "One-way streets",
+   "need": "Paper, a pencil and a drawing of 7 towns with one-way arrows",
+   "time": "20 minutes",
+   "steps": [
+    "Draw 7 towns and some one-way arrows.",
+    "Pass 1: walk depth-first from any town. Write each town down at the moment you have finished with it.",
+    "Redraw every arrow backward. Pass 2: take the town you wrote last. Walk along the backward arrows to everything you can reach that is not yet coloured. That is one group.",
+    "Repeat with the next-latest uncoloured town."
+   ],
+   "think": "Can two different groups ever reach each other in both directions?"
+  },
+  "level": 3,
+  "topic": "Strongly connected components"
+ },
+ {
+  "id": "graphs:bridges",
+  "page": "graphs",
+  "key": "bridges",
+  "slug": "graphs-bridges",
+  "pageTitle": "Graphs",
+  "name": "Bridges and cut points",
+  "blurb": "A bridge is a road that splits the network if you close it. Walk depth-first and note when you reach each town and the earliest town it can get back to. If a town cannot get back past its parent, the road to it is a bridge.",
+  "facts": [
+   [
+    "Bridge",
+    "Removing it disconnects"
+   ],
+   [
+    "Test",
+    "low[child] > disc[parent]"
+   ],
+   [
+    "Time",
+    "O(towns + roads)"
+   ]
+  ],
+  "code": [
+   "disc[u] ← the time we first reach u; low[u] ← disc[u]",
+   "for each road u – v (not the one we came by)",
+   "  new town: search it, then low[u] ← min(low[u], low[v])",
+   "    if low[v] > disc[u]: the road is a bridge",
+   "  seen town: low[u] ← min(low[u], disc[v])"
+  ],
+  "offline": {
+   "title": "Which road is a lifeline?",
+   "need": "A drawing of 7 towns and 8 roads, and a pencil",
+   "time": "15 minutes",
+   "steps": [
+    "Draw 7 towns joined by roads, with a couple of loops.",
+    "For each road, imagine closing it. Can you still get from any town to any other? If not, it is a bridge.",
+    "Notice that bridges are never part of a loop."
+   ],
+   "think": "Why can a road inside a loop never be a bridge?"
+  },
+  "level": 3,
+  "topic": "Bridges and cut points"
+ },
+ {
+  "id": "graphs:euler",
+  "page": "graphs",
+  "key": "euler",
+  "slug": "graphs-euler",
+  "pageTitle": "Graphs",
+  "name": "Euler circuits",
+  "blurb": "Can you walk along every road exactly once and end where you started? Yes, if every town has an even number of roads. Walk until you are stuck, then add in any loops you skipped.",
+  "facts": [
+   [
+    "Needs",
+    "Every town has even degree"
+   ],
+   [
+    "Each road",
+    "Used once"
+   ],
+   [
+    "Method",
+    "Hierholzer's walk"
+   ]
+  ],
+  "code": [
+   "check: every town has an even number of roads",
+   "walk along unused roads, noting each town",
+   "when stuck, back up and add that town to the finished route",
+   "keep going until nothing is left",
+   "the finished route (reversed) is the circuit"
+  ],
+  "offline": {
+   "title": "Snow plough",
+   "need": "A drawing of a ring of 6 towns with three extra roads, and a pencil",
+   "time": "15 minutes",
+   "steps": [
+    "Draw 6 towns in a ring and add a triangle joining three of them. Count the roads at each town.",
+    "Start anywhere and trace every road once without lifting your pencil. If you get stuck, find a town on your route that still has unused roads and walk a loop from there.",
+    "You should finish where you began."
+   ],
+   "think": "What goes wrong if two towns have an odd number of roads? What if four do?"
+  },
+  "level": 3,
+  "topic": "Euler circuits"
+ },
+ {
+  "id": "graphs:hamilton",
+  "page": "graphs",
+  "key": "hamilton",
+  "slug": "graphs-hamilton",
+  "pageTitle": "Graphs",
+  "name": "Hamilton paths",
+  "blurb": "An Euler walk uses every road once. A Hamilton path visits every town once. It sounds similar but is much harder, and nobody knows a quick test. Try a path, and step back when you get stuck.",
+  "facts": [
+   [
+    "Visits",
+    "Every town once"
+   ],
+   [
+    "Quick test?",
+    "None known"
+   ],
+   [
+    "Method here",
+    "Backtracking"
+   ]
+  ],
+  "code": [
+   "start in a town",
+   "go to a neighbour you have not visited",
+   "if every town is visited: found a Hamilton path",
+   "if stuck: step back and try another neighbour",
+   "tried every start: there is no Hamilton path"
+  ],
+  "offline": {
+   "title": "Visit every town",
+   "need": "A drawing of 6 towns joined by roads, and a pencil",
+   "time": "15 minutes",
+   "steps": [
+    "Draw 6 towns in a ring and add a couple of extra roads.",
+    "Pick a start. Walk to a neighbour you have not visited, marking each town. Try to visit all 6 without repeating one.",
+    "If you get stuck, step back one town and try a different road.",
+    "Now draw a \"star\": one town joined to three others, and one more town hanging off two of those. Can you do it?"
+   ],
+   "think": "Why can a town with only one road be in the middle of a Hamilton path? (Hint: it cannot.)"
+  },
+  "level": 3,
+  "topic": "Hamilton paths"
+ },
+ {
+  "id": "solve:divide",
+  "page": "solve",
+  "key": "divide",
+  "slug": "solve-divide",
+  "pageTitle": "Ways to solve it",
+  "name": "Divide and conquer",
+  "blurb": "Split a big problem into two halves, solve each half the same way, then combine the answers. Here the problem is the best run of numbers in a row. It is in the left half, in the right half, or across the middle.",
+  "facts": [
+   [
+    "Steps",
+    "Split, solve, combine"
+   ],
+   [
+    "Time",
+    "O(n log n)"
+   ],
+   [
+    "Smallest piece",
+    "One number"
+   ]
+  ],
+  "code": [
+   "solve(range): if one number, that is the answer",
+   "split the range in the middle",
+   "best of the left half",
+   "best of the right half",
+   "best run straddling the middle",
+   "answer ← the biggest of the three"
+  ],
+  "offline": {
+   "title": "Halve and combine",
+   "need": "Paper and 8 numbers, some negative",
+   "time": "15 minutes",
+   "steps": [
+    "Write 8 numbers, some below zero. We want the biggest total of numbers next to each other.",
+    "Split into two halves of 4. Find the best run in each half the same way (split again until one number).",
+    "Now find the best run that crosses the middle: the best run ending at the middle, plus the best run starting after it.",
+    "The answer is the biggest of the three."
+   ],
+   "think": "Why do you need the crossing case? What would you miss without it?"
+  },
+  "level": 2,
+  "topic": "Divide and conquer"
+ },
+ {
+  "id": "solve:greedy",
+  "page": "solve",
+  "key": "greedy",
+  "slug": "solve-greedy",
+  "pageTitle": "Ways to solve it",
+  "name": "Greedy choices",
+  "blurb": "A greedy method always takes the best-looking choice right now and never looks back. Giving change with the biggest coins first works for many coins. But with some coins it gives a worse answer.",
+  "facts": [
+   [
+    "Idea",
+    "Best choice now"
+   ],
+   [
+    "Speed",
+    "Very fast"
+   ],
+   [
+    "Risk",
+    "Can be wrong"
+   ]
+  ],
+  "code": [
+   "coins taken ← none; left ← the amount",
+   "repeat while something is left:",
+   "  take the biggest coin that fits",
+   "  subtract it from what is left",
+   "count the coins; compare with the best possible"
+  ],
+  "offline": {
+   "title": "Change maker",
+   "need": "Coins or paper discs worth 25, 10, 5 and 1 (or 4, 3 and 1)",
+   "time": "10 minutes",
+   "steps": [
+    "Pick an amount, like 63. Always take the biggest coin that still fits.",
+    "Count your coins.",
+    "Now try coins worth 4, 3 and 1 for the amount 6. Greedy takes 4 + 1 + 1. Can you do it with fewer?"
+   ],
+   "think": "For which coins does \"biggest first\" always give the fewest coins?"
+  },
+  "level": 1,
+  "topic": "Greedy choices"
+ },
+ {
+  "id": "solve:intervals",
+  "page": "solve",
+  "key": "intervals",
+  "slug": "solve-intervals",
+  "pageTitle": "Ways to solve it",
+  "name": "Interval scheduling",
+  "blurb": "Many meetings want one room. To fit the most, sort them by when they end. Take the first, then the next one that starts after the last one ended. Finishing early leaves the most room.",
+  "facts": [
+   [
+    "Sort by",
+    "Finish time"
+   ],
+   [
+    "Time",
+    "O(n log n)"
+   ],
+   [
+    "Method",
+    "Greedy"
+   ]
+  ],
+  "code": [
+   "sort meetings by finish time",
+   "chosen ← none; last end ← 0",
+   "for each meeting in order",
+   "  if it starts after the last end: choose it",
+   "  else skip it"
+  ],
+  "offline": {
+   "title": "Fit the meetings",
+   "need": "Paper strips of different lengths and a long line marked 1 to 12",
+   "time": "15 minutes",
+   "steps": [
+    "Cut 7 strips and place each along the line where a meeting would run.",
+    "Sort the strips by where they end.",
+    "Take the first. Then take the next that begins after the last one chosen ends. Skip any that overlap.",
+    "Count the meetings you fit."
+   ],
+   "think": "Why sort by the end time and not by the start time or length?"
+  },
+  "level": 2,
+  "topic": "Interval scheduling"
+ },
+ {
+  "id": "solve:backtrack",
+  "page": "solve",
+  "key": "backtrack",
+  "slug": "solve-backtrack",
+  "pageTitle": "Ways to solve it",
+  "name": "Backtracking",
+  "blurb": "Try a choice. If it leads nowhere, undo it and try another. For each number, take it or leave it. As soon as the total goes over the target, give up on that branch.",
+  "facts": [
+   [
+    "Idea",
+    "Try, undo, try again"
+   ],
+   [
+    "Saves time by",
+    "Giving up early"
+   ],
+   [
+    "Used for",
+    "Puzzles, mazes, Sudoku"
+   ]
+  ],
+  "code": [
+   "for each number, in order:",
+   "  try taking it",
+   "  if the total is over the target: give up (backtrack)",
+   "  if the total equals the target: found!",
+   "  then try leaving it out",
+   "every choice tried: no answer"
+  ],
+  "offline": {
+   "title": "Pick and undo",
+   "need": "Paper, a pencil and 5 number cards",
+   "time": "15 minutes",
+   "steps": [
+    "Pick a target. Lay out 5 cards. Find cards that add exactly to the target.",
+    "Go card by card: take it (add it up) or leave it.",
+    "If your total goes over the target, stop and undo the last card you took. Try leaving it out instead.",
+    "Write down each take and undo so you can see the search."
+   ],
+   "think": "Why does giving up early on a bad branch save so much work?"
+  },
+  "level": 2,
+  "topic": "Backtracking"
+ },
+ {
+  "id": "solve:nqueens",
+  "page": "solve",
+  "key": "nqueens",
+  "slug": "solve-nqueens",
+  "pageTitle": "Ways to solve it",
+  "name": "N-Queens",
+  "blurb": "Place queens on a board so none can capture another. Put one queen in each row. If a row has no safe square, go back to the row above and move its queen.",
+  "facts": [
+   [
+    "Goal",
+    "No two queens attack"
+   ],
+   [
+    "Method",
+    "Backtracking"
+   ],
+   [
+    "Rows",
+    "One queen each"
+   ]
+  ],
+  "code": [
+   "for each row",
+   "  for each column: is it safe?",
+   "    safe: place a queen, go to the next row",
+   "    no safe column: go back and move the queen above",
+   "every row has a queen: solved"
+  ],
+  "offline": {
+   "title": "Queens on paper",
+   "need": "A 5 by 5 grid on paper, and 5 coins",
+   "time": "20 minutes",
+   "steps": [
+    "Place a coin in the top row. A queen attacks along its row, column and both diagonals.",
+    "In the next row, put a coin on the first square no coin attacks.",
+    "If a row has no safe square, pick up the last coin and move it one square along. This is backtracking.",
+    "Continue until each row has a coin."
+   ],
+   "think": "How does moving back one row cut out thousands of silly positions at once?"
+  },
+  "level": 2,
+  "topic": "N-Queens"
+ },
+ {
+  "id": "solve:knapsack",
+  "page": "solve",
+  "key": "knapsack",
+  "slug": "solve-knapsack",
+  "pageTitle": "Ways to solve it",
+  "name": "Knapsack",
+  "blurb": "A bag can only hold so much weight. Which items give the most value? Fill a table. For each item, either leave it, or take it and add its value to the best for the room that is left.",
+  "facts": [
+   [
+    "Table",
+    "items × bag sizes"
+   ],
+   [
+    "Time",
+    "O(items × size)"
+   ],
+   [
+    "Method",
+    "Dynamic programming"
+   ]
+  ],
+  "code": [
+   "table[0][size] ← 0 (no items, no value)",
+   "for each item i, each bag size s",
+   "  leave it: table[i−1][s]",
+   "  take it (if it fits): value + table[i−1][s − weight]",
+   "  table[i][s] ← the bigger of the two",
+   "the answer is the last cell"
+  ],
+  "offline": {
+   "title": "Pack the bag",
+   "need": "Paper, a pencil and 4 items with weights and values",
+   "time": "20 minutes",
+   "steps": [
+    "Pick 4 items, each with a weight (1 to 5) and a value. The bag holds weight 8.",
+    "Draw a table: a row for each item added so far, a column for each bag size from 0 to 8.",
+    "Fill row by row. For each cell compare \"leave the item\" (the cell above) and \"take it\" (its value plus the cell above and to the left by its weight).",
+    "The last cell is the best value."
+   ],
+   "think": "Why does each cell only need to look at the row above?"
+  },
+  "level": 3,
+  "topic": "Knapsack"
+ },
+ {
+  "id": "solve:lcs",
+  "page": "solve",
+  "key": "lcs",
+  "slug": "solve-lcs",
+  "pageTitle": "Ways to solve it",
+  "name": "Longest common subsequence",
+  "blurb": "Two words can share letters in the same order, even if the letters are not side by side. Fill a table. If two letters match, add 1 to the cell up-left. If not, copy the bigger of the cell above and the cell to the left.",
+  "facts": [
+   [
+    "Compares",
+    "Two sequences"
+   ],
+   [
+    "Time",
+    "O(m × n)"
+   ],
+   [
+    "Used for",
+    "File diffs, DNA"
+   ]
+  ],
+  "code": [
+   "table[0][·] and table[·][0] are 0",
+   "for each letter pair (i, j)",
+   "  if the letters match: table[i][j] ← table[i−1][j−1] + 1",
+   "  else: table[i][j] ← the bigger of the cell above and the cell to the left",
+   "the last cell is the length"
+  ],
+  "offline": {
+   "title": "Shared letters",
+   "need": "Two short words on paper and a grid",
+   "time": "15 minutes",
+   "steps": [
+    "Write one word across the top and one down the side of a grid. Fill the first row and column with 0.",
+    "For each cell: if the two letters match, write one more than the cell up and to the left.",
+    "If not, write the bigger of the cell above and the cell to the left.",
+    "The bottom-right number is the length of the longest shared sequence."
+   ],
+   "think": "Is a shared sequence allowed to skip letters? Is it allowed to reorder them?"
+  },
+  "level": 3,
+  "topic": "Longest common subsequence"
+ },
+ {
+  "id": "solve:lis",
+  "page": "solve",
+  "key": "lis",
+  "slug": "solve-lis",
+  "pageTitle": "Ways to solve it",
+  "name": "Longest increasing subsequence",
+  "blurb": "Pick numbers from a row, left to right, so each one is bigger than the last. For each number, its best chain is 1 more than the best chain that ends at a smaller number before it.",
+  "facts": [
+   [
+    "Time",
+    "O(n²) here"
+   ],
+   [
+    "Table",
+    "One cell per number"
+   ],
+   [
+    "Method",
+    "Dynamic programming"
+   ]
+  ],
+  "code": [
+   "best[i] ← 1 for every number",
+   "for each number i, left to right",
+   "  for each earlier number j with a[j] < a[i]",
+   "    best[i] ← the bigger of best[i] and best[j] + 1",
+   "the answer is the biggest best[i]"
+  ],
+  "offline": {
+   "title": "Climbing the row",
+   "need": "Paper and 8 numbers in a row",
+   "time": "10 minutes",
+   "steps": [
+    "Write 8 numbers. Under each, write 1.",
+    "Go left to right. For each number look at the numbers before it that are smaller.",
+    "Under this number write one more than the biggest number under those smaller ones.",
+    "The biggest number written is the length of the longest climb."
+   ],
+   "think": "Why does a number's answer only depend on numbers to its left?"
+  },
+  "level": 3,
+  "topic": "Longest increasing subsequence"
+ },
+ {
+  "id": "solve:edit",
+  "page": "solve",
+  "key": "edit",
+  "slug": "solve-edit",
+  "pageTitle": "Ways to solve it",
+  "name": "Edit distance",
+  "blurb": "How many edits turn one word into another? An edit is adding, removing or changing one letter. A table stores the cheapest way to turn each start of one word into each start of the other.",
+  "facts": [
+   [
+    "Edits",
+    "Add, remove, change"
+   ],
+   [
+    "Time",
+    "O(m × n)"
+   ],
+   [
+    "Used for",
+    "Spell-checkers"
+   ]
+  ],
+  "code": [
+   "table[i][0] ← i; table[0][j] ← j",
+   "for each letter pair (i, j)",
+   "  if the letters match: copy the cell up-left",
+   "  else: 1 + the smallest of up, left and up-left",
+   "the last cell is the distance"
+  ],
+  "offline": {
+   "title": "Fix the word",
+   "need": "Two short words, paper and a pencil",
+   "time": "15 minutes",
+   "steps": [
+    "Pick two words like CAT and CUT. Draw a grid with a blank row and column first.",
+    "The first row counts 0, 1, 2, … and so does the first column.",
+    "Each cell: if the letters match, copy the cell up and to the left. If not, add 1 to the smallest of the cell above, the cell to the left and the cell up-left.",
+    "The last cell is the fewest edits."
+   ],
+   "think": "Why does the distance never exceed the length of the longer word?"
+  },
+  "level": 2,
+  "topic": "Edit distance"
+ },
+ {
+  "id": "solve:popcount",
+  "page": "solve",
+  "key": "popcount",
+  "slug": "solve-popcount",
+  "pageTitle": "Ways to solve it",
+  "name": "Bit tricks: counting 1s",
+  "blurb": "Computers store numbers as bits. Subtracting 1 flips the last 1 bit to 0. So n AND (n minus 1) removes exactly one 1 bit. Count how many times until you reach 0.",
+  "facts": [
+   [
+    "Trick",
+    "n AND (n − 1)"
+   ],
+   [
+    "Time",
+    "One step per 1-bit"
+   ],
+   [
+    "Used for",
+    "Fast counting and checks"
+   ]
+  ],
+  "code": [
+   "count ← 0",
+   "while n is not 0",
+   "  n ← n AND (n − 1)  (removes the lowest 1)",
+   "  count ← count + 1",
+   "count is the number of 1-bits"
+  ],
+  "offline": {
+   "title": "Flip the last 1",
+   "need": "Paper and a pencil",
+   "time": "10 minutes",
+   "steps": [
+    "Write a number in binary, like 10110100.",
+    "Subtract 1 in binary. Notice the lowest 1 becomes 0 and the zeros after it become 1s.",
+    "Line up the old and new numbers and keep a 1 only where both have a 1 (AND). The lowest 1 has vanished.",
+    "Repeat until you reach 0. Count the repeats."
+   ],
+   "think": "Why does this loop run once per 1-bit and not once per bit?"
+  },
+  "level": 2,
+  "topic": "Bit tricks"
+ },
+ {
+  "id": "solve:xor",
+  "page": "solve",
+  "key": "xor",
+  "slug": "solve-xor",
+  "pageTitle": "Ways to solve it",
+  "name": "Bit tricks: XOR",
+  "blurb": "XOR gives 1 only where two bits are different, and a number XOR itself is 0. If every number appears twice except one, XOR them all. The pairs cancel and the loner is left.",
+  "facts": [
+   [
+    "Rule",
+    "a XOR a = 0"
+   ],
+   [
+    "Time",
+    "One pass"
+   ],
+   [
+    "Extra memory",
+    "None"
+   ]
+  ],
+  "code": [
+   "answer ← 0",
+   "for each number n",
+   "  answer ← answer XOR n",
+   "pairs cancel to 0, so answer is the number with no partner"
+  ],
+  "offline": {
+   "title": "Cancelling pairs",
+   "need": "Paper and 7 numbers (3 pairs and 1 single)",
+   "time": "10 minutes",
+   "steps": [
+    "Write 7 numbers from 1 to 15: three numbers twice, and one number once. Shuffle them.",
+    "Write each in 4 bits. Start with 0000.",
+    "XOR each number in: where the bits differ, the result bit is 1.",
+    "When you finish, the pairs have cancelled and the single number is left."
+   ],
+   "think": "Why does the order of the numbers not matter?"
+  },
+  "level": 2,
+  "topic": null
+ },
+ {
+  "id": "solve:bitmask",
+  "page": "solve",
+  "key": "bitmask",
+  "slug": "solve-bitmask",
+  "pageTitle": "Ways to solve it",
+  "name": "Bitmask DP",
+  "blurb": "A bitmask is a row of 0s and 1s that shows which jobs are taken. Store the cheapest cost for every mask. Build each answer from a smaller mask plus one more job.",
+  "facts": [
+   [
+    "Masks",
+    "2ⁿ states"
+   ],
+   [
+    "Each",
+    "One cell per set"
+   ],
+   [
+    "Good for",
+    "Small sets (about 20)"
+   ]
+  ],
+  "code": [
+   "best[000] ← 0 (no jobs taken)",
+   "for each mask, smallest first",
+   "  worker ← the number of jobs taken",
+   "  for each job j in the mask: best[mask without j] + cost[worker][j]",
+   "  best[mask] ← the smallest of those",
+   "the answer is best[111]"
+  ],
+  "offline": {
+   "title": "Jobs and workers",
+   "need": "A 3 by 3 table of costs, paper and a pencil",
+   "time": "20 minutes",
+   "steps": [
+    "Write a 3 by 3 table: the cost of each worker doing each job.",
+    "List all 8 subsets of jobs as 000, 001, … 111 (1 means the job is taken).",
+    "For each subset, the number of 1s tells you how many workers are done. Try removing each job in turn: previous best + that cost for the next worker. Keep the smallest.",
+    "The cost for 111 is the cheapest way to give every worker a different job."
+   ],
+   "think": "How many ways are there to give 20 workers 20 different jobs? How many masks are there?"
+  },
+  "level": 3,
+  "topic": "Bitmask DP"
+ },
+ {
+  "id": "solve:meet",
+  "page": "solve",
+  "key": "meet",
+  "slug": "solve-meet",
+  "pageTitle": "Ways to solve it",
+  "name": "Meet in the middle",
+  "blurb": "Trying every subset of 8 numbers means 256 sets. Instead split the numbers in half. List the sums of each half, sort them, and use two pointers to find a pair that adds up to the target.",
+  "facts": [
+   [
+    "Halves",
+    "Two small problems"
+   ],
+   [
+    "Sums per half",
+    "2ⁿ/²"
+   ],
+   [
+    "Then",
+    "Two pointers"
+   ]
+  ],
+  "code": [
+   "split the numbers into a left half and a right half",
+   "list every subset sum of each half; sort both lists",
+   "left pointer at the smallest left sum, right pointer at the biggest right sum",
+   "if the two add to the target: found",
+   "if too small move the left pointer up; if too big move the right pointer down"
+  ],
+  "offline": {
+   "title": "Halve the search",
+   "need": "Paper and 6 numbers",
+   "time": "20 minutes",
+   "steps": [
+    "Write 6 numbers and a target. Split them into two groups of 3.",
+    "For each group, list all 8 subset sums (including the empty set, 0). Sort each list.",
+    "Put a finger at the start of the left list and another at the end of the right list. Add the two. Too small: move the left finger right. Too big: move the right finger left.",
+    "If the fingers add to the target, you have found a subset."
+   ],
+   "think": "For 40 numbers, how many sets would you try one by one? How many sums per half here?"
+  },
+  "level": 3,
+  "topic": "Meet in the middle"
+ },
+ {
+  "id": "solve:sudoku",
+  "page": "solve",
+  "key": "sudoku",
+  "slug": "solve-sudoku",
+  "pageTitle": "Ways to solve it",
+  "name": "Sudoku",
+  "blurb": "Fill a 4 by 4 grid so every row, column and 2 by 2 box has 1 to 4 once. Try a digit in each empty square. If a square has nothing that fits, go back and change the last digit.",
+  "facts": [
+   [
+    "Rule",
+    "No repeats in row, column or box"
+   ],
+   [
+    "Method",
+    "Try, back up"
+   ],
+   [
+    "Bigger sudokus",
+    "Same idea"
+   ]
+  ],
+  "code": [
+   "find the next empty square",
+   "for each digit 1 to 4: does it break a rule?",
+   "  fits: write it, go on to the next empty square",
+   "  nothing fits: go back and change the last digit",
+   "no empty squares: solved"
+  ],
+  "offline": {
+   "title": "Mini sudoku",
+   "need": "A 4 by 4 grid on paper with a few digits filled in, and a pencil",
+   "time": "15 minutes",
+   "steps": [
+    "Draw a 4 by 4 grid in four 2 by 2 boxes and fill in a few digits.",
+    "Go to the first empty square. Write the smallest digit that does not repeat in its row, column or box (lightly, in pencil).",
+    "Move to the next. If no digit fits, rub out your last digit and try the next one up.",
+    "Continue until the grid is full."
+   ],
+   "think": "Why does rubbing out one digit fix many mistakes at once?"
+  },
+  "level": 2,
+  "topic": "Sudoku"
+ },
+ {
+  "id": "text:naive",
+  "page": "text",
+  "key": "naive",
+  "slug": "text-naive",
+  "pageTitle": "Hashing and text",
+  "name": "Pattern matching",
+  "blurb": "To find a short word inside a long text, slide the word along one place at a time. At each place, compare letter by letter and stop at the first mismatch.",
+  "facts": [
+   [
+    "Worst case",
+    "O(text × word)"
+   ],
+   [
+    "Simple?",
+    "Very"
+   ],
+   [
+    "Wasteful when",
+    "Lots of near-matches"
+   ]
+  ],
+  "code": [
+   "for each starting place in the text",
+   "  compare the word with the text, letter by letter",
+   "  if a letter differs: slide on",
+   "  if every letter matches: found here",
+   "no more places to try"
+  ],
+  "offline": {
+   "title": "Slide the word",
+   "need": "A strip of paper with a short word, and a longer text on paper",
+   "time": "10 minutes",
+   "steps": [
+    "Write a text of 12 letters from A, B and C. Write a pattern of 3 letters on a paper strip.",
+    "Place the strip under the start of the text. Do all three letters match? Tick or cross.",
+    "Slide the strip one place right and repeat until the end.",
+    "Mark every place where all three letters matched."
+   ],
+   "think": "How many comparisons would you need to find a 100-letter pattern in a million-letter text, if every place nearly matched?"
+  },
+  "level": 2,
+  "topic": "Pattern matching"
+ },
+ {
+  "id": "text:rabin",
+  "page": "text",
+  "key": "rabin",
+  "slug": "text-rabin",
+  "pageTitle": "Hashing and text",
+  "name": "Rolling hash (Rabin-Karp)",
+  "blurb": "Give every stretch of text a fingerprint number and compare fingerprints first. Only when two fingerprints match, check the letters. Sliding along is cheap: drop the old digit, add the new one.",
+  "facts": [
+   [
+    "Fingerprint",
+    "A number from the digits"
+   ],
+   [
+    "Update",
+    "O(1) per slide"
+   ],
+   [
+    "Then",
+    "Check only on a match"
+   ]
+  ],
+  "code": [
+   "fingerprint of the word",
+   "fingerprint of the first stretch of text",
+   "for each stretch",
+   "  if the fingerprints match: check the letters",
+   "  slide: drop the old digit, add the new one",
+   "report every real match"
+  ],
+  "offline": {
+   "title": "Fingerprints",
+   "need": "Digits on paper (a text of 12 digits) and a 3-digit word",
+   "time": "15 minutes",
+   "steps": [
+    "Write 12 digits. Pick a 3-digit pattern. Its fingerprint is its value divided by 97, remainder.",
+    "Find the fingerprint of the first 3 digits of the text the same way.",
+    "To slide one place: take away the old first digit's part (digit × 100), multiply by 10, add the new digit, and take the remainder again.",
+    "Only when two fingerprints are equal, compare the digits."
+   ],
+   "think": "Two different stretches can have the same fingerprint. Why do you still check the digits?"
+  },
+  "level": 3,
+  "topic": "Rolling hash (Rabin-Karp)"
+ },
+ {
+  "id": "text:kmp",
+  "page": "text",
+  "key": "kmp",
+  "slug": "text-kmp",
+  "pageTitle": "Hashing and text",
+  "name": "KMP (prefix table)",
+  "blurb": "When a letter does not match, you already know the letters before it matched. A table made from the word tells you how far back to restart, so you never move back in the text.",
+  "facts": [
+   [
+    "Time",
+    "O(text + word)"
+   ],
+   [
+    "Text pointer",
+    "Never goes back"
+   ],
+   [
+    "Needs",
+    "A prefix table"
+   ]
+  ],
+  "code": [
+   "table[i] ← length of the longest start of the word that is also an end of its first i+1 letters",
+   "for each letter of the text",
+   "  while the word letter differs: fall back using the table",
+   "  if it matches: move on in the word",
+   "  if the whole word matched: found"
+  ],
+  "offline": {
+   "title": "Slide smartly",
+   "need": "A paper strip with the word ABAB, and a text of 12 letters from A and B",
+   "time": "20 minutes",
+   "steps": [
+    "Build the table for ABAB. Position 3 (AB) is 0, position 3 (ABA) is 1 because A starts and ends it, position 4 (ABAB) is 2 (AB).",
+    "Match the word along the text. When a mismatch happens, do not slide back: restart in the word at the table value.",
+    "Mark every place where the word fully matches."
+   ],
+   "think": "Why can the text pointer never move backward?"
+  },
+  "level": 3,
+  "topic": "KMP"
+ },
+ {
+  "id": "text:zalgo",
+  "page": "text",
+  "key": "zalgo",
+  "slug": "text-zalgo",
+  "pageTitle": "Hashing and text",
+  "name": "Z-algorithm",
+  "blurb": "For each place in a word, the Z-number says how many letters from there match the start of the word. Remembering the longest match so far saves comparing the same letters again.",
+  "facts": [
+   [
+    "Time",
+    "O(length)"
+   ],
+   [
+    "Z[i]",
+    "Match length with the start"
+   ],
+   [
+    "Used for",
+    "Pattern search"
+   ]
+  ],
+  "code": [
+   "Z[0] ← the whole word (skip it)",
+   "keep the window [l, r] of the furthest match",
+   "for each position i",
+   "  inside the window: start from a known value",
+   "  extend by comparing letters",
+   "  grow the window if we passed r"
+  ],
+  "offline": {
+   "title": "How much matches the start?",
+   "need": "A short word on paper",
+   "time": "10 minutes",
+   "steps": [
+    "Write the word AABXAAB. For each position, count how many letters in a row match the beginning of the word.",
+    "Position 2 (A) matches AAB... count it.",
+    "Write all the counts in a row. That is the Z row."
+   ],
+   "think": "What does a Z-value equal to the length of the pattern tell you if you search \"pattern + # + text\"?"
+  },
+  "level": 3,
+  "topic": "Z-algorithm"
+ },
+ {
+  "id": "text:suffix",
+  "page": "text",
+  "key": "suffix",
+  "slug": "text-suffix",
+  "pageTitle": "Hashing and text",
+  "name": "Suffix arrays",
+  "blurb": "Write every ending of a word and sort them like a dictionary. Words that start the same end up next to each other, so you can find them fast.",
+  "facts": [
+   [
+    "Stores",
+    "Sorted suffix starts"
+   ],
+   [
+    "Search",
+    "O(pattern × log n)"
+   ],
+   [
+    "Used for",
+    "Text search, DNA"
+   ]
+  ],
+  "code": [
+   "list every suffix of the word",
+   "sort the suffixes alphabetically",
+   "to find a pattern: binary search the sorted list",
+   "compare the pattern with the start of the middle suffix",
+   "all suffixes starting with the pattern are the matches"
+  ],
+  "offline": {
+   "title": "Sorted endings",
+   "need": "A short word like BANANA, paper and a pencil",
+   "time": "15 minutes",
+   "steps": [
+    "Write BANANA. Underneath write each ending: BANANA, ANANA, NANA, ANA, NA, A. Number them by where they start.",
+    "Sort them like a dictionary: A, ANA, ANANA, BANANA, NA, NANA.",
+    "To find ANA, look in the sorted list. All the endings that start with ANA are next to each other.",
+    "The numbers beside them are where ANA occurs."
+   ],
+   "think": "Why are all the endings that start with the same pattern next to each other?"
+  },
+  "level": 3,
+  "topic": "Suffix arrays"
+ },
+ {
+  "id": "text:huffman",
+  "page": "text",
+  "key": "huffman",
+  "slug": "text-huffman",
+  "pageTitle": "Hashing and text",
+  "name": "Compression (Huffman)",
+  "blurb": "Give common letters short codes and rare letters long ones. Keep joining the two rarest items into one. The joins form a tree, and the path to each letter is its code of 0s and 1s.",
+  "facts": [
+   [
+    "Idea",
+    "Short codes for common letters"
+   ],
+   [
+    "Method",
+    "Join the two smallest"
+   ],
+   [
+    "Result",
+    "Fewest bits possible"
+   ]
+  ],
+  "code": [
+   "put every letter in the queue with its count",
+   "take the two smallest items",
+   "join them into one item (add their counts)",
+   "put it back; repeat until one item is left",
+   "left branch = 0, right branch = 1"
+  ],
+  "offline": {
+   "title": "Make a code",
+   "need": "Paper, a pencil and a short message",
+   "time": "20 minutes",
+   "steps": [
+    "Write a short message and count each letter.",
+    "Write each letter with its count. Cross out the two smallest and replace them with one item that has their total.",
+    "Repeat until one item is left. You have drawn a tree.",
+    "Label left branches 0 and right branches 1. Each letter's code is the path from the top to it."
+   ],
+   "think": "Why does giving the common letters shorter codes make the whole message shorter?"
+  },
+  "level": 2,
+  "topic": "Compression (Huffman)"
+ },
+ {
+  "id": "text:bloom",
+  "page": "text",
+  "key": "bloom",
+  "slug": "text-bloom",
+  "pageTitle": "Hashing and text",
+  "name": "Bloom filters",
+  "blurb": "A Bloom filter remembers words using a tiny row of bits. Each word switches on three bits. If any of a word's bits is off, it was definitely not added. If all are on, it was probably added.",
+  "facts": [
+   [
+    "Memory",
+    "Tiny"
+   ],
+   [
+    "\"No\" means",
+    "Definitely no"
+   ],
+   [
+    "\"Yes\" means",
+    "Probably yes"
+   ]
+  ],
+  "code": [
+   "start with 16 bits, all 0",
+   "add: switch on the 3 bits the word points to",
+   "ask: look at the word's 3 bits",
+   "any bit is 0: definitely not added",
+   "all bits 1: probably added"
+  ],
+  "offline": {
+   "title": "Bit board",
+   "need": "16 small squares on paper (or coins), and some words",
+   "time": "15 minutes",
+   "steps": [
+    "Draw a row of 16 boxes, all empty. Make up a rule that gives each word three box numbers (like adding letter positions).",
+    "To add a word, fill its three boxes.",
+    "To ask about a new word, look at its three boxes. Any empty box means it was never added.",
+    "If all three are filled you can only say \"probably\"."
+   ],
+   "think": "Can a Bloom filter ever say \"no\" about a word that was added? Why not?"
+  },
+  "level": 3,
+  "topic": "Bloom filters"
+ },
+ {
+  "id": "text:sketch",
+  "page": "text",
+  "key": "sketch",
+  "slug": "text-sketch",
+  "pageTitle": "Hashing and text",
+  "name": "Count-min sketch",
+  "blurb": "Count how often things appear in a huge stream using a small table. Each item adds 1 to one counter in each of three rows. To ask for a count, take the smallest of its three counters.",
+  "facts": [
+   [
+    "Memory",
+    "A small fixed table"
+   ],
+   [
+    "Estimate",
+    "Never too low"
+   ],
+   [
+    "Answer",
+    "Smallest of the counters"
+   ]
+  ],
+  "code": [
+   "three rows of counters, all 0",
+   "for each item in the stream",
+   "  add 1 to one counter in each row",
+   "to ask: look at its three counters",
+   "answer ← the smallest"
+  ],
+  "offline": {
+   "title": "Tally boards",
+   "need": "Three rows of 6 boxes on paper and a stream of letters",
+   "time": "15 minutes",
+   "steps": [
+    "Draw three rows of 6 boxes. Make a rule for each row that sends a letter to one of its 6 boxes.",
+    "For each letter in a stream, add a tally in its box in every row.",
+    "To ask about a letter, look at its three boxes and take the smallest.",
+    "Compare with a true count. Is the answer ever lower?"
+   ],
+   "think": "Why is the smallest of the three counters the best guess?"
+  },
+  "level": 3,
+  "topic": "Count-min sketch"
+ },
+ {
+  "id": "text:lru",
+  "page": "text",
+  "key": "lru",
+  "slug": "text-lru",
+  "pageTitle": "Hashing and text",
+  "name": "Caches (LRU)",
+  "blurb": "A cache is a small, fast shelf for things you use a lot. When it is full, throw out the thing you used longest ago. Every time you use something, move it to the front.",
+  "facts": [
+   [
+    "Evicts",
+    "Least recently used"
+   ],
+   [
+    "Hit",
+    "Item already there"
+   ],
+   [
+    "Miss",
+    "Must fetch it"
+   ]
+  ],
+  "code": [
+   "cache holds 3 items, ordered by last use",
+   "item asked for:",
+   "  in the cache (a hit): move it to the newest end",
+   "  not there (a miss): fetch it",
+   "    if full: remove the oldest",
+   "    add it at the newest end"
+  ],
+  "offline": {
+   "title": "The small desk",
+   "need": "3 spaces on a desk, and cards A to D",
+   "time": "10 minutes",
+   "steps": [
+    "A desk fits only 3 cards. Someone asks for cards in a list like A B C A D B.",
+    "If the card is on the desk, slide it to the newest end. If not, fetch it. If the desk is full, send away the card that has been there untouched the longest.",
+    "Count hits (already on the desk) and misses."
+   ],
+   "think": "Why is \"least recently used\" a good guess for what you will not need next?"
+  },
+  "level": 2,
+  "topic": "Caches (LRU)"
+ },
+ {
+  "id": "text:freq",
+  "page": "text",
+  "key": "freq",
+  "slug": "text-freq",
+  "pageTitle": "Hashing and text",
+  "name": "Counting with hashes",
+  "blurb": "A hash map is like a notebook where you find things by name straight away. Look up each letter and add 1 to its tally. Then the first letter with a tally of 1 is the first that never repeats.",
+  "facts": [
+   [
+    "Look-up",
+    "About 1 step"
+   ],
+   [
+    "Time",
+    "O(length)"
+   ],
+   [
+    "Instead of",
+    "Rescanning for each letter"
+   ]
+  ],
+  "code": [
+   "counts ← an empty hash map",
+   "for each letter: counts[letter] ← counts[letter] + 1",
+   "for each letter in order",
+   "  if counts[letter] is 1: that is the answer",
+   "every letter repeats: no answer"
+  ],
+  "offline": {
+   "title": "Tally the letters",
+   "need": "A word on paper and a pencil",
+   "time": "10 minutes",
+   "steps": [
+    "Write a word like SWISS... a longer one, like LETTERS.",
+    "Make a list of letters and a tally column. For each letter in the word, find its row and add a tally.",
+    "Now read the word again from the start. The first letter with a tally of 1 is the first letter that never repeats."
+   ],
+   "think": "Why is it better to keep a tally than to count the letter again every time you meet it?"
+  },
+  "level": 1,
+  "topic": "Counting with hashes"
+ },
+ {
+  "id": "text:hll",
+  "page": "text",
+  "key": "hll",
+  "slug": "text-hll",
+  "pageTitle": "Hashing and text",
+  "name": "HyperLogLog",
+  "blurb": "How many different things went past? Scramble each one into bits and count the zeros at the start. Seeing a long run of zeros is rare, so a long run means a big crowd. One small counter gives a rough answer.",
+  "facts": [
+   [
+    "Memory",
+    "One tiny counter"
+   ],
+   [
+    "Estimate",
+    "2 to the power (zeros + 1)"
+   ],
+   [
+    "Used for",
+    "Counting visitors"
+   ]
+  ],
+  "code": [
+   "best ← 0",
+   "for each item: scramble it into 8 bits",
+   "  count the zeros at the start",
+   "  best ← the larger of best and that count",
+   "estimate ← 2 to the power (best + 1)"
+  ],
+  "offline": {
+   "title": "Rare coin runs",
+   "need": "A coin",
+   "time": "10 minutes",
+   "steps": [
+    "Flip a coin until you get heads. Count the tails first (these are like leading zeros). Do it 8 times and write the biggest count.",
+    "Now do it 32 times. Does the biggest count go up?",
+    "The more people flipping, the longer the longest run. So the longest run tells you roughly how many flipped."
+   ],
+   "think": "Why does one very rare value suggest a big crowd rather than a lucky few?"
+  },
+  "level": 3,
+  "topic": "HyperLogLog"
+ },
+ {
+  "id": "text:aho",
+  "page": "text",
+  "key": "aho",
+  "slug": "text-aho",
+  "pageTitle": "Hashing and text",
+  "name": "Aho-Corasick",
+  "blurb": "Search a text for many words at once. Build a trie of the words and give each node a fall-back link. Then read the text one time and never go back.",
+  "facts": [
+   [
+    "Words",
+    "Many at once"
+   ],
+   [
+    "Text",
+    "Read once"
+   ],
+   [
+    "Time",
+    "O(text + words + matches)"
+   ]
+  ],
+  "code": [
+   "build a trie of all the words",
+   "fail link of a node ← the longest shorter ending that is also a start in the trie",
+   "for each letter of the text",
+   "  while no branch for the letter: follow the fail link",
+   "  step along the branch, then report every word that ends here (following fail links)"
+  ],
+  "offline": {
+   "title": "Many words, one pass",
+   "need": "Paper, a pencil, a few short words and a text",
+   "time": "25 minutes",
+   "steps": [
+    "Draw a trie for the words HE, SHE, HIS and HERS.",
+    "For each node, work out where to fall back to if the next letter fails: the longest ending of what you have matched that is also a start of some word.",
+    "Read the text USHERS one letter at a time, moving along the trie or falling back.",
+    "Every time you reach a node where a word ends (or a fall-back chain through one), note the word."
+   ],
+   "think": "Why does reading \"SHE\" also find \"HE\"?"
+  },
+  "level": 3,
+  "topic": "Aho-Corasick"
+ },
+ {
+  "id": "numbers:modular",
+  "page": "numbers",
+  "key": "modular",
+  "slug": "numbers-modular",
+  "pageTitle": "Number magic",
+  "name": "Modular arithmetic",
+  "blurb": "Clock arithmetic: numbers wrap around. On a 12-hour clock, 9 o'clock plus 5 hours is 2 o'clock. \"Mod 12\" means: keep only the remainder after dividing by 12. Computers use it to keep numbers small.",
+  "facts": [
+   [
+    "Wraps at",
+    "The modulus"
+   ],
+   [
+    "Written",
+    "a mod m"
+   ],
+   [
+    "Used for",
+    "Hashing, clocks, codes"
+   ]
+  ],
+  "code": [
+   "start at a on a clock with m numbers (0 to m − 1)",
+   "move forward b steps, one at a time",
+   "past m − 1? wrap round to 0",
+   "where you stop is (a + b) mod m"
+  ],
+  "offline": {
+   "title": "Be a clock",
+   "need": "A paper clock with the numbers 0 to 6 (or 0 to 11)",
+   "time": "10 minutes",
+   "steps": [
+    "Draw a clock with the numbers 0 to 6 round the edge.",
+    "Put a coin on 5. Move it forward 4 steps, one number at a time, wrapping from 6 to 0.",
+    "Where did it land? Check: (5 + 4) divided by 7, remainder.",
+    "Try a few more sums."
+   ],
+   "think": "What is 100 hours after 3 o'clock on a 12-hour clock?"
+  },
+  "level": 1,
+  "topic": "Modular arithmetic"
+ },
+ {
+  "id": "numbers:fastpow",
+  "page": "numbers",
+  "key": "fastpow",
+  "slug": "numbers-fastpow",
+  "pageTitle": "Number magic",
+  "name": "Fast powers",
+  "blurb": "You do not need 12 multiplications to work out 3 to the power 13. Write the power in binary. Square your answer for every bit, and also multiply by 3 when the bit is 1.",
+  "facts": [
+   [
+    "Steps",
+    "About log₂ of the power"
+   ],
+   [
+    "Idea",
+    "Square, and sometimes multiply"
+   ],
+   [
+    "Used for",
+    "Codes and security"
+   ]
+  ],
+  "code": [
+   "result ← 1",
+   "for each bit of the power, from the left",
+   "  square the result (keep the remainder)",
+   "  if the bit is 1: multiply by the base",
+   "result is base^power"
+  ],
+  "offline": {
+   "title": "Square and multiply",
+   "need": "Paper and a calculator (optional)",
+   "time": "15 minutes",
+   "steps": [
+    "Write 13 in binary: 1101.",
+    "Start with 1. For the first bit (1): square, then multiply by 3. That gives 3.",
+    "Next bit (1): square → 9, multiply by 3 → 27. Next bit (0): just square → 729. Last bit (1): square, then multiply by 3.",
+    "Count the multiplications and compare with 12."
+   ],
+   "think": "How many multiplications does a power of one million need this way?"
+  },
+  "level": 2,
+  "topic": "Fast powers"
+ },
+ {
+  "id": "numbers:pascal",
+  "page": "numbers",
+  "key": "pascal",
+  "slug": "numbers-pascal",
+  "pageTitle": "Number magic",
+  "name": "Counting (nCr)",
+  "blurb": "How many ways can you choose 2 friends from 5? Pascal's triangle answers it. Each number is the sum of the two above it. The number in row n, place k is \"n choose k\".",
+  "facts": [
+   [
+    "Rule",
+    "Add the two above"
+   ],
+   [
+    "Reads as",
+    "n choose k"
+   ],
+   [
+    "Edges",
+    "Always 1"
+   ]
+  ],
+  "code": [
+   "row 0 is just 1",
+   "each row starts and ends with 1",
+   "every other number ← the number above-left + above",
+   "n choose k is the number in row n, place k"
+  ],
+  "offline": {
+   "title": "Build the triangle",
+   "need": "Paper and a pencil",
+   "time": "10 minutes",
+   "steps": [
+    "Write 1 at the top. Below it write 1 1. Then 1 2 1. Each new row starts and ends with 1.",
+    "Each number in the middle is the two numbers above it added up.",
+    "Go to row 5 and read place 2: that is the number of ways to pick 2 things from 5.",
+    "Check by listing the pairs from A, B, C, D, E."
+   ],
+   "think": "Why does choosing 2 from 5 give the same number as choosing 3 from 5?"
+  },
+  "level": 2,
+  "topic": "Counting (nCr)"
+ },
+ {
+  "id": "numbers:crt",
+  "page": "numbers",
+  "key": "crt",
+  "slug": "numbers-crt",
+  "pageTitle": "Number magic",
+  "name": "Chinese remainder theorem",
+  "blurb": "Say a number leaves remainder 2 when divided by 3, and remainder 3 when divided by 5. Mark the numbers that fit the first clue, then the second. The number in both lists is the answer.",
+  "facts": [
+   [
+    "Needs",
+    "Moduli with no common factor"
+   ],
+   [
+    "Unique below",
+    "Their product"
+   ],
+   [
+    "Used for",
+    "Big-number tricks, codes"
+   ]
+  ],
+  "code": [
+   "list the numbers 0 up to the product of the moduli − 1",
+   "mark those with the first remainder",
+   "mark those with the second remainder",
+   "the number marked twice is the answer"
+  ],
+  "offline": {
+   "title": "Two clues",
+   "need": "A number line from 0 to 14 on paper, and two coloured pencils",
+   "time": "10 minutes",
+   "steps": [
+    "Draw the numbers 0 to 14.",
+    "Clue 1: the number leaves remainder 2 when divided by 3. Colour all numbers that do (2, 5, 8, 11, 14).",
+    "Clue 2: remainder 3 when divided by 5. Colour with the other pencil (3, 8, 13).",
+    "The number with both colours is the answer."
+   ],
+   "think": "Why do the clues pick out exactly one number below 15?"
+  },
+  "level": 3,
+  "topic": "Chinese remainder theorem"
+ },
+ {
+  "id": "big:random",
+  "page": "big",
+  "key": "random",
+  "slug": "big-random",
+  "pageTitle": "The big questions",
+  "name": "Randomised algorithms",
+  "blurb": "Sometimes luck can answer a hard question. Throw darts at a square with a quarter-circle in it. The share that land inside tells you about the circle, and so about the number pi.",
+  "facts": [
+   [
+    "Uses",
+    "Random choices"
+   ],
+   [
+    "More darts",
+    "Better answer"
+   ],
+   [
+    "Name",
+    "Monte Carlo"
+   ]
+  ],
+  "code": [
+   "inside ← 0",
+   "throw a dart at a random square",
+   "  if it lands inside the quarter-circle: inside ← inside + 1",
+   "after n darts: π ≈ 4 × inside ÷ n"
+  ],
+  "offline": {
+   "title": "Dart board",
+   "need": "Squared paper (10 by 10), a dice or coin to choose squares, and a ruler",
+   "time": "20 minutes",
+   "steps": [
+    "Draw a 10 by 10 grid and a quarter-circle of radius 10 from the bottom-left corner.",
+    "Pick 20 random squares (roll a 10-sided dice twice, or draw numbers from a hat). Mark each one.",
+    "Count how many fall inside the curve.",
+    "Multiply that count by 4 and divide by 20. How close to 3.14 is it?"
+   ],
+   "think": "What happens to your answer if you throw 1000 darts instead of 20?"
+  },
+  "level": 2,
+  "topic": "Randomised algorithms"
+ },
+ {
+  "id": "big:nim",
+  "page": "big",
+  "key": "nim",
+  "slug": "big-nim",
+  "pageTitle": "The big questions",
+  "name": "Game theory (minimax)",
+  "blurb": "Two players take turns removing 1, 2 or 3 stones. Whoever takes the last stone wins. Work backwards: a pile is a win if one move leaves your opponent a losing pile.",
+  "facts": [
+   [
+    "Players",
+    "Both play perfectly"
+   ],
+   [
+    "Win",
+    "Some move leaves a loss"
+   ],
+   [
+    "Loss",
+    "Every move leaves a win"
+   ]
+  ],
+  "code": [
+   "a pile of 0: the player to move has lost",
+   "for each pile size n, smallest first",
+   "  look at the piles after taking 1, 2 or 3",
+   "  if any of them is a loss for the opponent: n is a win",
+   "  else n is a loss"
+  ],
+  "offline": {
+   "title": "Play the stones",
+   "need": "13 coins or counters and a friend",
+   "time": "15 minutes",
+   "steps": [
+    "Put 13 coins in a pile. Take turns removing 1, 2 or 3. Whoever takes the last coin wins.",
+    "Play a few games. Try to find a pile size that is always bad for whoever is about to move.",
+    "Work out why multiples of 4 are the losing piles: whatever you take, your friend can take enough to leave another multiple of 4."
+   ],
+   "think": "If you go first with 13 coins, how many should you take?"
+  },
+  "level": 2,
+  "topic": "Game theory (minimax)"
+ },
+ {
+  "id": "big:hard",
+  "page": "big",
+  "key": "hard",
+  "slug": "big-hard",
+  "pageTitle": "The big questions",
+  "name": "Easy and hard problems (P vs NP)",
+  "blurb": "Some problems are quick to check but seem slow to solve. Checking a guess takes one pass. Finding an answer may mean trying every set, and the number of sets doubles with each new number.",
+  "facts": [
+   [
+    "Checking a guess",
+    "Fast"
+   ],
+   [
+    "Finding an answer",
+    "Maybe not"
+   ],
+   [
+    "Sets of n numbers",
+    "2ⁿ"
+   ]
+  ],
+  "code": [
+   "to check a guess: add it up, compare with the target",
+   "to find one: try every set",
+   "with n numbers there are 2ⁿ sets",
+   "each new number doubles the work"
+  ],
+  "offline": {
+   "title": "Doubling sets",
+   "need": "Paper and a pencil",
+   "time": "10 minutes",
+   "steps": [
+    "List all the sets you can make from the numbers {1}: there are 2 (empty, and {1}).",
+    "Now from {1, 2}: 4 sets. From {1, 2, 3}: 8. List them all.",
+    "Check a guess like {1, 3} with one addition. How many sets would you list for 20 numbers?"
+   ],
+   "think": "If a computer could check a billion sets a second, how long would 60 numbers take?"
+  },
+  "level": 2,
+  "topic": "Easy and hard problems (P vs NP)"
+ },
+ {
+  "id": "big:approx",
+  "page": "big",
+  "key": "approx",
+  "slug": "big-approx",
+  "pageTitle": "The big questions",
+  "name": "Approximation",
+  "blurb": "Some problems are too hard to solve perfectly in time. A good guess that is fast and never too far off is useful. Guard roads by putting guards at both ends of an unguarded road. You never use more than twice the best.",
+  "facts": [
+   [
+    "Gives",
+    "Nearly the best"
+   ],
+   [
+    "Promise",
+    "At most twice as many"
+   ],
+   [
+    "Speed",
+    "Fast"
+   ]
+  ],
+  "code": [
+   "guards ← none",
+   "pick any road with no guard at either end",
+   "put guards at both ends",
+   "now every road touching those towns is guarded",
+   "repeat until every road is guarded"
+  ],
+  "offline": {
+   "title": "Guard the roads",
+   "need": "Paper and a pencil, and a small map of 6 towns and 7 roads",
+   "time": "15 minutes",
+   "steps": [
+    "Draw 6 towns and 7 roads. A guard in a town protects every road that touches it.",
+    "Pick any unguarded road. Put guards at both its ends. Cross out every road they now protect.",
+    "Repeat until all roads are crossed out. Count the guards.",
+    "Try to find a smaller set by thinking. Is yours less than half of what the quick method used?"
+   ],
+   "think": "Why can the best possible answer never use fewer than half as many guards as this quick method?"
+  },
+  "level": 2,
+  "topic": "Approximation"
+ },
+ {
+  "id": "shapes:hull",
+  "page": "shapes",
+  "key": "hull",
+  "slug": "shapes-hull",
+  "pageTitle": "Shapes and space",
+  "name": "Convex hull",
+  "blurb": "Stretch a rubber band around some points. The points it touches make the convex hull. Walk the points from left to right, and whenever a point sticks inwards, drop it.",
+  "facts": [
+   [
+    "Result",
+    "The outer boundary"
+   ],
+   [
+    "Time",
+    "O(n log n)"
+   ],
+   [
+    "Test",
+    "Which way do three points turn?"
+   ]
+  ],
+  "code": [
+   "sort the points from left to right",
+   "build the lower chain: add each point",
+   "  while the last three turn the wrong way: drop the middle one",
+   "build the upper chain the same way, right to left",
+   "join the two chains"
+  ],
+  "offline": {
+   "title": "Rubber band",
+   "need": "A board, 8 pins or coins, and a loop of string or a rubber band",
+   "time": "15 minutes",
+   "steps": [
+    "Place 8 pins on a board in a scatter.",
+    "Stretch the band around all of them and let it settle.",
+    "The pins the band touches are the hull. Write down their order going round.",
+    "Try moving one pin inside the band. Does the hull change?"
+   ],
+   "think": "Can a point in the middle ever be on the hull?"
+  },
+  "level": 3,
+  "topic": "Convex hull"
+ },
+ {
+  "id": "shapes:sweep",
+  "page": "shapes",
+  "key": "sweep",
+  "slug": "shapes-sweep",
+  "pageTitle": "Shapes and space",
+  "name": "Line sweep",
+  "blurb": "Sweep an invisible line across time and stop only when a meeting starts or ends. Add 1 at a start, take away 1 at an end, and remember the biggest number. That is how many meetings overlap.",
+  "facts": [
+   [
+    "Stops at",
+    "Starts and ends only"
+   ],
+   [
+    "Time",
+    "O(n log n)"
+   ],
+   [
+    "Answer",
+    "Most at the same time"
+   ]
+  ],
+  "code": [
+   "list every start (+1) and end (−1) as an event",
+   "sort the events by time (ends before starts at a tie)",
+   "sweep through the events",
+   "  add its +1 or −1 to the running count",
+   "  remember the biggest count"
+  ],
+  "offline": {
+   "title": "Sweep the timeline",
+   "need": "Paper strips marking meetings on a timeline from 0 to 12",
+   "time": "15 minutes",
+   "steps": [
+    "Draw 6 meetings as bars along a timeline.",
+    "Write a + at each start and a − at each end, in order along the timeline.",
+    "Walk along the line keeping a count: add 1 at a +, subtract 1 at a −.",
+    "The biggest count is the number of rooms you need."
+   ],
+   "think": "Why can you ignore all the times when nothing starts or ends?"
+  },
+  "level": 2,
+  "topic": "Line sweep"
+ },
+ {
+  "id": "shapes:closest",
+  "page": "shapes",
+  "key": "closest",
+  "slug": "shapes-closest",
+  "pageTitle": "Shapes and space",
+  "name": "Closest pair of points",
+  "blurb": "Which two points are nearest? Checking every pair is slow. Sort the points left to right. For each point, only look at points to its right, and stop when the sideways gap is already bigger than the best distance.",
+  "facts": [
+   [
+    "Naive",
+    "O(n²)"
+   ],
+   [
+    "With sorting",
+    "Much faster in practice"
+   ],
+   [
+    "Trick",
+    "Stop when the x-gap is too big"
+   ]
+  ],
+  "code": [
+   "sort the points by x",
+   "best ← the distance of the first pair",
+   "for each point i",
+   "  look at later points j",
+   "  stop if the x-gap is already at least best",
+   "  update best if the pair is closer"
+  ],
+  "offline": {
+   "title": "Nearest neighbours",
+   "need": "Squared paper with 7 dots",
+   "time": "15 minutes",
+   "steps": [
+    "Draw 7 dots on squared paper. Number them left to right.",
+    "Start with dot 1 and dot 2 as your best pair. Measure the gap.",
+    "For each dot, check the dots to its right. Stop looking as soon as a dot is further away sideways than your best gap.",
+    "Mark the closest pair."
+   ],
+   "think": "Why can you stop looking once the sideways gap is as big as the best distance?"
+  },
+  "level": 3,
+  "topic": "Closest pair of points"
+ },
+ {
+  "id": "sorting:bubble",
+  "page": "sorting",
+  "key": "bubble",
+  "slug": "sorting-bubble",
+  "pageTitle": "Sorting",
+  "name": "Bubble sort",
+  "blurb": "Walk along the list and swap any two neighbours that are in the wrong order. Each walk carries the biggest number left to the end, like a bubble rising.",
+  "facts": [
+   [
+    "Best case",
+    "O(n)"
+   ],
+   [
+    "Worst case",
+    "O(n²)"
+   ],
+   [
+    "Keeps equal items in order?",
+    "Yes"
+   ]
+  ],
+  "code": [
+   "for each pass i = 0, 1, …",
+   "  swapped ← false",
+   "  for j = 0 … n−2−i",
+   "    if a[j] > a[j+1]",
+   "      swap a[j], a[j+1]; swapped ← true",
+   "  a[n−1−i] is in place",
+   "  if not swapped: stop"
+  ],
+  "offline": {
+   "title": "The bubble line-up",
+   "need": "4 to 8 people, or 8 playing cards",
+   "time": "10 minutes",
+   "steps": [
+    "Stand in a line in any order.",
+    "Start at the left end. Look at the first two people. If the taller one is on the left, they swap places.",
+    "Take one step right and check the next two. Keep going to the end of the line.",
+    "The tallest person is now at the right end. They are sorted, so they can sit down.",
+    "Start again from the left. You are done when you walk the whole line and nobody swaps."
+   ],
+   "think": "How many times did the shortest person move? Why do small values travel left so slowly?"
+  },
+  "level": 1,
+  "topic": "Bubble sort"
+ },
+ {
+  "id": "sorting:selection",
+  "page": "sorting",
+  "key": "selection",
+  "slug": "sorting-selection",
+  "pageTitle": "Sorting",
+  "name": "Selection sort",
+  "blurb": "Look through the unsorted numbers, find the smallest, and move it to the front. Then do it again with what is left.",
+  "facts": [
+   [
+    "Best case",
+    "O(n²)"
+   ],
+   [
+    "Worst case",
+    "O(n²)"
+   ],
+   [
+    "Keeps equal items in order?",
+    "No"
+   ]
+  ],
+  "code": [
+   "for i = 0 … n−2",
+   "  min ← i",
+   "  for j = i+1 … n−1",
+   "    if a[j] < a[min]: min ← j",
+   "  swap a[i], a[min]",
+   "  a[i] is in place"
+  ],
+  "offline": {
+   "title": "Find the smallest",
+   "need": "8 playing cards (ace counts as 1)",
+   "time": "10 minutes",
+   "steps": [
+    "Lay the cards face up in a row, all mixed up.",
+    "Touch each card one at a time and find the smallest.",
+    "Move it down to start a new row underneath.",
+    "Do the same with the cards that are left, until the top row is empty."
+   ],
+   "think": "Count every card you touch. With 8 cards it is always 28, however they start. Can you work out why?"
+  },
+  "level": 1,
+  "topic": "Selection sort"
+ },
+ {
+  "id": "sorting:insertion",
+  "page": "sorting",
+  "key": "insertion",
+  "slug": "sorting-insertion",
+  "pageTitle": "Sorting",
+  "name": "Insertion sort",
+  "blurb": "Keep a sorted part on the left. Take the next number and slide it left until it fits, the way most people sort a hand of cards.",
+  "facts": [
+   [
+    "Best case",
+    "O(n)"
+   ],
+   [
+    "Worst case",
+    "O(n²)"
+   ],
+   [
+    "Keeps equal items in order?",
+    "Yes"
+   ]
+  ],
+  "code": [
+   "for i = 1 … n−1",
+   "  key ← a[i]",
+   "  while left neighbour > key",
+   "    shift neighbour right; key moves left",
+   "  key is placed"
+  ],
+  "offline": {
+   "title": "Sort your hand",
+   "need": "8 playing cards, face down in a pile",
+   "time": "10 minutes",
+   "steps": [
+    "Pick up one card. A hand of one card is already sorted.",
+    "Pick up the next card and slide it into the right place in your hand.",
+    "Keep going, one card at a time, until the pile is gone.",
+    "Now deal the cards out already in order and do it again. Notice how much faster it is."
+   ],
+   "think": "Why does insertion sort get so quick when the cards are nearly in order already?"
+  },
+  "level": 1,
+  "topic": "Insertion sort"
+ },
+ {
+  "id": "sorting:merge",
+  "page": "sorting",
+  "key": "merge",
+  "slug": "sorting-merge",
+  "pageTitle": "Sorting",
+  "name": "Merge sort",
+  "blurb": "Split the list in half again and again until every piece has one number. Then merge the pieces back together in order.",
+  "facts": [
+   [
+    "Best case",
+    "O(n log n)"
+   ],
+   [
+    "Worst case",
+    "O(n log n)"
+   ],
+   [
+    "Keeps equal items in order?",
+    "Yes"
+   ]
+  ],
+  "code": [
+   "mergeSort(lo, hi)",
+   "  if lo ≥ hi: return",
+   "  mid ← ⌊(lo + hi) / 2⌋",
+   "  mergeSort(lo, mid); mergeSort(mid+1, hi)",
+   "  while both halves have items",
+   "    write the smaller front item",
+   "  copy any leftovers"
+  ],
+  "offline": {
+   "title": "Split and merge",
+   "need": "8 playing cards and a table",
+   "time": "15 minutes",
+   "steps": [
+    "Split the cards into 2 piles of 4. Split those into 4 piles of 2. Split again into 8 single cards.",
+    "Merge the single cards in pairs, smaller card on top.",
+    "Merge two pairs into a sorted pile of 4. Only look at the top card of each pile and take the smaller one.",
+    "Merge the two piles of 4 into one sorted pile of 8."
+   ],
+   "think": "When you merge, you only ever compare the top two cards. Why is that enough?"
+  },
+  "level": 2,
+  "topic": "Merge sort"
+ },
+ {
+  "id": "sorting:quick",
+  "page": "sorting",
+  "key": "quick",
+  "slug": "sorting-quick",
+  "pageTitle": "Sorting",
+  "name": "Quick sort",
+  "blurb": "Pick one number as the pivot. Put everything smaller on its left, and the pivot lands in its final spot. Then do the same on each side.",
+  "facts": [
+   [
+    "Best case",
+    "O(n log n)"
+   ],
+   [
+    "Worst case",
+    "O(n²)"
+   ],
+   [
+    "Keeps equal items in order?",
+    "No"
+   ]
+  ],
+  "code": [
+   "quickSort(lo, hi)",
+   "  if lo ≥ hi: return",
+   "  pivot ← a[hi]; i ← lo",
+   "  for j = lo … hi−1",
+   "    if a[j] < pivot: swap a[i], a[j]; i ← i+1",
+   "  swap a[i], a[hi]    // pivot placed",
+   "  quickSort(lo, i−1); quickSort(i+1, hi)"
+  ],
+  "offline": {
+   "title": "The pivot game",
+   "need": "8 to 10 playing cards",
+   "time": "10 minutes",
+   "steps": [
+    "Mix the cards and pick the last one as the pivot. Put it in the middle of the table.",
+    "Every card smaller than the pivot goes in a pile on its left. Every other card goes on its right.",
+    "The pivot is now in its final place. Leave it there.",
+    "Play the same game with the left pile, then the right pile, until every pile has one card."
+   ],
+   "think": "What happens if the pivot is always the biggest card? Try it, and count how many times you compare."
+  },
+  "level": 2,
+  "topic": "Quick sort"
+ },
+ {
+  "id": "searching:linear",
+  "page": "searching",
+  "key": "linear",
+  "slug": "searching-linear",
+  "pageTitle": "Searching",
+  "name": "Linear search",
+  "blurb": "Open the boxes one by one, from the first to the last, until you find the number. Simple, and it works even when the boxes are in no order at all.",
+  "facts": [
+   [
+    "Fewest opens",
+    "1"
+   ],
+   [
+    "Most opens",
+    "n"
+   ],
+   [
+    "Needs order?",
+    "No"
+   ]
+  ],
+  "code": [
+   "for i = 1 … n",
+   "  open box i",
+   "  if it is the target: found!",
+   "the target is not here"
+  ],
+  "offline": {
+   "title": "Find the ace",
+   "need": "10 playing cards with one ace, and a friend",
+   "time": "10 minutes",
+   "steps": [
+    "Your friend shuffles the cards and lays them face down in a row.",
+    "Turn over the cards one at a time, starting from the left.",
+    "Make a tally mark for every card you turn. Stop when you find the ace.",
+    "Swap roles and play five rounds. Write down how many cards you turned each time."
+   ],
+   "think": "What is the most cards you could ever turn? What is the average? What would it be with a whole deck of 52?"
+  },
+  "level": 1,
+  "topic": "Linear search"
+ },
+ {
+  "id": "searching:binary",
+  "page": "searching",
+  "key": "binary",
+  "slug": "searching-binary",
+  "pageTitle": "Searching",
+  "name": "Binary search",
+  "blurb": "When the boxes are in order, open the middle one. If your number is bigger it must be on the right, and if smaller, on the left. Each box you open throws away half of what is left.",
+  "facts": [
+   [
+    "Fewest opens",
+    "1"
+   ],
+   [
+    "Most opens",
+    "log₂ n + 1"
+   ],
+   [
+    "Needs order?",
+    "Yes"
+   ]
+  ],
+  "code": [
+   "lo ← first box; hi ← last box",
+   "while lo ≤ hi",
+   "  open the middle box, mid",
+   "  if it is the target: found!",
+   "  if it is smaller: lo ← mid + 1",
+   "  else: hi ← mid − 1",
+   "the target is not here"
+  ],
+  "offline": {
+   "title": "Guess my number",
+   "need": "Two people. Nothing else.",
+   "time": "10 minutes",
+   "steps": [
+    "One person thinks of a whole number from 1 to 100 and keeps it secret.",
+    "The other person guesses. The answer is only ever \"higher\", \"lower\" or \"yes!\".",
+    "Always guess the middle of what is left. Start with 50. If the answer is \"higher\", the next guess is 75.",
+    "Count the guesses. Then swap roles."
+   ],
+   "think": "Seven guesses are always enough for 1 to 100. How many would you need for 1 to 1,000? For every person on Earth?"
+  },
+  "level": 1,
+  "topic": "Binary search"
+ },
+ {
+  "id": "mazes:bfs",
+  "page": "mazes",
+  "key": "bfs",
+  "slug": "mazes-bfs",
+  "pageTitle": "Mazes and maps",
+  "name": "Breadth-first search",
+  "blurb": "Keep a queue of squares to visit, like the line at a shop. Always take the square that has waited longest. The search spreads out like ripples, so the first route it finds is the shortest.",
+  "facts": [
+   [
+    "Shortest route?",
+    "Always"
+   ],
+   [
+    "Waiting line",
+    "Queue"
+   ],
+   [
+    "Work",
+    "O(V + E)"
+   ]
+  ],
+  "code": [
+   "queue ← [home]",
+   "while the queue is not empty",
+   "  square ← take from the FRONT",
+   "  if square is school: stop",
+   "  for each new open neighbour",
+   "    mark it seen; add to BACK",
+   "follow the arrows back home"
+  ],
+  "offline": {
+   "title": "Ripple map",
+   "need": "Squared paper and a pencil",
+   "time": "15 minutes",
+   "steps": [
+    "Draw a map on squared paper. Shade some squares as walls. Mark one square as home and one as school.",
+    "Write 0 in the home square.",
+    "Write 1 in every open square touching the 0. Then write 2 in every empty open square touching a 1, and so on, like ripples in a pond.",
+    "Stop when you write a number in the school square. That number is the length of the shortest walk.",
+    "Walk back from school, always stepping to a number one smaller, and draw the route."
+   ],
+   "think": "Why can there never be a shorter walk than the number you wrote in the school square?"
+  },
+  "level": 1,
+  "topic": "Breadth-first search"
+ },
+ {
+  "id": "mazes:dfs",
+  "page": "mazes",
+  "key": "dfs",
+  "slug": "mazes-dfs",
+  "pageTitle": "Mazes and maps",
+  "name": "Depth-first search",
+  "blurb": "Keep a stack of squares to visit, like a pile of plates. Always take the newest one off the top. The search dives down one path as far as it can, then backs up. It finds a route, but not always the shortest.",
+  "facts": [
+   [
+    "Shortest route?",
+    "Not always"
+   ],
+   [
+    "Waiting line",
+    "Stack"
+   ],
+   [
+    "Work",
+    "O(V + E)"
+   ]
+  ],
+  "code": [
+   "stack ← [home]",
+   "while the stack is not empty",
+   "  square ← take from the TOP",
+   "  if square is school: stop",
+   "  for each new open neighbour",
+   "    mark it seen; put on TOP",
+   "follow the arrows back home"
+  ],
+  "offline": {
+   "title": "Explore and back up",
+   "need": "A maze drawn on paper, and a few coins",
+   "time": "10 minutes",
+   "steps": [
+    "Draw a maze, or ask someone to draw one for you. Put your finger on the start.",
+    "Each time you reach a fork, put a coin on it, then take a way you have not tried.",
+    "At a dead end, go back to the last coin you put down and try another way from there.",
+    "When every way from a coin has been tried, pick the coin up and go back to the one before.",
+    "Keep going until you reach the exit."
+   ],
+   "think": "Your coins are a stack: the last one down is the first one up. Did you find the shortest way out, or just a way?"
+  },
+  "level": 1,
+  "topic": "Depth-first search"
+ },
+ {
+  "id": "structures:array",
+  "page": "structures",
+  "key": "array",
+  "slug": "structures-array",
+  "pageTitle": "Arrays, hashing and trees",
+  "name": "Arrays",
+  "blurb": "An array is a row of slots side by side, so the computer can jump straight to any slot. The price: squeezing a new number into the middle means shuffling its neighbours along.",
+  "facts": [
+   [
+    "Read a slot",
+    "1 step"
+   ],
+   [
+    "Insert in the middle",
+    "about n steps"
+   ],
+   [
+    "Memory",
+    "One block"
+   ]
+  ],
+  "code": [
+   "read slot i: jump straight to it",
+   "to insert at slot i:",
+   "  for each slot from the end back to i",
+   "    move its number one slot right",
+   "put the new number in slot i"
+  ],
+  "offline": {
+   "title": "The egg-box shuffle",
+   "need": "An egg box (or 8 cups in a row), and 5 small objects",
+   "time": "10 minutes",
+   "steps": [
+    "Put one object in each of the first five slots of the box. Number the slots 1 to 8.",
+    "Ask a friend to name a slot. Point to it straight away. That is reading an array.",
+    "Now squeeze a new object into slot 2. You must move the objects in slots 5, 4, 3 and 2 along, one at a time, starting at the end.",
+    "Count your moves. Try inserting into slot 5 instead."
+   ],
+   "think": "Why must you start moving from the far end and not from slot 2? What happens if you start at the front?"
+  },
+  "level": 1,
+  "topic": "Arrays"
+ },
+ {
+  "id": "structures:hash",
+  "page": "structures",
+  "key": "hash",
+  "slug": "structures-hash",
+  "pageTitle": "Arrays, hashing and trees",
+  "name": "Hash tables",
+  "blurb": "A hash table does not search at all. A tiny rule, here the remainder after dividing, tells you which shelf a number lives on. To find it later, use the same rule and look on just that shelf.",
+  "facts": [
+   [
+    "Find a number",
+    "about 1 step"
+   ],
+   [
+    "Collisions",
+    "Share a shelf"
+   ],
+   [
+    "Needs order?",
+    "No"
+   ]
+  ],
+  "code": [
+   "shelf ← number mod 7",
+   "put the number on that shelf",
+   "to find: shelf ← number mod 7",
+   "check only the numbers on that shelf"
+  ],
+  "offline": {
+   "title": "The seven-shelf shop",
+   "need": "Paper, a pencil and 8 numbers between 10 and 99",
+   "time": "10 minutes",
+   "steps": [
+    "Draw seven boxes in a row and write 0 to 6 above them. These are your shelves.",
+    "Take a number. Divide it by 7 and write the remainder in your head. Write the number in that box.",
+    "If the box already has numbers, write the new one beside them.",
+    "When all eight are filed, ask a friend to pick one. Find it by checking only one box."
+   ],
+   "think": "Two numbers landed on the same shelf. Is that a mistake, or just something the table has to cope with? What if all eight landed on one shelf?"
+  },
+  "level": 1,
+  "topic": "Hash tables"
+ },
+ {
+  "id": "structures:bst",
+  "page": "structures",
+  "key": "bst",
+  "slug": "structures-bst",
+  "pageTitle": "Arrays, hashing and trees",
+  "name": "Binary search trees",
+  "blurb": "A search tree puts every number where you can find it by asking one question at a time: smaller or bigger? Each answer throws away a whole branch.",
+  "facts": [
+   [
+    "Find a number",
+    "about log₂ n steps"
+   ],
+   [
+    "Rule",
+    "Small left, big right"
+   ],
+   [
+    "Worst case",
+    "A lopsided tree"
+   ]
+  ],
+  "code": [
+   "start at the root",
+   "compare the new number with this one",
+   "smaller: go left. bigger: go right",
+   "an empty spot? put the number there",
+   "to find: stop when the numbers match",
+   "otherwise keep going left or right"
+  ],
+  "offline": {
+   "title": "The family tree of numbers",
+   "need": "Paper, a pencil and 7 numbers",
+   "time": "15 minutes",
+   "steps": [
+    "Write the first number at the top of the page. That is the root.",
+    "For each next number, start at the root. If it is smaller, move down-left. If it is bigger, move down-right.",
+    "When you reach an empty space, write the number there and draw a line to its parent.",
+    "Pick a number and find it by starting at the top again. Count your steps."
+   ],
+   "think": "What would the tree look like if you added the numbers already in order, 1, 2, 3, 4, 5, 6, 7? How would that change the search?"
+  },
+  "level": 2,
+  "topic": "Binary trees"
+ },
+ {
+  "id": "paths:dijkstra",
+  "page": "paths",
+  "key": "dijkstra",
+  "slug": "paths-dijkstra",
+  "pageTitle": "Shortest paths",
+  "name": "Dijkstra's shortest path",
+  "blurb": "Keep the best distance found so far to each town. Always settle the closest town you have not settled, because nothing can beat it now. Then see if its roads give a neighbour a shorter way.",
+  "facts": [
+   [
+    "Finds",
+    "Shortest way"
+   ],
+   [
+    "Roads",
+    "Never negative"
+   ],
+   [
+    "Work",
+    "O(E log V)"
+   ]
+  ],
+  "code": [
+   "Home is 0; every other town is ?",
+   "pick the closest unsettled town, u",
+   "its distance is now final",
+   "for each road u – v of length len:",
+   "  if dist[u] + len is shorter, update v",
+   "follow the arrows back from School"
+  ],
+  "offline": {
+   "title": "Shortest way to school",
+   "need": "Paper, a pencil and a ruler",
+   "time": "20 minutes",
+   "steps": [
+    "Draw six dots as towns and join them with roads. Write a length on each road, 1 to 9.",
+    "Write 0 next to Home and a question mark next to every other town.",
+    "Circle the unsettled town with the smallest number. Its number is final.",
+    "For each road leaving it, add the road length to its number. If that beats the neighbour's number, cross it out and write the smaller one.",
+    "Repeat until School is circled. Trace the route back by following the roads that gave each final number."
+   ],
+   "think": "Why is it safe to say a town's number is final the moment it is the smallest? What would go wrong if a road could have a negative length?"
+  },
+  "level": 2,
+  "topic": "Shortest paths (Dijkstra)"
+ },
+ {
+  "id": "dp:coins",
+  "page": "dp",
+  "key": "coins",
+  "slug": "dp-coins",
+  "pageTitle": "Dynamic programming",
+  "name": "Fewest coins",
+  "blurb": "Solve the small problems first and write each answer in a table. Then build each bigger answer from answers you already wrote down. Nothing is worked out twice.",
+  "facts": [
+   [
+    "Idea",
+    "Reuse answers"
+   ],
+   [
+    "Table size",
+    "One per amount"
+   ],
+   [
+    "Beats",
+    "Biggest-coin-first"
+   ]
+  ],
+  "code": [
+   "table[0] ← 0 coins",
+   "for each amount a from 1 up",
+   "  try each coin k: table[a − k] + 1",
+   "  table[a] ← the smallest of those",
+   "the answer is the last table entry"
+  ],
+  "offline": {
+   "title": "The coin table",
+   "need": "Paper, a pencil and three kinds of coins, such as 1, 4 and 5 (real or drawn)",
+   "time": "15 minutes",
+   "steps": [
+    "Draw a row of 11 boxes, numbered 0 to 10. Write 0 in box 0.",
+    "For box 1: take away each coin that fits, look at the box that is left, and add 1. Write the smallest.",
+    "Do the same for box 2, box 3, and on up to box 10. Always look back at boxes you have already filled.",
+    "Check box 8. Is it what you get by grabbing the biggest coin first?"
+   ],
+   "think": "The table made every answer from smaller answers. Why is that quicker than trying every possible handful of coins from scratch?"
+  },
+  "level": 2,
+  "topic": "Dynamic programming"
+ },
+ {
+  "id": "dp:grid",
+  "page": "dp",
+  "key": "grid",
+  "slug": "dp-grid",
+  "pageTitle": "Dynamic programming",
+  "name": "Counting walks",
+  "blurb": "To reach a square you must come from the square above or the square on the left. So its count is those two counts added. Fill the grid from the top left and the answer appears in the last corner.",
+  "facts": [
+   [
+    "Idea",
+    "Add the two before"
+   ],
+   [
+    "Squares",
+    "rows × columns"
+   ],
+   [
+    "Without a table",
+    "Far slower"
+   ]
+  ],
+  "code": [
+   "start square ← 1 way",
+   "blocked square ← 0 ways",
+   "for each other square in order:",
+   "  ways ← ways from above + ways from left",
+   "the answer is the bottom-right square"
+  ],
+  "offline": {
+   "title": "Count the paths",
+   "need": "Squared paper and a pencil",
+   "time": "10 minutes",
+   "steps": [
+    "Draw a grid of 4 rows and 5 columns. Shade 3 squares as blocked, but not the start or the finish.",
+    "Write 1 in the top-left square. Write 0 in every blocked square.",
+    "Fill each remaining square, row by row, with the number above it plus the number to its left.",
+    "Read the bottom-right square. That is how many different walks there are."
+   ],
+   "think": "What happens to the numbers just after a blocked square? How would you count walks if you could also move diagonally?"
+  },
+  "level": 2,
+  "topic": "Grid DP"
+ },
+ {
+  "id": "advanced:sieve",
+  "page": "math/advanced",
+  "key": "sieve",
+  "slug": "math-advanced-sieve",
+  "pageTitle": "Advanced math",
+  "name": "Sieve of Eratosthenes",
+  "blurb": "A prime is a number whose only factors are 1 and itself. More than 2,000 years ago Eratosthenes found them by crossing out multiples. The numbers left uncrossed are prime.",
+  "facts": [
+   [
+    "Invented",
+    "About 240 BC"
+   ],
+   [
+    "Stops at",
+    "√N"
+   ],
+   [
+    "Work",
+    "O(N log log N)"
+   ]
+  ],
+  "code": [
+   "write the numbers 2 … N",
+   "for p = 2, 3, … while p×p ≤ N",
+   "  if p not crossed out: prime",
+   "    cross out p×p, p×p+p, … ≤ N",
+   "every number left is prime"
+  ],
+  "offline": {
+   "title": "The hundred square",
+   "need": "Paper, a pencil and three or four colours",
+   "time": "20 minutes",
+   "steps": [
+    "Draw a 10 by 10 grid and write the numbers 1 to 100, ten to a row.",
+    "Shade 1. It is not prime.",
+    "Circle 2. With one colour, shade every second number after it: 4, 6, 8 …",
+    "Circle 3, the next number that is not shaded. With a new colour, shade every third number after it.",
+    "Keep going with 5 and 7. Every number still not shaded is prime. Circle them all."
+   ],
+   "think": "You could stop after 7. Why do you never need to cross out with 11 when you go up to 100?"
+  },
+  "level": 1,
+  "topic": "Primes (the sieve)"
+ },
+ {
+  "id": "advanced:euclid",
+  "page": "math/advanced",
+  "key": "euclid",
+  "slug": "math-advanced-euclid",
+  "pageTitle": "Advanced math",
+  "name": "Euclid's GCD",
+  "blurb": "The greatest common divisor is the biggest number that divides both numbers. Euclid found it by cutting the biggest squares he could off a rectangle, again and again, until nothing was left.",
+  "facts": [
+   [
+    "Invented",
+    "About 300 BC"
+   ],
+   [
+    "Uses",
+    "Fractions, gears"
+   ],
+   [
+    "Work",
+    "O(log n)"
+   ]
+  ],
+  "code": [
+   "gcd(a, b)   // a × b rectangle",
+   "  while b > 0",
+   "    k ← how many b×b fit in a",
+   "    cut off k squares",
+   "    a, b ← b, a − k×b",
+   "  return a"
+  ],
+  "offline": {
+   "title": "Squares from a sheet",
+   "need": "Squared paper, scissors and a pencil",
+   "time": "15 minutes",
+   "steps": [
+    "Cut a rectangle 21 squares long and 13 squares wide out of squared paper.",
+    "Fold the short side down to make the biggest square you can. Cut it off.",
+    "Do the same with the strip that is left, and keep going.",
+    "Write down the size of every square you cut. The last, smallest square is the GCD.",
+    "Try again with 12 by 8. Can tiles of the smallest size fill the whole first rectangle?"
+   ],
+   "think": "With 21 by 13 your squares were 13, 8, 5, 3, 2, 1, 1. Each number is the sum of the next two. Can you find a rectangle where every cut makes exactly one square?"
+  },
+  "level": 1,
+  "topic": "Common factors (GCD)"
+ }
+]

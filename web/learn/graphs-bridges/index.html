@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bridges and cut points · Graphs · VisuaLearn</title>
+<meta name="description" content="A bridge is a road that splits the network if you close it. Walk depth-first and note when you reach each town and the earliest town it can get back to. If a town cannot get back past its parent,…">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VisuaLearn">
+<meta property="og:title" content="Bridges and cut points · Graphs · VisuaLearn">
+<meta property="og:description" content="A bridge is a road that splits the network if you close it. Walk depth-first and note when you reach each town and the earliest town it can get back to. If a town cannot get back past its parent,…">
+<meta property="og:url" content="https://visualearn.org/learn/graphs-bridges/">
+<meta property="og:image" content="https://visualearn.org/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://visualearn.org/learn/graphs-bridges/">
+<meta name="theme-color" content="#fffbea">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/arith.css">
+<script src="/assets/progress.js" defer></script>
+<script src="/assets/profile.js" defer></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/assets/app.js" defer></script>
+<script src="/assets/print.js" defer></script>
+<link rel="stylesheet" href="/assets/genz.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Bridges and cut points", "description": "A bridge is a road that splits the network if you close it. Walk depth-first and note when you reach each town and the earliest town it can get back to. If a town cannot get back past its parent, the road to it is a bridge.", "inLanguage": "en", "isAccessibleForFree": true, "educationalLevel": "Advanced (ages 13+)", "learningResourceType": "interactive lesson", "url": "https://visualearn.org/learn/graphs-bridges/", "provider": {"@type": "Organization", "name": "VisuaLearn", "url": "https://visualearn.org"}, "teaches": "Bridges and cut points"}</script>
+</head>
+<body class="home">
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="VisuaLearn home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="b-bg"/><rect x="7" y="18" width="4" height="7" rx="1" class="b-1"/><rect x="14" y="12" width="4" height="13" rx="1" class="b-2"/><rect x="21" y="7" width="4" height="18" rx="1" class="b-3"/></svg>
+      <span>visua<b>learn</b></span>
+    </a>
+    <nav class="nav" aria-label="Main"><a aria-current="page" href="/#lessons" title="Visual lessons, step by step">Learn</a><a href="/play/" title="Quick puzzle games">Play</a><a href="/curriculum/" title="Every topic, and what you have done">Roadmap</a></nav>
+    <span class="timer" id="timer" hidden></span>
+  </div>
+</header>
+
+<main class="wrap ar pg legal lesson-doc">
+  <p class="eyebrow"><a href="/curriculum/">Roadmap</a> · Graphs</p>
+  <h1>Bridges and cut points</h1>
+  <p class="lvl lvl3">Advanced · ages 13+</p>
+  <p class="lede">A bridge is a road that splits the network if you close it. Walk depth-first and note when you reach each town and the earliest town it can get back to. If a town cannot get back past its parent, the road to it is a bridge.</p>
+  <p><a class="btn primary" href="/graphs/#bridges">Play this lesson</a></p>
+  <h2>How it works</h2>
+  <ol class="doc-code"><li><code>disc[u] ← the time we first reach u; low[u] ← disc[u]</code></li><li><code>for each road u – v (not the one we came by)</code></li><li><code>  new town: search it, then low[u] ← min(low[u], low[v])</code></li><li><code>    if low[v] &gt; disc[u]: the road is a bridge</code></li><li><code>  seen town: low[u] ← min(low[u], disc[v])</code></li></ol>
+  <ul class="doc-facts"><li><b>Bridge</b><span>Removing it disconnects</span></li><li><b>Test</b><span>low[child] &gt; disc[parent]</span></li><li><b>Time</b><span>O(towns + roads)</span></li></ul>
+  <h2>Try it on paper</h2>
+  <article class="act" data-level="3"><p class="act-lesson">Bridges and cut points <span class="lv lv3">Advanced</span></p><h3>Which road is a lifeline?</h3><p class="act-need"><b>You need</b> A drawing of 7 towns and 8 roads, and a pencil · <b>Time</b> 15 minutes</p><ol><li>Draw 7 towns joined by roads, with a couple of loops.</li><li>For each road, imagine closing it. Can you still get from any town to any other? If not, it is a bridge.</li><li>Notice that bridges are never part of a loop.</li></ol><p class="act-think"><b>Think about it.</b> Why can a road inside a loop never be a bridge?</p></article>
+  <p><button class="btn" type="button" data-print>Print this activity</button></p>
+  <nav class="lesson-nav" aria-label="More in this group"><a class="btn" href="/learn/graphs-scc/">← Strongly connected components</a><a class="btn" href="/learn/graphs-euler/">Euler circuits →</a></nav>
+  <p class="fine">Was something confusing? <a href="mailto:rajanalamuri@gmail.com?subject=VisuaLearn%20feedback%3A%20Bridges%20and%20cut%20points&body=Lesson%3A%20graphs%3Abridges%0A%0AWhat%20was%20confusing%20or%20missing%3F%0A">Tell us</a>. We read every message.</p>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>© 2026 VisuaLearn · Free for everyone</span>
+    <nav class="foot-links" aria-label="More"><a href="/progress/">My page</a><a href="/math/grades/">Math by grade</a><a href="/#grown-ups">For grown-ups</a><a href="/privacy/">Privacy</a></nav>
+  </div>
+</footer>
+</body>
+</html>

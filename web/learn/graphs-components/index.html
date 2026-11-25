@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Connected components · Graphs · VisuaLearn</title>
+<meta name="description" content="A graph can be split into separate islands. Start anywhere and colour everything you can reach. Then start again at a dot you have not reached. The number of fresh starts is the number of islands.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VisuaLearn">
+<meta property="og:title" content="Connected components · Graphs · VisuaLearn">
+<meta property="og:description" content="A graph can be split into separate islands. Start anywhere and colour everything you can reach. Then start again at a dot you have not reached. The number of fresh starts is the number of islands.">
+<meta property="og:url" content="https://visualearn.org/learn/graphs-components/">
+<meta property="og:image" content="https://visualearn.org/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://visualearn.org/learn/graphs-components/">
+<meta name="theme-color" content="#fffbea">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/arith.css">
+<script src="/assets/progress.js" defer></script>
+<script src="/assets/profile.js" defer></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/assets/app.js" defer></script>
+<script src="/assets/print.js" defer></script>
+<link rel="stylesheet" href="/assets/genz.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Connected components", "description": "A graph can be split into separate islands. Start anywhere and colour everything you can reach. Then start again at a dot you have not reached. The number of fresh starts is the number of islands.", "inLanguage": "en", "isAccessibleForFree": true, "educationalLevel": "Builder (ages 10+)", "learningResourceType": "interactive lesson", "url": "https://visualearn.org/learn/graphs-components/", "provider": {"@type": "Organization", "name": "VisuaLearn", "url": "https://visualearn.org"}, "teaches": "Connected components"}</script>
+</head>
+<body class="home">
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="VisuaLearn home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="b-bg"/><rect x="7" y="18" width="4" height="7" rx="1" class="b-1"/><rect x="14" y="12" width="4" height="13" rx="1" class="b-2"/><rect x="21" y="7" width="4" height="18" rx="1" class="b-3"/></svg>
+      <span>visua<b>learn</b></span>
+    </a>
+    <nav class="nav" aria-label="Main"><a aria-current="page" href="/#lessons" title="Visual lessons, step by step">Learn</a><a href="/play/" title="Quick puzzle games">Play</a><a href="/curriculum/" title="Every topic, and what you have done">Roadmap</a></nav>
+    <span class="timer" id="timer" hidden></span>
+  </div>
+</header>
+
+<main class="wrap ar pg legal lesson-doc">
+  <p class="eyebrow"><a href="/curriculum/">Roadmap</a> · Graphs</p>
+  <h1>Connected components</h1>
+  <p class="lvl lvl2">Builder · ages 10+</p>
+  <p class="lede">A graph can be split into separate islands. Start anywhere and colour everything you can reach. Then start again at a dot you have not reached. The number of fresh starts is the number of islands.</p>
+  <p><a class="btn primary" href="/graphs/#components">Play this lesson</a></p>
+  <h2>How it works</h2>
+  <ol class="doc-code"><li><code>for each dot</code></li><li><code>  if it is not reached yet:</code></li><li><code>    a new island! explore it all</code></li><li><code>    mark everything reached with this colour</code></li><li><code>count the fresh starts</code></li></ol>
+  <ul class="doc-facts"><li><b>Islands</b><span>Components</span></li><li><b>Time</b><span>O(dots + lines)</span></li><li><b>Uses</b><span>DFS or BFS</span></li></ul>
+  <h2>Try it on paper</h2>
+  <article class="act" data-level="2"><p class="act-lesson">Connected components <span class="lv lv2">Builder</span></p><h3>Count the islands</h3><p class="act-need"><b>You need</b> A drawing of 9 dots and some lines, and 3 coloured pencils · <b>Time</b> 10 minutes</p><ol><li>Draw 9 dots and join some. Leave some dots cut off from others.</li><li>Pick a dot and colour it. Then colour every dot you can reach by following lines.</li><li>Pick an uncoloured dot with a new colour and repeat.</li><li>The number of colours you used is the number of islands.</li></ol><p class="act-think"><b>Think about it.</b> Can two dots of different colours ever share a line?</p></article>
+  <p><button class="btn" type="button" data-print>Print this activity</button></p>
+  <nav class="lesson-nav" aria-label="More in this group"><a class="btn" href="/learn/graphs-picture/">← Graphs as pictures</a><a class="btn" href="/learn/graphs-cycle/">Cycle detection in graphs →</a></nav>
+  <p class="fine">Was something confusing? <a href="mailto:rajanalamuri@gmail.com?subject=VisuaLearn%20feedback%3A%20Connected%20components&body=Lesson%3A%20graphs%3Acomponents%0A%0AWhat%20was%20confusing%20or%20missing%3F%0A">Tell us</a>. We read every message.</p>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>© 2026 VisuaLearn · Free for everyone</span>
+    <nav class="foot-links" aria-label="More"><a href="/progress/">My page</a><a href="/math/grades/">Math by grade</a><a href="/#grown-ups">For grown-ups</a><a href="/privacy/">Privacy</a></nav>
+  </div>
+</footer>
+</body>
+</html>

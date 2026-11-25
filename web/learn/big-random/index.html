@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Randomised algorithms · The big questions · VisuaLearn</title>
+<meta name="description" content="Sometimes luck can answer a hard question. Throw darts at a square with a quarter-circle in it. The share that land inside tells you about the circle, and so about the number pi.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VisuaLearn">
+<meta property="og:title" content="Randomised algorithms · The big questions · VisuaLearn">
+<meta property="og:description" content="Sometimes luck can answer a hard question. Throw darts at a square with a quarter-circle in it. The share that land inside tells you about the circle, and so about the number pi.">
+<meta property="og:url" content="https://visualearn.org/learn/big-random/">
+<meta property="og:image" content="https://visualearn.org/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://visualearn.org/learn/big-random/">
+<meta name="theme-color" content="#fffbea">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/arith.css">
+<script src="/assets/progress.js" defer></script>
+<script src="/assets/profile.js" defer></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/assets/app.js" defer></script>
+<script src="/assets/print.js" defer></script>
+<link rel="stylesheet" href="/assets/genz.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Randomised algorithms", "description": "Sometimes luck can answer a hard question. Throw darts at a square with a quarter-circle in it. The share that land inside tells you about the circle, and so about the number pi.", "inLanguage": "en", "isAccessibleForFree": true, "educationalLevel": "Builder (ages 10+)", "learningResourceType": "interactive lesson", "url": "https://visualearn.org/learn/big-random/", "provider": {"@type": "Organization", "name": "VisuaLearn", "url": "https://visualearn.org"}, "teaches": "Randomised algorithms"}</script>
+</head>
+<body class="home">
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="VisuaLearn home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="b-bg"/><rect x="7" y="18" width="4" height="7" rx="1" class="b-1"/><rect x="14" y="12" width="4" height="13" rx="1" class="b-2"/><rect x="21" y="7" width="4" height="18" rx="1" class="b-3"/></svg>
+      <span>visua<b>learn</b></span>
+    </a>
+    <nav class="nav" aria-label="Main"><a aria-current="page" href="/#lessons" title="Visual lessons, step by step">Learn</a><a href="/play/" title="Quick puzzle games">Play</a><a href="/curriculum/" title="Every topic, and what you have done">Roadmap</a></nav>
+    <span class="timer" id="timer" hidden></span>
+  </div>
+</header>
+
+<main class="wrap ar pg legal lesson-doc">
+  <p class="eyebrow"><a href="/curriculum/">Roadmap</a> · The big questions</p>
+  <h1>Randomised algorithms</h1>
+  <p class="lvl lvl2">Builder · ages 10+</p>
+  <p class="lede">Sometimes luck can answer a hard question. Throw darts at a square with a quarter-circle in it. The share that land inside tells you about the circle, and so about the number pi.</p>
+  <p><a class="btn primary" href="/big/#random">Play this lesson</a></p>
+  <h2>How it works</h2>
+  <ol class="doc-code"><li><code>inside ← 0</code></li><li><code>throw a dart at a random square</code></li><li><code>  if it lands inside the quarter-circle: inside ← inside + 1</code></li><li><code>after n darts: π ≈ 4 × inside ÷ n</code></li></ol>
+  <ul class="doc-facts"><li><b>Uses</b><span>Random choices</span></li><li><b>More darts</b><span>Better answer</span></li><li><b>Name</b><span>Monte Carlo</span></li></ul>
+  <h2>Try it on paper</h2>
+  <article class="act" data-level="2"><p class="act-lesson">Randomised algorithms <span class="lv lv2">Builder</span></p><h3>Dart board</h3><p class="act-need"><b>You need</b> Squared paper (10 by 10), a dice or coin to choose squares, and a ruler · <b>Time</b> 20 minutes</p><ol><li>Draw a 10 by 10 grid and a quarter-circle of radius 10 from the bottom-left corner.</li><li>Pick 20 random squares (roll a 10-sided dice twice, or draw numbers from a hat). Mark each one.</li><li>Count how many fall inside the curve.</li><li>Multiply that count by 4 and divide by 20. How close to 3.14 is it?</li></ol><p class="act-think"><b>Think about it.</b> What happens to your answer if you throw 1000 darts instead of 20?</p></article>
+  <p><button class="btn" type="button" data-print>Print this activity</button></p>
+  <nav class="lesson-nav" aria-label="More in this group"><a class="btn" href="/learn/big-nim/">Game theory (minimax) →</a></nav>
+  <p class="fine">Was something confusing? <a href="mailto:rajanalamuri@gmail.com?subject=VisuaLearn%20feedback%3A%20Randomised%20algorithms&body=Lesson%3A%20big%3Arandom%0A%0AWhat%20was%20confusing%20or%20missing%3F%0A">Tell us</a>. We read every message.</p>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>© 2026 VisuaLearn · Free for everyone</span>
+    <nav class="foot-links" aria-label="More"><a href="/progress/">My page</a><a href="/math/grades/">Math by grade</a><a href="/#grown-ups">For grown-ups</a><a href="/privacy/">Privacy</a></nav>
+  </div>
+</footer>
+</body>
+</html>

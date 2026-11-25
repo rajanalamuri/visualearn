@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sqrt decomposition · Arrays and techniques · VisuaLearn</title>
+<meta name="description" content="Cut a long row into blocks and write down each block&#x27;s total. To add up a stretch, use the written totals for whole blocks and add the few loose numbers at the ends.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VisuaLearn">
+<meta property="og:title" content="Sqrt decomposition · Arrays and techniques · VisuaLearn">
+<meta property="og:description" content="Cut a long row into blocks and write down each block&#x27;s total. To add up a stretch, use the written totals for whole blocks and add the few loose numbers at the ends.">
+<meta property="og:url" content="https://visualearn.org/learn/techniques-sqrt/">
+<meta property="og:image" content="https://visualearn.org/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://visualearn.org/learn/techniques-sqrt/">
+<meta name="theme-color" content="#fffbea">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/arith.css">
+<script src="/assets/progress.js" defer></script>
+<script src="/assets/profile.js" defer></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/assets/app.js" defer></script>
+<script src="/assets/print.js" defer></script>
+<link rel="stylesheet" href="/assets/genz.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Sqrt decomposition", "description": "Cut a long row into blocks and write down each block's total. To add up a stretch, use the written totals for whole blocks and add the few loose numbers at the ends.", "inLanguage": "en", "isAccessibleForFree": true, "educationalLevel": "Advanced (ages 13+)", "learningResourceType": "interactive lesson", "url": "https://visualearn.org/learn/techniques-sqrt/", "provider": {"@type": "Organization", "name": "VisuaLearn", "url": "https://visualearn.org"}, "teaches": "Sqrt decomposition"}</script>
+</head>
+<body class="home">
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="VisuaLearn home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="b-bg"/><rect x="7" y="18" width="4" height="7" rx="1" class="b-1"/><rect x="14" y="12" width="4" height="13" rx="1" class="b-2"/><rect x="21" y="7" width="4" height="18" rx="1" class="b-3"/></svg>
+      <span>visua<b>learn</b></span>
+    </a>
+    <nav class="nav" aria-label="Main"><a aria-current="page" href="/#lessons" title="Visual lessons, step by step">Learn</a><a href="/play/" title="Quick puzzle games">Play</a><a href="/curriculum/" title="Every topic, and what you have done">Roadmap</a></nav>
+    <span class="timer" id="timer" hidden></span>
+  </div>
+</header>
+
+<main class="wrap ar pg legal lesson-doc">
+  <p class="eyebrow"><a href="/curriculum/">Roadmap</a> · Arrays and techniques</p>
+  <h1>Sqrt decomposition</h1>
+  <p class="lvl lvl3">Advanced · ages 13+</p>
+  <p class="lede">Cut a long row into blocks and write down each block&#x27;s total. To add up a stretch, use the written totals for whole blocks and add the few loose numbers at the ends.</p>
+  <p><a class="btn primary" href="/techniques/#sqrt">Play this lesson</a></p>
+  <h2>How it works</h2>
+  <ol class="doc-code"><li><code>split the row into blocks of 3; write each block&#x27;s total</code></li><li><code>query(l, r):</code></li><li><code>  add single numbers until the start of a block</code></li><li><code>  add whole block totals while a block fits</code></li><li><code>  add single numbers for the ragged end</code></li></ol>
+  <ul class="doc-facts"><li><b>Blocks</b><span>About √n numbers each</span></li><li><b>Query</b><span>About √n steps</span></li><li><b>Update</b><span>Fix one block total</span></li></ul>
+  <h2>Try it on paper</h2>
+  <article class="act" data-level="3"><p class="act-lesson">Sqrt decomposition <span class="lv lv3">Advanced</span></p><h3>Chunked sums</h3><p class="act-need"><b>You need</b> Paper with 9 numbers in three boxes of three · <b>Time</b> 10 minutes</p><ol><li>Write 9 numbers. Draw a box round each group of 3 and write the group total beneath it.</li><li>Pick a stretch such as the 2nd to the 8th number.</li><li>Add the loose numbers at each end one by one, and use the written total for any full box in between.</li><li>Check with a slow sum.</li></ol><p class="act-think"><b>Think about it.</b> How many additions does this use compared with adding the whole stretch?</p></article>
+  <p><button class="btn" type="button" data-print>Print this activity</button></p>
+  <nav class="lesson-nav" aria-label="More in this group"><a class="btn" href="/learn/techniques-spacetime/">← Space and time</a><a class="btn" href="/learn/techniques-mo/">Mo&#x27;s algorithm →</a></nav>
+  <p class="fine">Was something confusing? <a href="mailto:rajanalamuri@gmail.com?subject=VisuaLearn%20feedback%3A%20Sqrt%20decomposition&body=Lesson%3A%20techniques%3Asqrt%0A%0AWhat%20was%20confusing%20or%20missing%3F%0A">Tell us</a>. We read every message.</p>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>© 2026 VisuaLearn · Free for everyone</span>
+    <nav class="foot-links" aria-label="More"><a href="/progress/">My page</a><a href="/math/grades/">Math by grade</a><a href="/#grown-ups">For grown-ups</a><a href="/privacy/">Privacy</a></nav>
+  </div>
+</footer>
+</body>
+</html>

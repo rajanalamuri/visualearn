@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Topological sort · Graphs · VisuaLearn</title>
+<meta name="description" content="Some jobs must wait for others. Count how many things each job is waiting for. Do any job that is waiting for nothing, then tell the jobs after it that one wait is over. Repeat.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VisuaLearn">
+<meta property="og:title" content="Topological sort · Graphs · VisuaLearn">
+<meta property="og:description" content="Some jobs must wait for others. Count how many things each job is waiting for. Do any job that is waiting for nothing, then tell the jobs after it that one wait is over. Repeat.">
+<meta property="og:url" content="https://visualearn.org/learn/graphs-topo/">
+<meta property="og:image" content="https://visualearn.org/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://visualearn.org/learn/graphs-topo/">
+<meta name="theme-color" content="#fffbea">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/arith.css">
+<script src="/assets/progress.js" defer></script>
+<script src="/assets/profile.js" defer></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/assets/app.js" defer></script>
+<script src="/assets/print.js" defer></script>
+<link rel="stylesheet" href="/assets/genz.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Topological sort", "description": "Some jobs must wait for others. Count how many things each job is waiting for. Do any job that is waiting for nothing, then tell the jobs after it that one wait is over. Repeat.", "inLanguage": "en", "isAccessibleForFree": true, "educationalLevel": "Builder (ages 10+)", "learningResourceType": "interactive lesson", "url": "https://visualearn.org/learn/graphs-topo/", "provider": {"@type": "Organization", "name": "VisuaLearn", "url": "https://visualearn.org"}, "teaches": "Topological sort"}</script>
+</head>
+<body class="home">
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="VisuaLearn home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="b-bg"/><rect x="7" y="18" width="4" height="7" rx="1" class="b-1"/><rect x="14" y="12" width="4" height="13" rx="1" class="b-2"/><rect x="21" y="7" width="4" height="18" rx="1" class="b-3"/></svg>
+      <span>visua<b>learn</b></span>
+    </a>
+    <nav class="nav" aria-label="Main"><a aria-current="page" href="/#lessons" title="Visual lessons, step by step">Learn</a><a href="/play/" title="Quick puzzle games">Play</a><a href="/curriculum/" title="Every topic, and what you have done">Roadmap</a></nav>
+    <span class="timer" id="timer" hidden></span>
+  </div>
+</header>
+
+<main class="wrap ar pg legal lesson-doc">
+  <p class="eyebrow"><a href="/curriculum/">Roadmap</a> · Graphs</p>
+  <h1>Topological sort</h1>
+  <p class="lvl lvl2">Builder · ages 10+</p>
+  <p class="lede">Some jobs must wait for others. Count how many things each job is waiting for. Do any job that is waiting for nothing, then tell the jobs after it that one wait is over. Repeat.</p>
+  <p><a class="btn primary" href="/graphs/#topo">Play this lesson</a></p>
+  <h2>How it works</h2>
+  <ol class="doc-code"><li><code>count what each job is waiting for</code></li><li><code>queue every job waiting for nothing</code></li><li><code>take a job from the queue and do it</code></li><li><code>  for each job after it: its count goes down by one</code></li><li><code>  if a count reaches 0: add it to the queue</code></li><li><code>order done = a valid order</code></li></ol>
+  <ul class="doc-facts"><li><b>Needs</b><span>No loops</span></li><li><b>Time</b><span>O(jobs + links)</span></li><li><b>Result</b><span>A valid order</span></li></ul>
+  <h2>Try it on paper</h2>
+  <article class="act" data-level="2"><p class="act-lesson">Topological sort <span class="lv lv2">Builder</span></p><h3>Getting ready</h3><p class="act-need"><b>You need</b> Cards for 6 jobs, and arrows drawn between them · <b>Time</b> 15 minutes</p><ol><li>Write jobs on cards: Wake, Wash, Dress, Eat, Pack, Go. Draw an arrow from each job to one that must come after it.</li><li>Next to each card write how many arrows point into it.</li><li>Do a card with 0, write the order down, and cross out the arrows leaving it.</li><li>Repeat until all cards are done.</li></ol><p class="act-think"><b>Think about it.</b> Can there be more than one valid order? What if two jobs wait for each other?</p></article>
+  <p><button class="btn" type="button" data-print>Print this activity</button></p>
+  <nav class="lesson-nav" aria-label="More in this group"><a class="btn" href="/learn/graphs-bipartite/">← Two-colouring (bipartite)</a><a class="btn" href="/learn/graphs-unionfind/">Union-find →</a></nav>
+  <p class="fine">Was something confusing? <a href="mailto:rajanalamuri@gmail.com?subject=VisuaLearn%20feedback%3A%20Topological%20sort&body=Lesson%3A%20graphs%3Atopo%0A%0AWhat%20was%20confusing%20or%20missing%3F%0A">Tell us</a>. We read every message.</p>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>© 2026 VisuaLearn · Free for everyone</span>
+    <nav class="foot-links" aria-label="More"><a href="/progress/">My page</a><a href="/math/grades/">Math by grade</a><a href="/#grown-ups">For grown-ups</a><a href="/privacy/">Privacy</a></nav>
+  </div>
+</footer>
+</body>
+</html>

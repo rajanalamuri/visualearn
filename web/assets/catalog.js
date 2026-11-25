@@ -201,7 +201,23 @@
     ]],
   ];
 
-  globalThis.VLCatalog = { IDEAS, GRADES, DSA };
+  // Who each topic is for: 1 Starter (about 8+), 2 Builder (about 10+), 3 Advanced (about 13+, and anyone learning to code).
+  const STARTER = ['Steps and loops', 'Linear search', 'Binary search', 'Bubble sort', 'Selection sort', 'Insertion sort', 'Arrays', 'Strings', 'Stacks', 'Queues',
+    'Breadth-first search', 'Depth-first search', 'Graphs as pictures', 'Counting sort', 'Hash tables', 'Collisions', 'Counting with hashes', 'Greedy choices',
+    'Modular arithmetic', 'Primes (the sieve)', 'Common factors (GCD)', 'Recursion'];
+  const ADVANCED = ['Radix sort', 'Binary search on the answer', 'Monotonic stacks', 'Fenwick trees', 'Segment trees', 'Sparse tables', 'Balanced trees (AVL)', 'B-trees', 'Skip lists', 'Treaps',
+    'Heavy-light decomposition', 'Lowest common ancestor', 'Union-find', 'Bellman-Ford', 'All-pairs shortest paths (Floyd-Warshall)', 'A* search', 'Minimum spanning trees',
+    'Strongly connected components', 'Bridges and cut points', 'Euler circuits', 'Hamilton paths', 'Network flow', 'Bipartite matching', 'Knapsack', 'Longest common subsequence',
+    'Longest increasing subsequence', 'Tree DP', 'Bitmask DP', 'Meet in the middle', 'Sqrt decomposition', 'Mo’s algorithm', 'KMP', 'Z-algorithm', 'Rolling hash (Rabin-Karp)',
+    'Suffix arrays', 'Aho-Corasick', 'Bloom filters', 'Count-min sketch', 'HyperLogLog', 'Chinese remainder theorem', 'Convex hull', 'Closest pair of points'];
+  const LEVEL_LABEL = ['All', 'Starter · 8+', 'Builder · 10+', 'Advanced · 13+'];
+  const levelOf = (name) => (STARTER.includes(name) ? 1 : ADVANCED.includes(name) ? 3 : 2);
+  // The order to try the first topics in, for someone who does not know where to begin.
+  const START_PATH = ['Steps and loops', 'Linear search', 'Binary search', 'Bubble sort', 'Stacks', 'Queues', 'Breadth-first search', 'Recursion', 'Hash tables', 'Greedy choices'];
+  const topicFor = (id) => { for (const [, topics] of DSA) for (const t of topics) if (t[1] === id) return t[0]; return null; };
+  const levelOfIdea = (id) => { const n = topicFor(id); return n ? levelOf(n) : 0; };
+
+  globalThis.VLCatalog = { IDEAS, GRADES, DSA, STARTER, ADVANCED, LEVEL_LABEL, START_PATH, levelOf, levelOfIdea, topicFor };
   if (typeof document === 'undefined') return;
 
   const $ = (id) => document.getElementById(id);
@@ -249,33 +265,81 @@
   const curEl = $('curriculum');
   if (curEl) {
     const met = new Set(globalThis.VLProgress ? VLProgress.everMet() : []);
-    let ready = 0, total = 0;
+    const want = new URLSearchParams(location.search).get('level'), saved = store.get('vl-level');
+    const valid = (v) => [0, 1, 2, 3].includes(Number(v)) && v !== null && v !== '';
+    let level = valid(want) ? Number(want) : valid(saved) ? Number(saved) : 0;
+    const secs = [], byName = new Map();
     for (const [track, topics] of DSA) {
       const sec = make('section', 'track');
       const head = make('h2', '', track);
       const list = make('ul', 'topics tl');
-      let here = 0;
+      const count = make('span', '', '');
+      const rec = { el: sec, count, tiles: [], total: topics.length };
       for (const [name, ref, next] of topics) {
-        total++;
+        const lv = levelOf(name);
         const li = make('li');
+        li.dataset.level = String(lv);
+        const badge = make('small', `lv lv${lv}`, ['', '8+', '10+', '13+'][lv]);
+        badge.title = LEVEL_LABEL[lv];
         if (ref) {
-          here++; ready++;
-          const a = make('a', met.has(ref) ? 'topic met' : 'topic', name);
-          a.href = ref.startsWith('/') ? ref : IDEAS[ref][1];
-          li.appendChild(a);
+          const t = make('a', met.has(ref) ? 'topic met' : 'topic', name);
+          t.href = ref.startsWith('/') ? ref : IDEAS[ref][1];
+          t.appendChild(badge);
+          li.appendChild(t);
+          byName.set(name, { href: t.href, met: met.has(ref) });
         } else {
           const sp = make('span', next ? 'topic soon next' : 'topic soon', name);
           sp.appendChild(make('small', '', next ? 'next' : 'tbd'));
           li.appendChild(sp);
         }
         list.appendChild(li);
+        rec.tiles.push({ li, lv, ready: !!ref });
       }
-      head.appendChild(make('span', '', `${here} of ${topics.length}`));
+      head.appendChild(count);
       sec.append(head, list);
       curEl.appendChild(sec);
+      secs.push(rec);
     }
-    $('cur-count').textContent = `${ready} of ${total} ready`;
-    $('cur-fill').style.width = `${Math.round((100 * ready) / total)}%`;
+    const levels = $('levels');
+    function apply() {
+      let r = 0, t = 0;
+      for (const sec of secs) {
+        let vis = 0, ok = 0;
+        for (const tile of sec.tiles) {
+          const show = !level || tile.lv === level;
+          tile.li.hidden = !show;
+          if (show) { vis++; if (tile.ready) ok++; }
+        }
+        sec.el.hidden = vis === 0;
+        sec.count.textContent = `${ok} of ${vis}`;
+        r += ok; t += vis;
+      }
+      $('cur-count').textContent = `${r} of ${t} ready`;
+      $('cur-fill').style.width = t ? `${Math.round((100 * r) / t)}%` : '0%';
+      if (levels) for (const b of levels.children) b.setAttribute('aria-pressed', String(Number(b.dataset.level) === level));
+      store.set('vl-level', String(level));
+      document.dispatchEvent(new Event('vl:filter'));
+    }
+    if (levels) {
+      LEVEL_LABEL.forEach((label, i) => {
+        const b = make('button', '', label); b.type = 'button'; b.dataset.level = String(i);
+        b.addEventListener('click', () => { level = i; apply(); });
+        levels.appendChild(b);
+      });
+    }
+    const pathEl = $('path');
+    if (pathEl) {
+      START_PATH.forEach((name, i) => {
+        const hit = byName.get(name);
+        const li = make('li');
+        const a = make('a', hit && hit.met ? 'step met' : 'step', name);
+        if (hit) a.href = hit.href;
+        a.prepend(make('b', '', String(i + 1)));
+        li.appendChild(a);
+        pathEl.appendChild(li);
+      });
+    }
+    apply();
   }
 
   // ---- progress diary ----

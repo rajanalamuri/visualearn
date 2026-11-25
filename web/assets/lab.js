@@ -112,7 +112,9 @@
     }
     for (const n of v.nodes) {
       const shape = n.wide ? `<rect x="${n.x - Math.max(22, 4.5 * String(n.t).length + 10)}" y="${n.y - 17}" width="${2 * Math.max(22, 4.5 * String(n.t).length + 10)}" height="34" rx="9"/>` : `<circle cx="${n.x}" cy="${n.y}" r="19"/>`;
-      out += `<g class="g-node${n.c ? ` ${n.c}` : ''}">${shape}<text x="${n.x}" y="${n.y + (n.s ? -1 : 5)}" text-anchor="middle" class="nm">${esc(n.t ?? n.id)}</text>${n.s ? `<text x="${n.x}" y="${n.y + 13}" text-anchor="middle" class="ds">${esc(n.s)}</text>` : ''}</g>`;
+      const cls = String(n.c || '');
+      const badge = /(^| )(found|done)( |$)/.test(cls) ? '✓' : /(^| )swap( |$)/.test(cls) ? '✕' : '';
+      out += `<g class="g-node${n.c ? ` ${n.c}` : ''}">${/(^| )cur( |$)/.test(cls) ? `<circle class="ring" cx="${n.x}" cy="${n.y}" r="26"/>` : ''}${shape}<text x="${n.x}" y="${n.y + (n.s ? -1 : 5)}" text-anchor="middle" class="nm">${esc(n.t ?? n.id)}</text>${n.s ? `<text x="${n.x}" y="${n.y + 13}" text-anchor="middle" class="ds">${esc(n.s)}</text>` : ''}${badge ? `<g class="badge"><circle cx="${n.x + 15}" cy="${n.y - 15}" r="9"/><text x="${n.x + 15}" y="${n.y - 11}" text-anchor="middle">${badge}</text></g>` : ''}</g>`;
     }
     return `${out}</svg>`;
   }

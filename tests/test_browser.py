@@ -67,9 +67,10 @@ def test_a_child_signs_up_plays_a_lesson_and_switches_profiles(site):
     for must in ("first visit shows a Sign up chip", "an email is refused with a reason", "header chip shows the nickname",
                  "the lesson reaches its last step", "the final card says the big idea", "Next switched to the next lesson",
                  "the diary lists today's lesson", "switching restores the first diary", "removing a person leaves the other",
-                 "home page ends with the closing card", "roadmap ends with its closing card"):
+                 "home page ends with the closing card", "roadmap ends with its closing card",
+                 "the Starter filter hides the harder topics", '"Not really" offers a prefilled email', "the activity pack filters by level"):
         assert must in names, must
-    assert len(names) >= 28
+    assert len(names) >= 40
 
 
 def _online(host="www.gstatic.com"):

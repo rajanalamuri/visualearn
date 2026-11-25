@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Longest common subsequence · Ways to solve it · VisuaLearn</title>
+<meta name="description" content="Two words can share letters in the same order, even if the letters are not side by side. Fill a table. If two letters match, add 1 to the cell up-left. If not, copy the bigger of the cell above…">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VisuaLearn">
+<meta property="og:title" content="Longest common subsequence · Ways to solve it · VisuaLearn">
+<meta property="og:description" content="Two words can share letters in the same order, even if the letters are not side by side. Fill a table. If two letters match, add 1 to the cell up-left. If not, copy the bigger of the cell above…">
+<meta property="og:url" content="https://visualearn.org/learn/solve-lcs/">
+<meta property="og:image" content="https://visualearn.org/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://visualearn.org/learn/solve-lcs/">
+<meta name="theme-color" content="#fffbea">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/arith.css">
+<script src="/assets/progress.js" defer></script>
+<script src="/assets/profile.js" defer></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/assets/app.js" defer></script>
+<script src="/assets/print.js" defer></script>
+<link rel="stylesheet" href="/assets/genz.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Longest common subsequence", "description": "Two words can share letters in the same order, even if the letters are not side by side. Fill a table. If two letters match, add 1 to the cell up-left. If not, copy the bigger of the cell above and the cell to the left.", "inLanguage": "en", "isAccessibleForFree": true, "educationalLevel": "Advanced (ages 13+)", "learningResourceType": "interactive lesson", "url": "https://visualearn.org/learn/solve-lcs/", "provider": {"@type": "Organization", "name": "VisuaLearn", "url": "https://visualearn.org"}, "teaches": "Longest common subsequence"}</script>
+</head>
+<body class="home">
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="VisuaLearn home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="b-bg"/><rect x="7" y="18" width="4" height="7" rx="1" class="b-1"/><rect x="14" y="12" width="4" height="13" rx="1" class="b-2"/><rect x="21" y="7" width="4" height="18" rx="1" class="b-3"/></svg>
+      <span>visua<b>learn</b></span>
+    </a>
+    <nav class="nav" aria-label="Main"><a aria-current="page" href="/#lessons" title="Visual lessons, step by step">Learn</a><a href="/play/" title="Quick puzzle games">Play</a><a href="/curriculum/" title="Every topic, and what you have done">Roadmap</a></nav>
+    <span class="timer" id="timer" hidden></span>
+  </div>
+</header>
+
+<main class="wrap ar pg legal lesson-doc">
+  <p class="eyebrow"><a href="/curriculum/">Roadmap</a> · Ways to solve it</p>
+  <h1>Longest common subsequence</h1>
+  <p class="lvl lvl3">Advanced · ages 13+</p>
+  <p class="lede">Two words can share letters in the same order, even if the letters are not side by side. Fill a table. If two letters match, add 1 to the cell up-left. If not, copy the bigger of the cell above and the cell to the left.</p>
+  <p><a class="btn primary" href="/solve/#lcs">Play this lesson</a></p>
+  <h2>How it works</h2>
+  <ol class="doc-code"><li><code>table[0][·] and table[·][0] are 0</code></li><li><code>for each letter pair (i, j)</code></li><li><code>  if the letters match: table[i][j] ← table[i−1][j−1] + 1</code></li><li><code>  else: table[i][j] ← the bigger of the cell above and the cell to the left</code></li><li><code>the last cell is the length</code></li></ol>
+  <ul class="doc-facts"><li><b>Compares</b><span>Two sequences</span></li><li><b>Time</b><span>O(m × n)</span></li><li><b>Used for</b><span>File diffs, DNA</span></li></ul>
+  <h2>Try it on paper</h2>
+  <article class="act" data-level="3"><p class="act-lesson">Longest common subsequence <span class="lv lv3">Advanced</span></p><h3>Shared letters</h3><p class="act-need"><b>You need</b> Two short words on paper and a grid · <b>Time</b> 15 minutes</p><ol><li>Write one word across the top and one down the side of a grid. Fill the first row and column with 0.</li><li>For each cell: if the two letters match, write one more than the cell up and to the left.</li><li>If not, write the bigger of the cell above and the cell to the left.</li><li>The bottom-right number is the length of the longest shared sequence.</li></ol><p class="act-think"><b>Think about it.</b> Is a shared sequence allowed to skip letters? Is it allowed to reorder them?</p></article>
+  <p><button class="btn" type="button" data-print>Print this activity</button></p>
+  <nav class="lesson-nav" aria-label="More in this group"><a class="btn" href="/learn/solve-knapsack/">← Knapsack</a><a class="btn" href="/learn/solve-lis/">Longest increasing subsequence →</a></nav>
+  <p class="fine">Was something confusing? <a href="mailto:rajanalamuri@gmail.com?subject=VisuaLearn%20feedback%3A%20Longest%20common%20subsequence&body=Lesson%3A%20solve%3Alcs%0A%0AWhat%20was%20confusing%20or%20missing%3F%0A">Tell us</a>. We read every message.</p>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>© 2026 VisuaLearn · Free for everyone</span>
+    <nav class="foot-links" aria-label="More"><a href="/progress/">My page</a><a href="/math/grades/">Math by grade</a><a href="/#grown-ups">For grown-ups</a><a href="/privacy/">Privacy</a></nav>
+  </div>
+</footer>
+</body>
+</html>

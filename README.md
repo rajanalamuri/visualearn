@@ -27,6 +27,7 @@ web/                    static site, served by a Cloudflare Worker (assets only)
   dp/                   dynamic programming: fewest coins, counting walks (dp.js)
   math/grades/          grade 1 to 10 map; progress/ is the on-device diary
   techniques/, trees/, graphs/, solve/, text/, numbers/, shapes/, big/   about 75 more lessons on the shared lab engine (assets/lab.js plus one script per page)
+  learn/, activities/, teachers/   one readable page per lesson, the printable activity pack, and the teacher page (generated, see below)
   parents/, privacy/    optional parent sign-in (Firebase, see below) and the privacy policy
   curriculum/           the whole DSA map: ready, next, to do (data lives in assets/catalog.js)
   manifest.webmanifest, sw.js, icons/   make /play/ installable and usable offline
@@ -67,6 +68,18 @@ docker compose run --rm test         # the whole test suite in a clean container
 
 `docker/default.conf` and `docker/security.conf` mirror the Cloudflare headers and folder behaviour in `web/_headers`.
 (The Docker files were written without Docker on hand, so run `docker compose up --build` once and open the site to confirm.)
+
+## Generated pages
+
+`web/learn/*`, `web/activities/`, `web/teachers/`, `web/assets/lessons.json` and the lesson entries in `web/sitemap.xml` are generated from the lessons.
+After you change a lesson's text, run:
+
+```bash
+python tools/build_content.py          # rewrites them
+python tools/build_content.py --check  # fails if they are stale (pytest does this too)
+```
+
+Who each topic is for (Starter 8+, Builder 10+, Advanced 13+) is set in `web/assets/catalog.js`.
 
 ## Check the links
 

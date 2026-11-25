@@ -12,7 +12,7 @@
   --accent-soft:#e8e0ff;
   --bar:#e6d57a;
   --cmp:#ffb703;
-  --swap:#ff4f86;
+  --swap:#b3124f;
   --pivot:#8e6bff;
   --done:#00a884;
   --bd:#15120a;
@@ -34,8 +34,8 @@
     --accent-soft:#2e2552;
     --bar:#6a5d2c;
     --cmp:#ffcf33;
-    --swap:#ff6f9d;
-    --done:#35d6b0;
+    --swap:#ff3d7f;
+    --done:#5ff0cb;
     --bd:#fff1a8;
     --sh:#000000;
     --pop:#ffd93d;
@@ -99,7 +99,7 @@ select,.p-row input{border:2px solid var(--bd);border-radius:12px;background:var
 .lcell.cur b,.lcell.found b,.lcell.done b,.lcell.swap b,.lcell.key b,.lcell.alt b{border-color:var(--bd)}
 .lcell.found b,.lcell.done b{background:var(--t2);color:#15120a}
 .lcell.cur b{background:var(--pop);color:#15120a}
-.lcell.swap b{background:var(--t3);color:#15120a}
+.lcell.swap b{background:var(--swap);color:#fff}
 .lcell.alt b{background:var(--t4);color:#15120a}
 .lcell.seen b{background:var(--line)}
 .box{background:var(--surface);color:var(--ink)}
@@ -114,8 +114,8 @@ select,.p-row input{border:2px solid var(--bd);border-radius:12px;background:var
 .g-node.cur circle,.g-node.cur rect,.t-node.cur circle{fill:var(--pop);stroke:var(--bd)}
 .g-node.found circle,.g-node.done circle,.t-node.found circle,.g-node.path circle,.g-node.found rect{fill:var(--t2);stroke:var(--bd)}
 .g-node.found text,.g-node.done text,.t-node.found text,.g-node.path text{fill:#15120a}
-.g-node.swap circle{fill:var(--t3);stroke:var(--bd)}
-.g-node.swap text{fill:#15120a}
+.g-node.swap circle{fill:var(--swap);stroke:var(--bd)}
+.g-node.swap text{fill:#fff}
 .g-node.alt circle{fill:var(--t4);stroke:var(--bd)}
 .g-node.alt text{fill:#15120a}
 .g-node.key circle{fill:var(--accent);stroke:var(--bd)}
@@ -268,3 +268,105 @@ select,.p-row input{border:2px solid var(--bd);border-radius:12px;background:var
   .toc-fab{bottom:calc(78px + env(safe-area-inset-bottom, 0px))}
   .toc-panel{bottom:calc(140px + env(safe-area-inset-bottom, 0px))}
 }
+
+/* shape cues: colour is never the only signal (colour-blind friendly) */
+.lcell b,.labgrid .cell{position:relative}
+.lcell.found b::after,.lcell.done b::after,.lcell.swap b::after,.lcell.alt b::after,
+.labgrid .cell.found::after,.labgrid .cell.done::after,.labgrid .cell.swap::after,.labgrid .cell.alt::after{
+  position:absolute;top:-7px;right:-6px;width:17px;height:17px;border-radius:50%;background:var(--bd);color:var(--surface);
+  font:800 11px/17px var(--font-body);text-align:center}
+.lcell.found b::after,.lcell.done b::after,.labgrid .cell.found::after,.labgrid .cell.done::after{content:"✓"}
+.lcell.swap b::after,.labgrid .cell.swap::after{content:"✕"}
+.lcell.alt b::after,.labgrid .cell.alt::after{content:"◆"}
+.lcell.cur b,.labgrid .cell.cur{outline:3px dashed var(--bd);outline-offset:2px}
+.g-node .ring{fill:none;stroke:var(--bd);stroke-width:3;stroke-dasharray:5 4}
+.g-node .badge circle{fill:var(--bd);stroke:none}
+.g-node .badge text{fill:var(--surface);font-size:12px;font-weight:800;stroke:none}
+.g-node.found .badge text,.g-node.done .badge text,.g-node.swap .badge text{fill:var(--surface)}
+.g-edge.cut{stroke-dasharray:7 6}
+.g-edge.path,.g-edge.done{stroke-width:6}
+
+/* phones: the picture is drawn 600 units wide and shrinks to about 350px, so type and shapes are scaled up to stay readable */
+@media (max-width: 640px){
+  .labgraph .g-node circle{r:25px}
+  .labgraph .g-node .ring{r:32px}
+  .labgraph .g-node text.nm{font-size:21px}
+  .labgraph .g-node text.ds{font-size:19px}
+  .labgraph .g-node .badge circle{r:11px}
+  .labgraph .g-node .badge text{font-size:15px}
+  .labgraph .g-len{transform-box:fill-box;transform-origin:center;transform:scale(1.6)}
+  .graph .g-node text.nm,.tree .t-node text{font-size:20px}
+  .graph .g-node text.ds{font-size:18px}
+  .graph .g-node circle,.tree .t-node circle{r:24px}
+  .graph .g-len{transform-box:fill-box;transform-origin:center;transform:scale(1.5)}
+  .lcell b{min-width:40px}
+}
+
+/* levels: who each topic is for */
+.levels{justify-content:center;margin:6px 0 4px}
+.start{width:100%;max-width:980px;display:flex;flex-direction:column;gap:10px}
+.start h2{font-size:22px;font-weight:800}
+.path{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
+.step{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border:2px solid var(--bd);border-radius:999px;background:var(--surface);box-shadow:0 3px 0 var(--sh);
+  color:var(--ink);font-weight:700;text-decoration:none}
+.step b{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--pop);color:#15120a;border:2px solid var(--bd);font-size:13px}
+.step.met b{background:var(--t2)}
+.step.met b::before{content:"✓"}
+.step.met b{font-size:0}
+.step.met b::before{font-size:14px}
+a.step:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--sh)}
+.lv{margin-left:auto;font-size:11px;font-weight:800;border:2px solid var(--bd);border-radius:999px;padding:0 7px;color:#15120a}
+.lv1{background:var(--t2)} .lv2{background:var(--t1)} .lv3{background:var(--t4)}
+.lvl{margin:2px 0 0;display:inline-block;align-self:flex-start;font-size:13px;font-weight:800;border:2px solid var(--bd);border-radius:999px;padding:1px 12px;color:#15120a}
+.lvl[hidden]{display:none}
+.lvl1{background:var(--t2)} .lvl2{background:var(--t1)} .lvl3{background:var(--t4)}
+
+/* home: proof and previews */
+.previews{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:18px;width:100%}
+.previews a{display:flex;flex-direction:column;gap:6px;height:100%;padding:12px;border:2px solid var(--bd);border-radius:22px;background:var(--surface);box-shadow:5px 5px 0 var(--sh);color:var(--ink);text-decoration:none;transition:transform .12s, box-shadow .12s}
+.previews a:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--sh)}
+.previews img{width:100%;height:auto;aspect-ratio:760/440;object-fit:cover;object-position:top;border-radius:14px;border:2px solid var(--bd);background:var(--paper)}
+.previews b{font-family:var(--font-display);font-size:20px;font-weight:800}
+.previews span{color:var(--ink-2);font-weight:600;font-size:15px}
+.proof{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:12px 24px;width:100%}
+.proof li{font-weight:600;color:var(--ink-2)}
+.proof b{color:var(--ink);display:block;font-family:var(--font-display);font-size:18px}
+.proof-links{margin:4px 0 0;font-weight:700}
+
+/* end-of-lesson feedback */
+.fb-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.fb-q{font-weight:700}
+.btn.small{padding:5px 12px;font-size:14px;border-radius:12px}
+
+/* generated pages: one lesson, the activity pack, teachers */
+.lesson-doc h2,.teachers h2{font-size:24px;margin-top:10px}
+.doc-code{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;max-width:70ch}
+.doc-code code{font-family:var(--font-code);font-size:14.5px;white-space:pre-wrap}
+.doc-facts{list-style:none;margin:6px 0;padding:0;display:flex;flex-wrap:wrap;gap:10px;width:100%}
+.doc-facts li{border:2px solid var(--bd);border-radius:14px;padding:8px 14px;background:var(--surface);display:flex;flex-direction:column;gap:2px}
+.doc-facts b{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.lesson-nav{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;width:100%;margin-top:8px}
+.act{border:2px solid var(--bd);border-radius:18px;padding:16px 18px;background:var(--surface);box-shadow:4px 4px 0 var(--sh);display:flex;flex-direction:column;gap:8px;width:100%;max-width:760px;break-inside:avoid}
+.act h3{margin:0;font-size:22px;font-weight:800}
+.act ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.act p{margin:0}
+.act-lesson{font-weight:700;color:var(--muted)}
+.act-need{color:var(--ink-2)}
+.act-grid{display:flex;flex-direction:column;gap:16px;width:100%;align-items:center}
+.act[hidden]{display:none}
+.act-pack{max-width:820px}
+.plan{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:8px;max-width:64ch}
+.plan-links{display:flex;flex-wrap:wrap;gap:10px}
+.plain{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;max-width:64ch}
+@media print{
+  .top,.foot,.no-print,.toc,.btn,.lesson-nav,.fine{display:none!important}
+  .act{box-shadow:none;border:1px solid #000;page-break-inside:avoid;break-inside:avoid;margin-bottom:12px;max-width:none}
+  .act-grid{display:block}
+  body{background:#fff!important;padding:0}
+}
+
+/* reading pages (privacy, a lesson, teachers, the activity pack): left-aligned, comfortable width */
+.ar.legal{align-items:flex-start}
+.ar.legal h1,.ar.legal h2{text-align:left}
+.ar.legal .lede{text-align:left}
+.ar.legal.lesson-doc,.ar.legal.teachers{max-width:760px}

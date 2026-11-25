@@ -93,6 +93,11 @@
     setOpen(false);
   });
 
+  // sections hidden by a page filter (the roadmap's level buttons) leave the menu too
+  const syncHidden = () => links.forEach((a, i) => { a.parentElement.hidden = !!heads[i].closest('[hidden]'); });
+  document.addEventListener('vl:filter', syncHidden);
+  syncHidden();
+
   // ---- scroll spy ----
   let current = -2, queued = false;
   function spy() {

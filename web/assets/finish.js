@@ -21,12 +21,36 @@
     const i = buttons.findIndex((b) => b.pressed);
     return i >= 0 && i + 1 < buttons.length ? buttons[i + 1] : null;
   }
-  globalThis.VLFinish = { idea, progressLine, nextLesson };
+  const MAIL = 'rajanalamuri@gmail.com';
+  // The page for a lesson that can be read, printed and shared: /learn/<page>-<key>/
+  const slugFor = (pagePath, key) => `${String(pagePath).replace(/^\/+|\/+$/g, '').replace(/\//g, '-')}-${key}`;
+  const feedbackLink = (name, id) => `mailto:${MAIL}?subject=${encodeURIComponent('VisuaLearn feedback: ' + name)}&body=${encodeURIComponent(`Lesson: ${id}
+
+What was confusing or missing?
+`)}`;
+  globalThis.VLFinish = { idea, progressLine, nextLesson, slugFor, feedbackLink };
   if (typeof document === 'undefined') return;
 
   const done = document.getElementById('done'), list = document.getElementById('algos');
   if (!done || !list) return;
   const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+
+  // who this lesson is for, and a title that names the lesson (for tabs, bookmarks and shares)
+  const baseTitle = document.title, h1 = document.querySelector('.viz-head h1');
+  const chip = el('p', 'lvl');
+  if (h1) h1.after(chip);
+  function levelChip() {
+    const C = globalThis.VLCatalog, pressed = list.querySelector('[aria-pressed="true"]');
+    if (!pressed) return;
+    document.title = `${pressed.textContent} · ${baseTitle}`;
+    const lv = C ? C.levelOfIdea(`${location.pathname.split('/').filter(Boolean).pop()}:${pressed.dataset.algo}`) : 0;
+    chip.textContent = lv ? C.LEVEL_LABEL[lv].replace('· ', '· ages ') : '';
+    chip.className = lv ? `lvl lvl${lv}` : 'lvl';
+    chip.hidden = !lv;
+  }
+  const nameEl = document.getElementById('algo-name');
+  if (nameEl) new MutationObserver(levelChip).observe(nameEl, { childList: true, characterData: true, subtree: true });
+  levelChip();
 
   const card = el('div', 'finish');
   card.hidden = true;
@@ -42,6 +66,30 @@
       const me = P.active();
       card.append(el('p', 'finish-prog', progressLine(me && me.name, P.everMet().length, Object.keys(C.IDEAS).length)));
       if (!me) { const j = el('a', 'link', 'Sign up with a nickname to keep your own page'); j.href = '/progress/#join'; card.append(j); }
+    }
+    // "Was this clear?" is kept on this device. It only turns into an email if someone chooses to send it.
+    const pressed = list.querySelector('[aria-pressed="true"]');
+    if (pressed) {
+      const path = location.pathname.replace(/^\/+|\/+$/g, ''), id = `${path.split('/').pop()}:${pressed.dataset.algo}`;
+      let all = {};
+      try { all = JSON.parse(localStorage.getItem('vl-fb') || '{}') || {}; } catch { all = {}; }
+      const box = el('div', 'fb-row');
+      const ask = () => {
+        box.innerHTML = '';
+        if (all[id] === undefined) {
+          box.append(el('span', 'fb-q', 'Was this clear?'));
+          for (const [label, v] of [['Yes', 1], ['Not really', 0]]) {
+            const b = el('button', 'btn small', label); b.type = 'button';
+            b.addEventListener('click', () => { all[id] = v; try { localStorage.setItem('vl-fb', JSON.stringify(all)); } catch { /* private mode */ } ask(); });
+            box.append(b);
+          }
+        } else if (all[id] === 1) box.append(el('span', 'fb-q', 'Thanks, glad it made sense.'));
+        else { const a = el('a', 'link', 'Tell us what was confusing'); a.href = feedbackLink(pressed.textContent, id); box.append(el('span', 'fb-q', 'Sorry about that.'), a); }
+      };
+      ask();
+      card.append(box);
+      const share = el('a', 'link', 'Read, print or share this lesson'); share.href = `/learn/${slugFor(path, pressed.dataset.algo)}/`;
+      card.append(share);
     }
     const row = el('div', 'rest-actions');
     const buttons = [...list.children].map((b) => ({ key: b.dataset.algo, name: b.textContent, pressed: b.getAttribute('aria-pressed') === 'true', node: b }));

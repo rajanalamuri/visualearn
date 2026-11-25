@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Selection sort · Sorting · VisuaLearn</title>
+<meta name="description" content="Look through the unsorted numbers, find the smallest, and move it to the front. Then do it again with what is left.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VisuaLearn">
+<meta property="og:title" content="Selection sort · Sorting · VisuaLearn">
+<meta property="og:description" content="Look through the unsorted numbers, find the smallest, and move it to the front. Then do it again with what is left.">
+<meta property="og:url" content="https://visualearn.org/learn/sorting-selection/">
+<meta property="og:image" content="https://visualearn.org/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://visualearn.org/learn/sorting-selection/">
+<meta name="theme-color" content="#fffbea">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/atkinson-hyperlegible-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="stylesheet" href="/assets/home.css">
+<link rel="stylesheet" href="/assets/arith.css">
+<script src="/assets/progress.js" defer></script>
+<script src="/assets/profile.js" defer></script>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/assets/app.js" defer></script>
+<script src="/assets/print.js" defer></script>
+<link rel="stylesheet" href="/assets/genz.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LearningResource", "name": "Selection sort", "description": "Look through the unsorted numbers, find the smallest, and move it to the front. Then do it again with what is left.", "inLanguage": "en", "isAccessibleForFree": true, "educationalLevel": "Starter (ages 8+)", "learningResourceType": "interactive lesson", "url": "https://visualearn.org/learn/sorting-selection/", "provider": {"@type": "Organization", "name": "VisuaLearn", "url": "https://visualearn.org"}, "teaches": "Selection sort"}</script>
+</head>
+<body class="home">
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/" aria-label="VisuaLearn home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" class="b-bg"/><rect x="7" y="18" width="4" height="7" rx="1" class="b-1"/><rect x="14" y="12" width="4" height="13" rx="1" class="b-2"/><rect x="21" y="7" width="4" height="18" rx="1" class="b-3"/></svg>
+      <span>visua<b>learn</b></span>
+    </a>
+    <nav class="nav" aria-label="Main"><a aria-current="page" href="/#lessons" title="Visual lessons, step by step">Learn</a><a href="/play/" title="Quick puzzle games">Play</a><a href="/curriculum/" title="Every topic, and what you have done">Roadmap</a></nav>
+    <span class="timer" id="timer" hidden></span>
+  </div>
+</header>
+
+<main class="wrap ar pg legal lesson-doc">
+  <p class="eyebrow"><a href="/curriculum/">Roadmap</a> · Sorting</p>
+  <h1>Selection sort</h1>
+  <p class="lvl lvl1">Starter · ages 8+</p>
+  <p class="lede">Look through the unsorted numbers, find the smallest, and move it to the front. Then do it again with what is left.</p>
+  <p><a class="btn primary" href="/sorting/#selection">Play this lesson</a></p>
+  <h2>How it works</h2>
+  <ol class="doc-code"><li><code>for i = 0 … n−2</code></li><li><code>  min ← i</code></li><li><code>  for j = i+1 … n−1</code></li><li><code>    if a[j] &lt; a[min]: min ← j</code></li><li><code>  swap a[i], a[min]</code></li><li><code>  a[i] is in place</code></li></ol>
+  <ul class="doc-facts"><li><b>Best case</b><span>O(n²)</span></li><li><b>Worst case</b><span>O(n²)</span></li><li><b>Keeps equal items in order?</b><span>No</span></li></ul>
+  <h2>Try it on paper</h2>
+  <article class="act" data-level="1"><p class="act-lesson">Selection sort <span class="lv lv1">Starter</span></p><h3>Find the smallest</h3><p class="act-need"><b>You need</b> 8 playing cards (ace counts as 1) · <b>Time</b> 10 minutes</p><ol><li>Lay the cards face up in a row, all mixed up.</li><li>Touch each card one at a time and find the smallest.</li><li>Move it down to start a new row underneath.</li><li>Do the same with the cards that are left, until the top row is empty.</li></ol><p class="act-think"><b>Think about it.</b> Count every card you touch. With 8 cards it is always 28, however they start. Can you work out why?</p></article>
+  <p><button class="btn" type="button" data-print>Print this activity</button></p>
+  <nav class="lesson-nav" aria-label="More in this group"><a class="btn" href="/learn/sorting-bubble/">← Bubble sort</a><a class="btn" href="/learn/sorting-insertion/">Insertion sort →</a></nav>
+  <p class="fine">Was something confusing? <a href="mailto:rajanalamuri@gmail.com?subject=VisuaLearn%20feedback%3A%20Selection%20sort&body=Lesson%3A%20sorting%3Aselection%0A%0AWhat%20was%20confusing%20or%20missing%3F%0A">Tell us</a>. We read every message.</p>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <span>© 2026 VisuaLearn · Free for everyone</span>
+    <nav class="foot-links" aria-label="More"><a href="/progress/">My page</a><a href="/math/grades/">Math by grade</a><a href="/#grown-ups">For grown-ups</a><a href="/privacy/">Privacy</a></nav>
+  </div>
+</footer>
+</body>
+</html>
