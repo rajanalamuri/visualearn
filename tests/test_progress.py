@@ -193,9 +193,15 @@ def test_grown_up_gate_has_a_checkable_answer():
         assert g["answer"] == a * b and 6 <= a <= 12 and 6 <= b <= 12
 
 
-def test_parents_page_is_off_until_configured_and_kids_pages_load_no_firebase():
+def test_parent_sign_in_is_fully_configured_and_kids_pages_load_no_firebase():
+    import re
     cfg = (WEB / "assets" / "firebase-config.js").read_text(encoding="utf-8")
-    assert "apiKey: ''" in cfg  # shipped switched off
+    vals = dict(re.findall(r"(apiKey|authDomain|projectId|appId): '([^']*)'", cfg))
+    assert set(vals) == {"apiKey", "authDomain", "projectId", "appId"}
+    assert all(vals.values()) or not any(vals.values()), "fill in all four values, or none"  # half a config would break sign-in
+    if vals["projectId"]:
+        assert vals["authDomain"].startswith(vals["projectId"]) and vals["appId"].startswith("1:")
+    assert "measurementId" not in cfg and "analytics" not in cfg.lower()  # this site promises no tracking
     assert (WEB.parent / "firestore.rules").is_file()
     for html in WEB.rglob("*.html"):
         text = html.read_text(encoding="utf-8")
