@@ -2,7 +2,7 @@
    segment trees, Fenwick trees and sparse tables. */
 (() => {
   'use strict';
-  const { rnd, pick, distinct, row, rows, choice, numq, yesno, plural, treePos } = VLLab;
+  const { rnd, pick, distinct, shuffle, row, rows, choice, numq, yesno, plural, treePos } = VLLab;
   const off = (title, need, time, steps, think) => ({ title, need, time, steps, think });
 
   // ---- shared helpers ----
@@ -518,6 +518,95 @@
       const best = Math.max(...dp.get(root.v));
       x.rec(show({ [root.v]: 'found' }), 3, `The best total is ${best}.`);
       x.result = { best, v, w };
+    },
+  };
+
+  ALGOS.treap = {
+    name: 'Treaps',
+    blurb: 'A treap is a search tree and a heap at the same time. Numbers are ordered by key like a normal search tree, and every node also gets a random priority, with the highest priority kept at the top. Random priorities keep the tree bushy, even if the keys arrive in order.',
+    facts: [['Order by', 'Key (left < right)'], ['Heap by', 'Random priority'], ['Height', 'About log n, by luck']],
+    code: ['add the node like a normal search tree, by key', 'give it a random priority (p)', 'while its priority is higher than its parent\'s:', '  rotate it above its parent', 'search order and priority order both hold'],
+    offline: off('Keys and dice', 'Paper, a pencil, a dice or number cards for priorities, and 7 numbers in order', '20 minutes', [
+      'Write 7 numbers in increasing order. Give each a random priority (draw numbers from a hat).',
+      'Add them to a search tree one at a time by key. A plain tree would be a stick.',
+      'After adding a node, if its priority is bigger than its parent\'s, swap their places by rotating, and repeat.',
+      'Compare the height of your tree with a stick of 7.'], 'Why does random priority make the tree behave as if the keys had arrived in random order?'),
+    make() { return { keys: distinct(7, 1, 90).sort((a, b) => a - b), pri: distinct(7, 1, 99) }; },
+    run(x, { keys, pri }) {
+      let root = null, asked = 0, rot = 0;
+      const prOf = {}; keys.forEach((k, i) => { prOf[k] = pri[i]; });
+      const view = (marks) => treeView(root, marks || {}, Object.fromEntries(keys.map((k) => [k, `p${prOf[k]}`])));
+      x.rec({ type: 'rows', rows: [row('keys in order', keys, {}), row('random priority', pri, {})], lists: [] }, -1, 'Add the keys in order. Each has a random priority (p). The highest priority belongs at the top. Press play.');
+      keys.forEach((k, i) => {
+        const n = { v: k, p: pri[i], l: null, r: null }, path = [];
+        if (!root) root = n; else { let c = root; for (;;) { path.push(c); const s = k < c.v ? 'l' : 'r'; if (!c[s]) { c[s] = n; break; } c = c[s]; } }
+        x.rec(view({ [k]: 'cur' }), 0, `Add ${k} with priority ${pri[i]}, like a normal search tree.`);
+        while (path.length) {
+          const par = path[path.length - 1], up = n.p > par.p;
+          x.rec(view({ [k]: 'cur', [par.v]: 'alt' }), 2, `${k} has priority ${n.p}; its parent ${par.v} has ${par.p}.`, asked < 3 ? (asked++, yesno(`Is ${n.p} bigger than the parent's ${par.p}, so ${k} should rotate above it?`, up, up ? 'A higher priority must sit above a lower one.' : 'The parent already has the higher priority, so the order is fine.')) : null);
+          if (!up) break;
+          if (par.l === n) { par.l = n.r; n.r = par; } else { par.r = n.l; n.l = par; }
+          const gp = path[path.length - 2];
+          if (!gp) root = n; else if (gp.l === par) gp.l = n; else gp.r = n;
+          path.pop(); rot++;
+          x.rec(view({ [k]: 'found' }), 3, `Rotate: ${k} moves above ${par.v}.`);
+        }
+      });
+      const pairs = [], inorder = []; let height = 0;
+      (function w(n, d) { if (!n) return; height = Math.max(height, d); w(n.l, d + 1); inorder.push(n.v); w(n.r, d + 1); [n.l, n.r].forEach((c) => { if (c) pairs.push([n.p, c.p]); }); })(root, 1);
+      x.rec(view(), 4, `Height ${height}, after ${rot} rotation${rot === 1 ? '' : 's'}. A plain tree from these keys would be ${keys.length} tall.`);
+      x.result = { inorder, pairs, height, rot };
+    },
+  };
+
+  ALGOS.hld = {
+    name: 'Heavy-light decomposition',
+    blurb: 'To make paths in a tree quick, split the tree into long chains. Each node keeps going down through its heaviest child (the one with the biggest subtree). A path from any node to the top then crosses only a few chains, because every time you leave a chain the subtree at least doubles.',
+    facts: [['Heavy child', 'Biggest subtree'], ['Chains crossed', 'At most about log n'], ['Used for', 'Fast path queries']],
+    code: ['size[node] ← 1 + the sizes of its children', 'heavy child ← the child with the biggest size', 'a heavy child continues its parent\'s chain', 'every other child starts a new chain', 'path query: while the chains differ, jump the deeper chain\'s head to its parent'],
+    offline: off('Chains in a tree', 'A tree of 9 circles on paper and coloured pencils', '20 minutes', [
+      'Draw a tree of 9 circles. Write beside each circle the size of the tree hanging below it (itself included).',
+      'From each circle, draw a thick line to the child with the larger size. Thin lines go to the others.',
+      'Colour each chain of thick lines in one colour. Every circle belongs to exactly one chain.',
+      'Pick two circles. Count how many times a path between them switches colour.'], 'Why does the subtree at least double each time you take a thin line upward?'),
+    make() { const v = distinct(10, 1, 90), t = shuffle(v); return { v, a: t[0], b: t[1] }; },
+    run(x, { v, a, b }) {
+      const root = bstFrom(v), par = new Map(), dep = new Map(), size = new Map(), heavy = new Map(), head = new Map();
+      (function d(n, p, k) { if (!n) return; par.set(n.v, p); dep.set(n.v, k); d(n.l, n.v, k + 1); d(n.r, n.v, k + 1); })(root, null, 0);
+      const cls = ['key', 'found', 'alt', 'done', 'swap', 'seen'], chainOf = new Map(); let nc = 0;
+      const subs = {}, showSizes = new Set(), showChains = { on: false }, hv = { on: false };
+      const view = (marks, lists) => {
+        const vw = treeView(root, marks || {}, subs, { lists });
+        if (hv.on) vw.edges.forEach((e) => { e.c = heavy.get(e.a) === e.b ? 'path' : 'cut'; });
+        return vw;
+      };
+      x.rec(view(), -1, 'Cut the tree into chains. First find the size of the subtree under each node: the small number under a node is its size. Press play.');
+      let asked = 0;
+      (function sz(n) {
+        if (!n) return 0;
+        const l = sz(n.l), r = sz(n.r); size.set(n.v, 1 + l + r); subs[n.v] = String(1 + l + r);
+        x.rec(view({ [n.v]: 'cur' }), 0, `Node ${n.v}: 1 + ${l} + ${r} = ${1 + l + r} nodes in its subtree.`, asked < 2 && (n.l || n.r) ? (asked++, numq(`The subtrees under ${n.v}'s children have ${l} and ${r} nodes. How many nodes are under ${n.v}, itself included?`, 1 + l + r, [l + r, 2 + l + r, Math.max(l, r)], `1 + ${l} + ${r} = ${1 + l + r}.`)) : null);
+        return 1 + l + r;
+      })(root);
+      (function hy(n) { if (!n) return; const lc = n.l ? size.get(n.l.v) : 0, rc = n.r ? size.get(n.r.v) : 0; if (n.l || n.r) heavy.set(n.v, lc >= rc ? n.l.v : n.r.v); hy(n.l); hy(n.r); })(root);
+      hv.on = true;
+      x.rec(view(), 1, 'Heavy edges (green) go to the child with the bigger subtree. Light edges (dashed) go to the other.');
+      (function ch(n, h) { if (!n) return; head.set(n.v, h); if (h === n.v) chainOf.set(h, nc++); [n.l, n.r].forEach((c) => { if (c) ch(c, heavy.get(n.v) === c.v ? h : c.v); }); })(root, root.v);
+      const chains = [...head.keys()].filter((k) => head.get(k) === k).map((h) => { const c = [h]; while (heavy.has(c[c.length - 1])) c.push(heavy.get(c[c.length - 1])); return c; });
+      const colour = Object.fromEntries([...head.entries()].map(([k, h]) => [k, cls[chainOf.get(h) % cls.length]]));
+      x.rec(view(colour, [{ label: 'Chains (top to bottom)', items: chains.map((c) => c.join('→')) }]), 2, `Following heavy edges down gives ${chains.length} chains. Each colour is one chain.`);
+      let p = a, q = b, jumps = 0;
+      x.rec(view({ ...colour, [p]: 'cur', [q]: 'cur' }, [{ label: 'Chains crossed', items: [0] }]), 4, `Find the path between ${a} and ${b}. Move the one whose chain head is deeper, up to the parent of that head.`);
+      while (head.get(p) !== head.get(q)) {
+        const moveP = dep.get(head.get(p)) > dep.get(head.get(q)), h = moveP ? head.get(p) : head.get(q);
+        const qn = asked < 4 ? (asked++, choice('The two nodes are on different chains. Which one jumps?', moveP ? `The one at ${p}` : `The one at ${q}`, [moveP ? `The one at ${q}` : `The one at ${p}`], 'The node whose chain head is deeper jumps up first, so we never overshoot.')) : null;
+        if (moveP) p = par.get(h); else q = par.get(h);
+        jumps++;
+        x.rec(view({ ...colour, [p]: 'cur', [q]: 'cur' }, [{ label: 'Chains crossed', items: [jumps] }]), 4, `Jump from the head of the chain (${h}) to its parent ${moveP ? p : q}. Chains crossed: ${jumps}.`, qn);
+      }
+      const lca = dep.get(p) <= dep.get(q) ? p : q;
+      x.rec(view({ ...colour, [lca]: 'found' }, [{ label: 'Chains crossed', items: [jumps] }]), 4, `Same chain now. The paths meet at ${lca}. Only ${jumps} jump${jumps === 1 ? '' : 's'} were needed.`);
+      x.result = { chains, jumps, a, b, lca };
     },
   };
 

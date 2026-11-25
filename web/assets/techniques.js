@@ -549,5 +549,40 @@
     },
   };
 
+  ALGOS.mo = {
+    name: "Mo's algorithm",
+    blurb: 'Many questions each ask about a stretch of a row, like "how many different numbers are in this stretch?" Instead of starting afresh each time, keep a window and slide its ends. Answer the questions in a clever order, grouped by block, so the window moves as little as possible.',
+    facts: [['Window', 'Slides, never restarts'], ['Order', 'By block, then right end'], ['Total moves', 'About n√q']],
+    code: ['sort the questions by (block of the left end, right end)', 'for each question in that order', '  move the left end to the question\'s left, adding or removing one number at a time', '  move the right end the same way', '  the window now holds exactly the question\'s stretch: read the answer'],
+    offline: off('Sliding frame', 'A strip of 9 numbers from 1 to 4, and a card with a window', '20 minutes', [
+      'Write 9 numbers from 1 to 4. Make a tally of which numbers are in the window.',
+      'Take 4 questions of the form "how many different numbers are between place l and place r?".',
+      'Instead of re-counting each from scratch, slide the window ends from the last question to the next, adding or removing one number each step and updating the tally.',
+      'Count your steps and compare with counting every stretch from scratch.'], 'Why does sorting the questions make the window move less overall?'),
+    make() { const a = Array.from({ length: 9 }, () => rnd(1, 4)), qs = []; while (qs.length < 4) { const l = rnd(0, 6), r = rnd(l + 1, 8); qs.push([l, r]); } return { a, qs }; },
+    run(x, { a, qs }) {
+      const B = 3, order = qs.map((q, i) => i).sort((p, q) => Math.floor(qs[p][0] / B) - Math.floor(qs[q][0] / B) || qs[p][1] - qs[q][1]);
+      const cnt = Array(5).fill(0); let curL = 0, curR = -1, distinct = 0, moves = 0, asked = 0; const ans = Array(qs.length).fill(null);
+      const view = (hi) => ({ ...rows([row('numbers', a, Object.fromEntries(a.map((_, i) => [i, hi === i ? 'cur' : i >= curL && i <= curR ? 'key' : ''])), {}), row('tally of 1 to 4', cnt.slice(1), {})]), lists: [{ label: 'Different numbers in the window', items: [distinct] }, { label: 'Answers (in question order)', items: ans.map((v, i) => `Q${i + 1} = ${v === null ? '?' : v}`) }] });
+      const add = (i) => { if (cnt[a[i]]++ === 0) distinct++; moves++; };
+      const del = (i) => { if (--cnt[a[i]] === 0) distinct--; moves++; };
+      x.rec(view(), -1, `Four questions: how many different numbers between two places? Sort them by block, then slide one window. Press play.`, null, [['Window moves', 0]]);
+      x.rec(view(), 0, `Order to answer: ${order.map((i) => `Q${i + 1} (${qs[i][0] + 1}–${qs[i][1] + 1})`).join(', ')}.`, null, [['Window moves', 0]]);
+      for (const qi of order) {
+        const [l, r] = qs[qi];
+        x.rec(view(), 2, `Question ${qi + 1}: positions ${l + 1} to ${r + 1}. The window is now ${curR < curL ? 'empty' : `${curL + 1} to ${curR + 1}`}.`, null, [['Window moves', moves]]);
+        while (curL > l) { curL--; add(curL); x.rec(view(curL), 2, `Add place ${curL + 1} (${a[curL]}) on the left.`, null, [['Window moves', moves]]); }
+        while (curR < r) { curR++; add(curR); x.rec(view(curR), 3, `Add place ${curR + 1} (${a[curR]}) on the right.`, null, [['Window moves', moves]]); }
+        while (curL < l) { del(curL); x.rec(view(curL), 2, `Remove place ${curL + 1} (${a[curL]}) on the left.`, null, [['Window moves', moves]]); curL++; }
+        while (curR > r) { del(curR); x.rec(view(curR), 3, `Remove place ${curR + 1} (${a[curR]}) on the right.`, null, [['Window moves', moves]]); curR--; }
+        ans[qi] = distinct;
+        x.rec(view(), 4, `The window is exactly ${l + 1} to ${r + 1}: ${distinct} different number${distinct === 1 ? '' : 's'}.`, asked < 2 ? (asked++, numq(`How many different numbers are in positions ${l + 1} to ${r + 1}?`, distinct, [distinct + 1, Math.max(1, distinct - 1), r - l + 1], `Count the tallies above zero in the window: ${distinct}.`)) : null, [['Window moves', moves]]);
+      }
+      const naive = qs.reduce((s, [l, r]) => s + (r - l + 1), 0);
+      x.rec(view(), 4, `All answered in ${moves} window moves. Counting each stretch afresh would take ${naive} steps here. With thousands of questions, sliding one window in a good order wins by far.`, null, [['Window moves', moves]]);
+      x.result = { ans: ans.slice(), moves, naive, qs, a };
+    },
+  };
+
   VLLab.define('techniques', ALGOS);
 })();

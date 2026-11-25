@@ -887,3 +887,88 @@ def test_every_frame_of_every_lesson_draws_cleanly(page_key, drawing):
       return bad;
     }})())""")
     assert json.loads(out) == []
+
+
+# ---------- the final five ----------
+
+def test_treap_is_ordered_by_key_and_by_priority():
+    for _ in range(40):
+        inp, fr = run("trees", "treap")
+        res = fr[-1]["result"]
+        assert res["inorder"] == sorted(inp["keys"])
+        assert all(p >= c for p, c in res["pairs"])
+        assert len(res["pairs"]) == len(inp["keys"]) - 1
+        assert res["height"] <= len(inp["keys"])
+
+
+def test_heavy_light_chains_and_path_jumps():
+    for _ in range(50):
+        inp, fr = run("trees", "hld")
+        root = bst_nodes(inp["v"])
+        par, dep, size = {}, {}, {}
+        def walk(n, p, d):
+            if n is None:
+                return 0
+            par[n["v"]], dep[n["v"]] = p, d
+            size[n["v"]] = 1 + walk(n["l"], n["v"], d + 1) + walk(n["r"], n["v"], d + 1)
+            return size[n["v"]]
+        walk(root, None, 0)
+        heavy, head = {}, {root["v"]: root["v"]}
+        def mark(n):
+            if n is None:
+                return
+            kids = [k for k in (n["l"], n["r"]) if k]
+            if kids:
+                hv = max(kids, key=lambda k: (size[k["v"]], k is n["l"]))
+                heavy[n["v"]] = hv["v"]
+            for k in kids:
+                head[k["v"]] = head[n["v"]] if heavy.get(n["v"]) == k["v"] else k["v"]
+                mark(k)
+        mark(root)
+        chains = []
+        for h in {v for v in head.values()}:
+            c = [h]
+            while c[-1] in heavy:
+                c.append(heavy[c[-1]])
+            chains.append(c)
+        res = fr[-1]["result"]
+        assert sorted(res["chains"]) == sorted(chains)
+        assert sorted(v for c in res["chains"] for v in c) == sorted(inp["v"])
+        p, q, jumps = inp["a"], inp["b"], 0
+        while head[p] != head[q]:
+            if dep[head[p]] > dep[head[q]]:
+                p = par[head[p]]
+            else:
+                q = par[head[q]]
+            jumps += 1
+        assert res["jumps"] == jumps and res["lca"] == (p if dep[p] <= dep[q] else q)
+        assert jumps <= math.log2(len(inp["v"])) + 1
+
+
+def test_hamilton_path_exists_exactly_when_found():
+    seen = set()
+    for _ in range(60):
+        inp, fr = run("graphs", "hamilton")
+        n, es = inp["n"], {frozenset(e) for e in inp["es"]}
+        exists = any(all(frozenset((p[i], p[i + 1])) in es for i in range(n - 1)) for p in itertools.permutations(range(n)))
+        path = fr[-1]["result"]["path"]
+        assert (path is not None) == exists
+        if path:
+            assert sorted(path) == list(range(n)) and all(frozenset((path[i], path[i + 1])) in es for i in range(n - 1))
+        seen.add(exists)
+    assert seen == {True, False}
+
+
+def test_mos_algorithm_answers_every_question():
+    for _ in range(40):
+        inp, fr = run("techniques", "mo")
+        res = fr[-1]["result"]
+        assert res["ans"] == [len(set(inp["a"][l:r + 1])) for l, r in inp["qs"]]
+        assert res["moves"] >= 1
+
+
+def test_aho_corasick_finds_every_word_in_one_pass():
+    for _ in range(30):
+        inp, fr = run("text", "aho")
+        want = sorted(([w, i] for w in inp["words"] for i in range(len(inp["text"])) if inp["text"].startswith(w, i)), key=lambda m: (m[1], m[0]))
+        assert fr[-1]["result"]["found"] == want

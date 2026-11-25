@@ -343,6 +343,60 @@
     },
   };
 
+  ALGOS.aho = {
+    name: 'Aho-Corasick',
+    blurb: 'Search a text for many words at once. Build a trie of all the words. Give every node a "fail link": where to go if the next letter does not fit, keeping as much of what you matched as possible. Then read the text once, never going back.',
+    facts: [['Words', 'Many at once'], ['Text', 'Read once'], ['Time', 'O(text + words + matches)']],
+    code: ['build a trie of all the words', 'fail link of a node ← the longest shorter ending that is also a start in the trie', 'for each letter of the text', '  while no branch for the letter: follow the fail link', '  step along the branch, then report every word that ends here (following fail links)'],
+    offline: off('Many words, one pass', 'Paper, a pencil, a few short words and a text', '25 minutes', [
+      'Draw a trie for the words HE, SHE, HIS and HERS.',
+      'For each node, work out where to fall back to if the next letter fails: the longest ending of what you have matched that is also a start of some word.',
+      'Read the text USHERS one letter at a time, moving along the trie or falling back.',
+      'Every time you reach a node where a word ends (or a fall-back chain through one), note the word.'], 'Why does reading "SHE" also find "HE"?'),
+    make() { return pick([{ words: ['he', 'she', 'his', 'hers'], text: 'ushers' }, { words: ['ab', 'bc', 'abc'], text: 'xabcab' }, { words: ['a', 'ab', 'bab'], text: 'cabab' }]); },
+    run(x, { words, text }) {
+      const root = { id: '', ch: '•', kids: {}, end: null, fail: null, d: 0 };
+      for (const w of words) { let n = root; for (const c of w) { n.kids[c] = n.kids[c] || { id: n.id + c, ch: c, kids: {}, end: null, fail: null, d: n.d + 1 }; n = n.kids[c]; } n.end = w; }
+      const all = []; (function c(n) { all.push(n); Object.keys(n.kids).sort().forEach((k) => c(n.kids[k])); })(root);
+      const byId = new Map(all.map((n) => [n.id, n]));
+      const layout = () => { let leaf = 0, maxD = 0; (function p(n) { maxD = Math.max(maxD, n.d); const ks = Object.keys(n.kids).sort(); ks.forEach((k) => p(n.kids[k])); n.x = ks.length ? ks.reduce((s, k) => s + n.kids[k].x, 0) / ks.length : leaf++; })(root); return { cols: Math.max(leaf, 1), maxD }; };
+      const { cols, maxD } = layout();
+      const found = [];
+      const view = (cur, showFail, hi) => ({ type: 'graph', h: 90 + maxD * 62, nodes: all.map((n) => ({ id: n.id, x: 30 + (cols === 1 ? 270 : (n.x * 540) / (cols - 1)), y: 36 + n.d * 62, t: n.ch, s: n.end ? 'end' : '', c: n.id === cur ? 'cur' : hi && hi.includes(n.id) ? 'found' : n.end ? 'done' : '' })),
+        edges: [...all.filter((n) => n.id).map((n) => ({ a: n.id.slice(0, -1), b: n.id })), ...all.filter((n) => showFail && n.fail && n.fail !== root && n.fail.id !== n.id.slice(0, -1) && n.fail.id !== '').map((n) => ({ a: n.id, b: n.fail.id, d: true, c: 'cut' }))],
+        lists: [{ label: 'Words found', items: found.map((f) => `${f[0]}@${f[1] + 1}`) }] });
+      x.rec(view(), -1, `Find ${words.join(', ')} in "${text}" in one pass. First build a trie of the words. Press play.`);
+      x.rec(view(), 0, 'The trie is built. A node marked "end" finishes a word.');
+      const q = [];
+      for (const k of Object.keys(root.kids)) { root.kids[k].fail = root; q.push(root.kids[k]); }
+      let asked = 0;
+      while (q.length) {
+        const u = q.shift();
+        for (const k of Object.keys(u.kids).sort()) {
+          const v = u.kids[k]; let f = u.fail;
+          while (f !== root && !f.kids[k]) f = f.fail;
+          v.fail = f.kids[k] && f.kids[k] !== v ? f.kids[k] : root; q.push(v);
+        }
+      }
+      x.rec(view(null, true), 1, 'Fail links (dashed arrows) say where to fall back to when the next letter does not fit.');
+      let st = root;
+      const row0 = (i) => ({ ...rows([row('text', [...text], { [i]: 'cur' }, {})]), lists: [] });
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i], had = !!st.kids[c];
+        const hasBranch = (s) => !!s.kids[c];
+        x.rec({ ...view(st.id, true), rows: [row('text', [...text], { [i]: 'cur' }, {})] }, 2, `Read "${c}". We are at "${st.id || 'the start'}".`,
+          asked < 3 ? (asked++, yesno(`Does the node "${st.id || 'start'}" have a branch for "${c}"?`, had, had ? `Yes: follow it.` : `No: follow the fail link and try again, so we keep as much of what we matched as we can.`)) : null);
+        while (st !== root && !st.kids[c]) { st = st.fail; x.rec({ ...view(st.id, true), rows: [row('text', [...text], { [i]: 'cur' }, {})] }, 3, `No branch for "${c}": fall back along the fail link to "${st.id || 'the start'}".`); }
+        if (st.kids[c]) st = st.kids[c];
+        const hits = []; for (let s = st; s && s !== root; s = s.fail) if (s.end) { hits.push(s.id); found.push([s.end, i - s.end.length + 1]); }
+        x.rec({ ...view(st.id, true, hits), rows: [row('text', [...text], { [i]: 'cur' }, {})] }, 4, hits.length ? `Now at "${st.id || 'the start'}": found ${hits.join(', ')}.` : `Now at "${st.id || 'the start'}": no word ends here.`);
+      }
+      const sorted = found.slice().sort((a, b) => a[1] - b[1] || (a[0] < b[0] ? -1 : 1));
+      x.rec({ ...view(null, true), rows: [row('text', [...text], {}, {})] }, 4, `${sorted.length} match${sorted.length === 1 ? '' : 'es'} found while reading the text once.`);
+      x.result = { found: sorted, words, text };
+    },
+  };
+
   VLLab.define('text', ALGOS);
   globalThis.VLText = { bloomHash, sketchHash, allAt, hllHash };
 })();

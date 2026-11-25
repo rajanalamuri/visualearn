@@ -26,7 +26,7 @@ web/                    static site, served by a Cloudflare Worker (assets only)
   paths/                Dijkstra's shortest path (paths.js)
   dp/                   dynamic programming: fewest coins, counting walks (dp.js)
   math/grades/          grade 1 to 10 map; progress/ is the on-device diary
-  techniques/, trees/, graphs/, solve/, text/, numbers/, shapes/, big/   about 70 more lessons on the shared lab engine (assets/lab.js plus one script per page)
+  techniques/, trees/, graphs/, solve/, text/, numbers/, shapes/, big/   about 75 more lessons on the shared lab engine (assets/lab.js plus one script per page)
   parents/, privacy/    optional parent sign-in (Firebase, see below) and the privacy policy
   curriculum/           the whole DSA map: ready, next, to do (data lives in assets/catalog.js)
   manifest.webmanifest, sw.js, icons/   make /play/ installable and usable offline

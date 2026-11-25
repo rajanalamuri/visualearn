@@ -534,5 +534,43 @@
     },
   };
 
+  ALGOS.hamilton = {
+    name: 'Hamilton paths',
+    blurb: 'An Euler walk uses every road once. A Hamilton path visits every town exactly once. It sounds similar but is much harder: there is no quick test. Try a path, and if you get stuck, step back and try another way.',
+    facts: [['Visits', 'Every town once'], ['Quick test?', 'None known'], ['Method here', 'Backtracking']],
+    code: ['start in a town', 'go to a neighbour you have not visited', 'if every town is visited: found a Hamilton path', 'if stuck: step back and try another neighbour', 'tried every start: there is no Hamilton path'],
+    offline: off('Visit every town', 'A drawing of 6 towns joined by roads, and a pencil', '15 minutes', [
+      'Draw 6 towns in a ring and add a couple of extra roads.',
+      'Pick a start. Walk to a neighbour you have not visited, marking each town. Try to visit all 6 without repeating one.',
+      'If you get stuck, step back one town and try a different road.',
+      'Now draw a "star": one town joined to three others, and one more town hanging off two of those. Can you do it?'], 'Why can a town with only one road be in the middle of a Hamilton path? (Hint: it cannot.)'),
+    make() {
+      if (Math.random() < 0.55) { const n = 6, es = Array.from({ length: n }, (_, i) => [i, (i + 1) % n]); [[0, 2], [1, 4], [3, 5]].filter(() => Math.random() < 0.7).forEach(([a, b]) => es.push([a, b])); return { n, es }; }
+      return { n: 6, es: [[0, 1], [0, 2], [0, 3], [1, 4], [2, 5]] };
+    },
+    run(x, { n, es }) {
+      const P = ring(n), adj = Array.from({ length: n }, () => []); es.forEach(([a, b]) => { adj[a].push(b); adj[b].push(a); });
+      const path = []; let asked = 0, tries = 0, found = null;
+      const view = (cur, bad) => gv(P.map((p, i) => ({ id: i, ...p, t: L(i), c: i === cur ? (bad ? 'swap' : 'cur') : path.includes(i) ? 'key' : '' })), es.map(([a, b]) => ({ a, b, c: path.some((v, k) => k > 0 && key(v, path[k - 1]) === key(a, b)) ? 'on' : '' })), [{ label: 'Path so far', items: path.map(L) }]);
+      x.rec(view(), -1, 'Find a path that visits every town exactly once. Press play.');
+      const go = (u) => {
+        path.push(u); tries++;
+        x.rec(view(u), path.length === 1 ? 0 : 1, path.length === 1 ? `Start at ${L(u)}.` : `Go to ${L(u)}.`, null, [['Steps', tries]]);
+        if (path.length === n) { found = path.slice(); x.rec(view(u), 2, `Every town is visited exactly once: ${path.map(L).join(' → ')}.`, null, [['Steps', tries]]); return true; }
+        for (const v of adj[u]) {
+          const seen = path.includes(v);
+          if (asked < 3) { asked++; x.rec(view(u), 1, `From ${L(u)}, look at ${L(v)}.`, yesno(`Has ${L(v)} already been visited on this path?`, seen, seen ? 'It is on the path already, and each town may be used once.' : 'Not yet visited, so we can go there.'), [['Steps', tries]]); }
+          if (!seen && go(v)) return true;
+        }
+        path.pop();
+        x.rec(view(u, true), 3, `Stuck at ${L(u)}: no unvisited neighbour leads to a full path. Step back.`, null, [['Steps', tries]]);
+        return false;
+      };
+      for (let s = 0; s < n && !found; s++) { if (s > 0) x.rec(view(), 0, `That start failed. Try starting at ${L(s)} instead.`, null, [['Steps', tries]]); go(s); }
+      if (!found) x.rec(view(), 4, 'Every start was tried. There is no Hamilton path in this map.', null, [['Steps', tries]]);
+      x.result = { path: found, es, n };
+    },
+  };
+
   VLLab.define('graphs', ALGOS);
 })();

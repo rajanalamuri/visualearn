@@ -111,7 +111,7 @@ def test_dsa_curriculum_is_complete_and_honest():
                     assert ref in ideas, ref
     ready = [t for _, topics in dsa for t in topics if len(t) > 1 and t[1]]
     nxt = [t for _, topics in dsa for t in topics if len(t) > 2 and t[2]]
-    assert len(ready) >= 10 and 4 <= len(nxt) <= 10
+    assert len(ready) >= 10 and len(nxt) <= 10  # a finished curriculum has nothing left to mark "next"
     # every lesson that exists is on the map: all five sorts, both searches, both graph searches
     refs = {t[1] for t in ready}
     for want in ("sorting:bubble", "sorting:selection", "sorting:insertion", "sorting:merge", "sorting:quick",
